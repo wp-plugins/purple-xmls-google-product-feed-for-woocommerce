@@ -1,10 +1,11 @@
 <?php
+
 /*
-  Plugin Name: Google XML Product Feed for WooCommerce
-Plugin URI: http://www.purpleturtle.pro/
-  Description: Update permalinks after activating/deactivating the plugin :: <a href="/wp-admin/options-general.php?page=purple-feeds-xmls">Settings</a> :: <b><a href="http://www.w3bdesign.ca/woocommerce-google-merchant-feed/">Get Pro Version</a></b> - Includes Attribute and Variable Product Support + Easy to use Interface <img style="border:1px #ccc solid;" src="http://www.purpleturtle.pro/wp-content/uploads/2013/07/screenshot-e1373150699517.png" />
+  Plugin Name: PurpleXMLs
+  Plugin URI: http://www.purpleturtle.pro/
+  Description: Google XML Product Feed for WooCommerce, Update permalinks after activating/deactivating the plugin :: <a href="/wp-admin/options-general.php?page=purple-feeds-xmls">Settings</a> :: <b><a href="http://www.w3bdesign.ca/woocommerce-google-merchant-feed/">Get Pro Version</a></b> - Includes Attribute and Variable Product Support + Easy to use Interface <img style="border:1px #ccc solid;" src="http://www.purpleturtle.pro/wp-content/uploads/2013/07/screenshot-e1373150699517.png" />
   Author: Purple Turtle Productions
-  Version: 1.3
+  Version: 1.3.1
   Author URI: http://www.purpleturtle.pro/
 
  */

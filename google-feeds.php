@@ -29,7 +29,7 @@ function purple_feeds_page_getGoogleFeeds($category_id, $google_category, $brand
     echo '<channel>';
     echo '<title>' . $cat_row->name . '</title>';
     echo '<link>' . get_category_link($category_id) . '</link>';
-    echo '<description>' . $cat_row->description . '</description>';
+    echo '<description><![CDATA[' . $cat_row->description . ']]></description>';
     foreach ($products as $prod) {
         if ($brand_name == "") {
             $brand_name = $cat_row->name;
@@ -39,19 +39,18 @@ function purple_feeds_page_getGoogleFeeds($category_id, $google_category, $brand
         echo '<item>' . PHP_EOL;
         echo '	<g:id>' . $prod->ID . '</g:id>' . PHP_EOL;
         echo '	<g:mpn>' . $product->sku . '</g:mpn>' . PHP_EOL;
-        echo '	<title>' . $prod->post_title . '</title>' . PHP_EOL;
+        echo '	<title><![CDATA[' . $prod->post_title . ']]></title>' . PHP_EOL;
         echo '	<description><![CDATA[' . $prod->post_content . ']]></description>' . PHP_EOL;
-        echo '	<g:google_product_category>' . $google_category . '</g:google_product_category>' . PHP_EOL;
+        echo '	<g:google_product_category><![CDATA[' . $google_category . ']]></g:google_product_category>' . PHP_EOL;
         echo '	<g:product_type>' . $google_category . '</g:product_type>' . PHP_EOL;
         echo '	<link>' . get_permalink($prod->ID) . '</link>' . PHP_EOL;
         $thumb = wp_get_attachment_image_src(get_post_thumbnail_id($prod->ID), 'small-feature');
         $imgurl = $thumb['0'];
-        echo '	<g:image_link>' . $imgurl . '</g:image_link>' . PHP_EOL;
+        echo '	<g:image_link><![CDATA[' . $imgurl . ']]></g:image_link>' . PHP_EOL;
         echo '	<g:price>' . $product->price . '</g:price>' . PHP_EOL;
         echo '	<g:condition>new</g:condition>' . PHP_EOL;
-        echo '	<g:brand>' . $brand_name . '</g:brand>' . PHP_EOL;
+        echo '	<g:brand><![CDATA[' . $brand_name . ']]></g:brand>' . PHP_EOL;
         echo '	<g:availability>in stock</g:availability>' . PHP_EOL;
-        // echo '	<g:quantity>1</g:quantity>'.PHP_EOL;
         echo '</item>' . PHP_EOL;
     }
     echo '</channel>';
