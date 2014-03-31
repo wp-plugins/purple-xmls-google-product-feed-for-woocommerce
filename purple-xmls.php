@@ -5,7 +5,7 @@
   Plugin URI: http://www.purpleturtle.pro/
   Description: Google XML Product Feed for WooCommerce, Update permalinks after activating/deactivating the plugin :: <a href="/wp-admin/options-general.php?page=purple-feeds-xmls">Settings</a> :: <b><a href="http://www.w3bdesign.ca/woocommerce-google-merchant-feed/">Get Pro Version</a></b> - Includes Attribute and Variable Product Support + Easy to use Interface <img style="border:1px #ccc solid;" src="http://www.purpleturtle.pro/wp-content/uploads/2013/07/screenshot-e1373150699517.png" />
   Author: Purple Turtle Productions
-  Version: 1.3.1
+  Version: 1.3.3
   Author URI: http://www.purpleturtle.pro/
 
  */
@@ -21,37 +21,67 @@ function purple_xmls_init() {
     // Check if form was posted and select task accordingly
     if (isset($_REQUEST['purplexmls'])) {
         $purplexmls = $_REQUEST['purplexmls'];
-        switch ($purplexmls) {
-            case 'google':
-                $inc = 'google-feeds.php';
-                include_once $inc;
-                $category = $_REQUEST['category'];
-                $google_category = $_REQUEST['google_category'];
-                $brand_name = $_REQUEST['brand_name'];
+        // Check if form was posted and select task accordingly
+        $dir = WP_CONTENT_DIR . "/uploads/purplexmls/";
+        if (!is_writable(WP_CONTENT_DIR . "/uploads/")) {
+            $message = WP_CONTENT_DIR . "/uploads/ should be writable";
+        } else {
+            $dir = WP_CONTENT_DIR . "/uploads/purplexmls/";
+            if (!is_dir($dir)) {
+                mkdir($dir);
+            }
+            if (!is_writable($dir)) {
+                $message = "$dir should be writable";
+            } else {
+                $dir2 = $dir . "google/";
+                if (!is_dir($dir2)) {
+                    mkdir($dir2);
+                }
+                if (!is_writable($dir2)) {
+                    $message = "$dir2 should be writable";
+                }
+                switch ($purplexmls) {
+                    case 'google':
+                        $inc = 'google-feeds.php';
+                        include_once $inc;
+                        $category = $_REQUEST['category'];
+                        $google_category = $_REQUEST['google_category'];
+                        $brand_name = $_REQUEST['brand_name'];
+                        $dir2 = $dir . "google/";
+                        $old_flag = FALSE;
+                        $file_name = sanitize_title_with_dashes($_REQUEST['brand_name']);
+                        if ($file_name == "") {
+                            $file_name = "feed" . rand(10, 1000);
+                        }
+                        $file_url = $dir2 . $file_name . ".xml";
+                        $handle = fopen($file_url, "w");
+                        $file_path = site_url() . "/wp-content/uploads/purplexmls/google/$file_name.xml";
+                        // Generate xml file for download
+                        $output = purple_feeds_page_getGoogleFeeds($category, $google_category, $brand_name);
+                        fwrite($handle, $output);
+                        header('Location: ' . $file_path);
+                        break;
+                    case 'categories':
+                        $inc = 'categories-feeds.php';
+                        include_once $inc;
+                        // Generate xml file for download
+                        purple_feeds_page_getCategoriesFeeds();
+                        break;
+                    case 'category_products':
+                        $category = $_REQUEST['category'];
+                        $inc = 'categories-products-feeds.php';
+                        include_once $inc;
+                        // Generate xml file for download
+                        purple_feeds_page_getCategoriesProductsFeeds($category);
+                        break;
+                    default: $inc = '';
+                        break;
+                }
 
-                // Generate xml file for download
-                purple_feeds_page_getGoogleFeeds($category, $google_category, $brand_name);
-//                return call_user_func('purple_feeds_page_getGoogleFeeds');
-                break;
-            case 'categories':
-                $inc = 'categories-feeds.php';
-                include_once $inc;
-                // Generate xml file for download
-                purple_feeds_page_getCategoriesFeeds();
-                break;
-            case 'category_products':
-                $category = $_REQUEST['category'];
-                $inc = 'categories-products-feeds.php';
-                include_once $inc;
-                // Generate xml file for download
-                purple_feeds_page_getCategoriesProductsFeeds($category);
-                break;
-            default: $inc = '';
-                break;
-        }
-
-        if ($inc != "") {
-            exit();
+                if ($inc != "") {
+                    exit();
+                }
+            }
         }
     }
 }

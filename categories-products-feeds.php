@@ -21,7 +21,7 @@ header ("Content-Type:text/xml");
     		";
     $products = $wpdb->get_results($sql);
     $cat_row = get_term($category_id, 'product_cat');
-    echo '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
+    echo '<?xml version="1.0" encoding="iso-8859-1" ?>' . PHP_EOL;
     echo '<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
 	http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"

@@ -52,7 +52,7 @@ header ("Content-Type:text/xml");
         }
     }
 
-    echo '<?xml version="1.0"?>' . PHP_EOL;
+    echo '<?xml version="1.0" encoding="iso-8859-1" ?>' . PHP_EOL;
     echo '<items>' . PHP_EOL;
     foreach ($mainCats as $mcat) {
         echo '<item>' . PHP_EOL;
