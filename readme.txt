@@ -10,6 +10,8 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 The Purple XMLs Google Product Feed for WooCommerce creates an XML output by of any category in the WooCommerce installation
 
+
+
 == Description ==
 
 The Purple XMLs Google Product Feed for WooCommerce creates an XML output of any category in the WooCommerce installation. It includes all required feed types for Google Merchant Center for non-variable products.
