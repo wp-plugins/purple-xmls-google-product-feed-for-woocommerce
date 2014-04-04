@@ -25,7 +25,7 @@ function purple_feeds_page_getGoogleFeeds($category_id, $google_category, $brand
     $products = $wpdb->get_results($sql);
     $cat_row = get_term($category_id, 'product_cat');
 
-    $output.= '<?xml version="1.0" encoding="iso-8859-1" ?>' . PHP_EOL;
+    $output.= '<?xml version="1.0" encoding="UTF-8" ?>' . PHP_EOL;
     $output.= '<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0" xmlns:c="http://base.google.com/cns/1.0">' . PHP_EOL;
     $output.= '<channel>';
     $output.= '<title>' . $cat_row->name . '</title>';
@@ -42,8 +42,8 @@ function purple_feeds_page_getGoogleFeeds($category_id, $google_category, $brand
         $output.= '	<g:mpn>' . $product->sku . '</g:mpn>' . PHP_EOL;
         $output.= '	<title><![CDATA[' . $prod->post_title . ']]></title>' . PHP_EOL;
         $output.= '	<description><![CDATA[' . $prod->post_content . ']]></description>' . PHP_EOL;
-        $output.= '	<g:google_product_category><![CDATA[' . $google_category . ']]></g:google_product_category>' . PHP_EOL;
-        $output.= '	<g:product_type>' . $google_category . '</g:product_type>' . PHP_EOL;
+        $output.= '	<g:google_product_category><![CDATA[ ' . str_replace(".and.", " & ", str_replace(".in.", " > ", $google_category)) . ']]></g:google_product_category>' . PHP_EOL;
+        $output.= '	<g:product_type><![CDATA[ ' . str_replace(".and.", " & ", str_replace(".in.", " > ", $google_category)) .  ']]></g:product_type>' . PHP_EOL;
         $output.= '	<link>' . get_permalink($prod->ID) . '</link>' . PHP_EOL;
         $thumb = wp_get_attachment_image_src(get_post_thumbnail_id($prod->ID), 'small-feature');
         $imgurl = $thumb['0'];

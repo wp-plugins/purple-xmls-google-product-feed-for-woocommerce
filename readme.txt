@@ -4,7 +4,7 @@ Donate link: https://www.purpleturtle.pro
 Tags: WooCommerce, Google, Merchant, Shopping, xml, product feed, nextag, google product feed
 Requires at least: 3.0
 Tested up to: 3.8.1
-Stable tag: 1.3.3
+Stable tag: 1.3.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -90,7 +90,10 @@ http://www.youtube.com/watch?v=RueV471NbJ4
 1. 4 Steps to the feed
 
 == Changelog ==
-<h4>Version 1.3.3 31/03/2014</h4>
+<h4>Version 1.3.4 05/04/2014</h4>
+<ul>
+    <li><strong>Fix</strong> Google category special characters issue removed</li> 
+</ul>
 <ul>
     <li><strong>Fix</strong> Remove URL problem with special charectes</li> 
     <li><strong>Add</strong> optimize generated URL, Create XML file with feed generated, URL can able to submit in Google Mechant account </li>           
