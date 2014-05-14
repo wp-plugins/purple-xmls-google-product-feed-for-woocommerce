@@ -1,0 +1,259 @@
+Cars > Auto Parts and Accessories	;	96477
+Cars > Automotive Security Systems 	;	96621
+Cars > Motorcycle Parts and Accessories	;	96478
+Cars > New Cars	;	96456
+Cars > Used Cars	;	96457
+Clothing and Accessories > Clothing	;	31515
+Clothing and Accessories > Handbags and Wallets	;	96668
+Clothing and Accessories > Luggage	;	68185
+Clothing and Accessories > Shoes	;	96602
+Computers > Barcode Scanners	;	96500
+Computers > Barebone Systems	;	96600
+Computers > Bridges	;	96267
+Computers > Cables and Connectors	;	1627
+Computers > Cache Memory	;	96258
+Computers > Cartridges and Toners	;	352
+Computers > CD and DVD Burners	;	94757
+Computers > Computer Speakers	;	1721
+Computers > Concentrators and Multiplexers	;	96286
+Computers > Drive Cases	;	96269
+Computers > DVD and CD ROM Drives	;	94758
+Computers > PDAs	;	9
+Computers > Expansion Modules	;	96283
+Computers > Firewalls	;	96288
+Computers > Floppy Drives	;	1702
+Computers > Graphic Tablets	;	1694
+Computers > Graphics Cards	;	1722
+Computers > Hard Drives	;	1701
+Computers > Input Adapters	;	1725
+Computers > IP Phones	;	96405
+Computers > Keyboards and Mice	;	1696
+Computers > Laptop Accessories	;	1633
+Computers > Laptops	;	9007
+Computers > Mac Desktops	;	96297
+Computers > Mac Laptops	;	460
+Computers > Media Streamers	;	96623
+Computers > Memory Adapters	;	96261
+Computers > Memory Cards	;	96259
+Computers > Modems	;	461
+Computers > Monitor Accessories	;	1632
+Computers > Monitors	;	9006
+Computers > Motherboards	;	1717
+Computers > Network Accessories	;	96291
+Computers > Network Adapters	;	1683
+Computers > Network Cables	;	96287
+Computers > Network Storage	;	1707
+Computers > Network Terminals	;	96438
+Computers > Hubs and Switches	;	1684
+Computers > Networking Repeaters	;	1687
+Computers > Other Network Devices	;	96292
+Computers > PC Cases	;	1718
+Computers > PC Desktops	;	451
+Computers > PC Gaming Devices	;	1693
+Computers > PDA Accessories	;	1637
+Computers > Printer Accessories	;	1635
+Computers > Printers	;	6
+Computers > Processors	;	1719
+Computers > Random Access Memory (RAM)	;	96256
+Computers > Read Only Memory (ROM)	;	96260
+Computers > Blank Media	;	63686
+Computers > Routers	;	96268
+Computers > Scanner Accessories	;	96436
+Computers > Scanners	;	7
+Computers > Serial Adapters	;	96284
+Computers > Servers	;	96263
+Computers > Software	;	96394
+Computers > Sound Cards	;	1724
+Computers > Storage Controllers	;	96437
+Computers > Surge Suppressors	;	1646
+Computers > System Cooling	;	96448
+Computers > System Power Supplies	;	96452
+Computers > Tablets and eBook Readers	;	96601
+Computers > Tape Drives	;	1708
+Computers > Transceivers	;	96270
+Computers > UPS Accessories	;	96453
+Computers > UPS Systems Devices	;	1647
+Computers > Video Memory	;	96257
+Computers > Web Cameras	;	1697
+Computers > Wireless Access Points	;	96290
+Computers > Wireless Adapters	;	96619
+Computers > Zip and Other Drives	;	1705
+Electronics > 2 Way Radios	;	409
+Electronics > Amplifiers and Preamps	;	437
+Electronics > Answering Machines	;	96264
+Electronics > Audio Shelf Systems	;	414
+Electronics > Binoculars	;	96321
+Electronics > Boomboxes	;	87207
+Electronics > Camcorders	;	410
+Electronics > Camera Lenses	;	96323
+Electronics > Car Amplifiers	;	420
+Electronics > Car Audio and Video Accessories	;	96455
+Electronics > Car Equalizers	;	1390
+Electronics > Car Monitors	;	96609
+Electronics > Car Speakers and Subwoofers	;	422
+Electronics > CB Radios	;	87212
+Electronics > CD Players	;	434
+Electronics > Cellular Accessories	;	93768
+Electronics > Cellular Phones	;	93767
+Electronics > Clock Radios	;	417
+Electronics > Conferencing Stations	;	96618
+Electronics > Camcorders and Digital Camera Accessories	;	87204
+Electronics > Digital Cameras	;	7185
+Electronics > Digital Picture Frames	;	96714
+Electronics > DVD Players	;	87
+Electronics > Equalizers	;	428
+Electronics > Film	;	448
+Electronics > Film Cameras	;	442
+Electronics > Flashes	;	96460
+Electronics > Televisions	;	96252
+Electronics > GPS Accessories	;	93207
+Electronics > GPS Devices	;	1398
+Electronics > Headphones	;	418
+Electronics > Headsets	;	96442
+Electronics > Home Audio Accessories	;	87215
+Electronics > Home Theater Speakers and Subwoofers	;	1510
+Electronics > Home Theater Systems	;	1401
+Electronics > In Dash Receivers	;	96608
+Electronics > Lens Converters	;	96461
+Electronics > Microphones	;	92217
+Electronics > Microscopes	;	96611
+Electronics > MP3 Accessories	;	87208
+Electronics > MP3 Players	;	89
+Electronics > Night Vision	;	96493
+Electronics > Optics Accessories	;	96400
+Electronics > Personal Audio   Mini Disc Player	;	19700
+Electronics > Personal Radios	;	87211
+Electronics > Phones	;	419
+Electronics > Photography Accessories	;	1385
+Electronics > Portable Cassette Players	;	19699
+Electronics > Portable CD Players	;	19698
+Electronics > Radar Detectors	;	1394
+Electronics > Radio Scanners	;	96449
+Electronics > Rangefinders	;	96322
+Electronics > Receivers	;	439
+Electronics > Remote Controls	;	96341
+Electronics > Rifle Scopes	;	96612
+Electronics > Satellite Radio Accessories	;	96637
+Electronics > Satellite Radio Receivers	;	96636
+Electronics > Security Systems and Surveillance	;	96459
+Electronics > Spotting Scopes	;	96490
+Electronics > Tape Decks	;	426
+Electronics > Telephone Accessories	;	96454
+Electronics > Telescopes	;	415
+Electronics > Tripods	;	96463
+Electronics > Turntables	;	441
+Electronics > TV Accessories	;	87214
+Electronics > TV Receivers and DVRs	;	1399
+Electronics > VCRs	;	88
+Electronics > Warranties and Service Agreements	;	96654
+Electronics > Weather Stations	;	96605
+Event Tickets > Event Tickets	;	96472
+Flowers and Gifts > Cigars and Tobacco Accessories	;	96626
+Flowers and Gifts > Flowers and Plants	;	41187
+Flowers and Gifts > Gift Cards	;	96675
+Flowers and Gifts > Gifts and Collectibles	;	41186
+Health and Beauty > Cosmetics	;	197
+Health and Beauty > Health Aids	;	199
+Health and Beauty > Nutrition	;	205
+Health and Beauty > Perfumes and Colognes	;	92
+Health and Beauty > Personal Care	;	206
+Health and Beauty > Shavers	;	1424
+Home and Garden > Air Conditioner Accessories	;	96482
+Home and Garden > Air Conditioners	;	1888
+Home and Garden > Air Purifiers	;	96335
+Home and Garden > Blenders	;	96301
+Home and Garden > Bread Machines	;	96302
+Home and Garden > Building Supplies	;	554
+Home and Garden > Coffee Grinders	;	96604
+Home and Garden > Craft Supplies	;	96464
+Home and Garden > Crock Pots and Slow Cookers	;	96311
+Home and Garden > Deep Fryers	;	96313
+Home and Garden > Dehumidifiers	;	96334
+Home and Garden > Dishwasher Accessories	;	96483
+Home and Garden > Dishwashers	;	1894
+Home and Garden > Dryers	;	1893
+Home and Garden > Electric Fans	;	96502
+Home and Garden > Electric Kettles	;	96494
+Home and Garden > Electric Skillets and Woks	;	96316
+Home and Garden > Espresso Machines & Coffee Makers	;	96349
+Home and Garden > Food and Drink	;	96446
+Home and Garden > Food Processors	;	96303
+Home and Garden > Furniture	;	73188
+Home and Garden > Garden	;	113
+Home and Garden > Grill and Smoker Accessories	;	96491
+Home and Garden > Grills and Smokers	;	1524
+Home and Garden > Heaters	;	96501
+Home and Garden > Home Furnishings	;	96441
+Home and Garden > Humidifier, Dehumidifier and Air Purifier Accessories	;	96484
+Home and Garden > Humidifiers	;	96333
+Home and Garden > Ice Cream Makers	;	96304
+Home and Garden > Indoor Grills and Sandwich Makers	;	96312
+Home and Garden > Irons	;	96319
+Home and Garden > Juicers	;	96305
+Home and Garden > Kitchen	;	69
+Home and Garden > Kitchen Electrics Accessories	;	96318
+Home and Garden > Kitchen Hoods	;	96458
+Home and Garden > Kitchen Ovens and Cooktops	;	1896
+Home and Garden > Lighting	;	96650
+Home and Garden > Microwave Oven Accessories	;	96485
+Home and Garden > Microwave Ovens	;	1892
+Home and Garden > Mixers	;	96306
+Home and Garden > Pasta Makers	;	96315
+Home and Garden > Pets	;	96443
+Home and Garden > Plumbing Supplies	;	96651
+Home and Garden > Popcorn Makers	;	96314
+Home and Garden > Range and Oven Accessories	;	96486
+Home and Garden > Refrigerator and Freezer Accessories	;	96487
+Home and Garden > Refrigerators and Freezers	;	1889
+Home and Garden > Rice Cookers and Steamers	;	96307
+Home and Garden > Sewing Machine Accessories	;	96488
+Home and Garden > Sewing Machines	;	96329
+Home and Garden > Specialty Kitchen Appliances	;	96310
+Home and Garden > Spirits and Beers	;	390
+Home and Garden > Toaster Ovens	;	96317
+Home and Garden > Toasters	;	96308
+Home and Garden > Tools and Accessories	;	96669
+Home and Garden > Vacuum Cleaner Accessories	;	96324
+Home and Garden > Vacuums	;	1898
+Home and Garden > Waffle Makers	;	96309
+Home and Garden > Wall Art	;	96653
+Home and Garden > Washer and Dryer Accessories	;	96489
+Home and Garden > Washing Machines	;	1897
+Home and Garden > Wine	;	391
+Jewelry and Watches > Jewelry	;	276
+Jewelry and Watches > Sunglasses	;	22686
+Jewelry and Watches > Watches	;	277
+Kids and Family > Baby Care	;	85708
+Kids and Family > Baby Carriers	;	61193
+Kids and Family > Car Seats	;	61192
+Kids and Family > Cribs and Bassinets	;	96393
+Kids and Family > Strollers	;	61194
+Kids and Family > Toys	;	96425
+Magazine and Subscriptions > Magazine and Newspaper Subscriptions	;	96444
+Magazine and Subscriptions > Magazines	;	96447
+Media > Books	;	63715
+Media > Movies	;	63716
+Miscellaneous > Miscellaneous	;	96392
+Music > Music	;	63717
+Musical Instruments & Accessories > Musical Instruments	;	91705
+Musical Instruments & Accessories > Sheet Music	;	96629
+Office > Calculators	;	96295
+Office > Copiers	;	318
+Office > Electronic Dictionaries and Translators	;	96296
+Office > Fax Machines	;	367
+Office > Multimedia Projector Replacement Lamps	;	96624
+Office > Multimedia Projectors	;	96253
+Office > Office Supplies	;	95263
+Office > Overhead Projectors	;	96617
+Office > Projection Screens	;	96643
+Office > Shredders	;	323
+Office > Slide Projectors	;	96496
+Office > Typewriters	;	321
+Office > Voice Recorders and Transcribers	;	327
+Sports and Outdoors > Boating and Sailing Accessories	;	96467
+Sports and Outdoors > Flashlights	;	96625
+Sports and Outdoors > Marine Electronics	;	96474
+Sports and Outdoors > Sport and Outdoor	;	96424
+Video Games > Video Games	;	54214
+Video Games > Video Game Accessories	;	96343
+Video Games > Video Game Consoles	;	96339
