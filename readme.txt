@@ -1,59 +1,48 @@
-=== PurpleXMLs ===
+=== WooCommerce Shopping Cart Export ===
 Contributors: PurpleTurtlePro
-Donate link: https://www.purpleturtle.pro
-Tags: WooCommerce, Google, Merchant, Shopping, xml, product feed, nextag, google product feed
-Requires at least: 3.0
-Tested up to: 3.8.1
-Stable tag: 1.3.4
+Tags: WooCommerce, Google, Merchant, Shopping, xml, product feed, Nextag, Google product feed, Amazon, eBay, google merchant, amazon seller, shopzilla, shopify, export csv, export xml, export tab
+Requires at least: 3.0.1
+Tested up to: 3.9.1
+Stable tag: 3.0.0.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-The Purple XMLs Google Product Feed for WooCommerce creates an XML output by of any category in the WooCommerce installation
+The Shopping Cart Product Feed for WooCommerce creates output by of any product category (and its details) in your  WooCommerce installation
 
 == Description ==
 
-The Purple XMLs Google Product Feed for WooCommerce creates an XML output of any category in the WooCommerce installation. It includes all required feed types for Google Merchant Center for non-variable products.
+The Shopping Cart Product Feed for WooCommerce creates output by of any product category (and its details) in your  WooCommerce installation It includes all required feed types for Google Merchant Center, Amazon Seller, Shopzilla, eBay Merchant, NexTag for variable & non-variable products.  Additionally - you can choose to export CSV/XML directly for integration to other platforms (billing systems, other vendor sites, sub-sales sites, etc).
 
-The Purple XMLs Plugin creates a digestible XML feed for Google to import WooCommerce Products into a Google Merchant Account. This Plugin creates an XML output of entire Categories that adheres to Google Feed Specifications.
+The Plugin creates a digestible XML feed for your targets (Google, eBay, Amazon, etc.)  to import WooCommerce Products into your Merchant Account. This Plugin feeds that are available for export (timed and ad hoc) for these merchant providers - as well as a full CSV/XML Export is available as well.
 
-> [**Upgrade to Pro**](http://www.w3bdesign.ca/woocommerce-google-merchant-feed/) // The Pro version supports unlimited Attributes and Variations
-> **AUTOMATIC** // You can forget it! -Added products update the feed instantly!
-> **SIMPLE** // Configured in less than 2 minutes, it works automatically!
+[**Free Version**](http://www.shoppingcartproductfeed.com/) // Includes all functionality - limited to 10 items
+> [**Upgrade to Pro**](http://www.shoppingcartproductfeed.com/) // The Pro version supports unlimited Attributes and Variations
+> **AUTOMATIC** // Exports are done on a timed basis - set it once only!
+> **SIMPLE** // Configured in less than 2 minutes, one page - done!
 
-The plugin includes some great options to create your own customized feed.
+
+
+
+The plugin includes some great options to create your own customized feed - for export to other platforms.  Join the over 2,000 other users of our plugin to push your WooCommerce product set (all details, sale prices, etc.) to many other sales platforms - enter once - sell everywhere!
+
 
 == Installation ==
-Upload the plugin to the plugins directory of your Wordpress install and activate the plugin. 
- Navigate to the settings and select your category, then the google category, and finally enter the brand name in the text area. 
-Generate the feeb by clicking the button . 
+Upload to your WordPress website, and activate.
 
-you must find the single general google category that best suits your needs here:
-http://support.google.com/merchants/bin/answer.py?hl=en&answer=160081
+Select ‘
+Select your product category (or all categories) from the first dropdown.
+Select the corresponding Google category.
+Name your feed.
 
-= Upcoming Features =
+Feeds are stored in a file that can be managed in the feeds area of the settings.
 
-* Ebay Feed Support
-* Amazon Feed Support
-
-= Help & Support =
-Suggestions and Feedback should be directed to our [Client Hub ](https://www.purpleturtle.pro/submitticket.php)
-
-#### Functionality
-* Creates an XML output that includes properly formatted XML for Google Shopping and Google Merchant
-
-== Help ==
-Suggestions and Feedback should be directed to our [Client Hub ](https://www.purpleturtle.pro/submitticket.php)
-
-Feed errors? I have a video for that
-http://www.youtube.com/watch?v=RueV471NbJ4
 
 == Frequently Asked Questions ==
-<p><strong>What is XML plugin?</strong></p>
-<p>The Purple XMLs Google Product Feed for WooCommerce creates an XML output of any category in the WooCommerce installation. It includes all required feed types for Google Merchant Center for non-variable products.
-    The Purple XMLs Plugin creates a digestible XML feed for Google to import WooCommerce Products into a Google Merchant Account. This Plugin creates an XML output of entire Categories that adheres to Google Feed Specifications.</p>
+<p><strong>What is Shopping Cart Product Feed plugin?</strong></p>
+<p>The Shopping Cart Product Feed (Formerly known as Purple XMLs) for WooCommerce creates output of any category in the WooCommerce installation. It includes all required feed types for Google Merchant Center, Amazon Seller, eBay Merchant, Shopzilla, NexTag for non-variable products.
+    The Plugin creates a digestible  feed for Google/Amazon/eBay/Shopzilla/NexTag to import WooCommerce Products into a  Merchant Account. This Plugin creates an  output of entire Categories that adheres to the Feed Specifications of your target.</p>
 <p><strong>Is there any trial version available?</strong></p>
-<p>Yes, You can try the free version before going to pro version. Free version of purple-xmls plugin available at wordpress.org, URL as follows
-    https://wordpress.org/plugins/purple-xmls-google-product-feed-for-woocommerce/</p>
+<p>Yes, You can try the free version before going to pro version.  Free version is restricted to 10 items per feed.  We offer a free trial (which is unlimited for 5 days), and a professional version that is available for unlimited exports of all product types to all targets</p>
 <p><strong>How can I Install the plugin?</strong></p>
 <p>Upload the plugin to the plugins directory of your WordPress install and activate the plugin. Navigate to the settings and select your category, then the google category, and finally enter the brand name in the text area. Generate the feeb by clicking the button .</p>
 <p><strong>How can I update the plugin to pro version?</strong></p>
@@ -61,13 +50,10 @@ http://www.youtube.com/watch?v=RueV471NbJ4
 <p><strong>Why my feed has some errors?</strong></p>
 <p>Make sure all of your titles and descriptions contain proper markup.
     Titles and descriptions can not contain just & .. needs to be fully qualified HTML ie. "&" </p>
-<p><strong>My feed is not getting any output?</strong></p>
-<p>Try changing the line in the google-feed.php from:
-    $product = get_product($prod->ID);
-    to $product = new WC_Product($prod->ID);</p>
+
 <p><strong>How do I contact support?</strong></p>
-<p>We are providing 24/7 support for our products. You can contact us through live chat and ticket https://www.purpleturtle.pro/</p>
-<p><strong>After uploading my  product xml feeds generated by PurpleXMLs plugin I bought to Google merchant account, most of the products where rejected in google merchants.</strong></p>
+<p>We are providing 24/7 support for our products. You can contact us through live chat and ticket https://www.shoppingcartfeed.com/</p>
+<p><strong>After uploading my  product xml feeds generated by the plugin I bought to Google merchant account, most of the products where rejected in google merchants.</strong></p>
 <p>Each product should have at least 2 unique identifiers 
     Unique product identifiers are product codes or other identifying values associated with an individual product:
     Global Trade Item Numbers (GTINs) submitted through the ‘gtin’ attribute. GTINs include UPC, EAN (in Europe), JAN (in Japan), and ISBN;
@@ -87,25 +73,141 @@ http://www.youtube.com/watch?v=RueV471NbJ4
 <p>If you have any number of categories no matter , you can map all categories and product to a single category by selecting "All category" Option and select Google Category as parent one that match with all your product, if you are products are entirely different or Each category contain very huge number of products, then it is better to create as different feeds. Because if you have huge number of product in system, it will take a very long time to generate a single feed with all these product, may chance break operation due maximum execution time exceeding. if you are product are entirety different in each category so separate feed will help you to map each category to most matching category in google.</p>
 
 == Screenshots ==
-1. 4 Steps to the feed
+1. Go to Plugins -> Edit -> Product Feeds and edit the categories your store most qualifies to -> Update File
+2. 2. Select your output category and click the link "Google Products XML"
+3. 3.  The category tree needs to be set up in a brand structure to work correctly ( and Its good practise anyway :) 
 
 == Changelog ==
-<h4>Version 1.3.4 05/04/2014</h4>
+<h4>Version 3.0.0.2 2014-05-12</h4>
 <ul>
-    <li><strong>Fix</strong> Google category special characters issue removed</li> 
+  <li><strong>Fix</strong>Save attribute mappings now works</li>
 </ul>
+<h4>Version 3.0 2014-05-12</h4>
 <ul>
-    <li><strong>Fix</strong> Remove URL problem with special charectes</li> 
-    <li><strong>Add</strong> optimize generated URL, Create XML file with feed generated, URL can able to submit in Google Mechant account </li>           
+  <li><strong>Add</strong>Enabled Trial Licensing, full rebrand, new subdirectories and other general clean-ups.</li>
 </ul>
-<h4>Version 1.3.2 24/03/2014</h4>
+<h4>Version 2.6.3.0 2014-05-01</h4>
 <ul>
-    <li><strong>Fix</strong> Remove XML Parse error for other laguages than English</li>           
+  <li><strong>Add</strong>Merged Free and Pro versions - yay!</li>
 </ul>
-<h4>Version 1.3.1 12/03/2014</h4>
+<h4>Version 2.6.2.10 2014-05-01</h4>
 <ul>
-    <li><strong>Added</strong> updated FAQ</li>
-    <li><strong>Fix</strong> Plain XML output</li>
+  <li><strong>Add</strong>Export Product Categories, resolve cron execution issues, UI updates including feed setup page, licensing management updates</li>
+</ul>
+   <h4>Version 2.6.2.1 23/04/2014</h4>
+<ul>
+<li><strong>Add</strong> Add support for Ebay Product Feed!</li>         
+</ul>
+   <h4>Version 2.6.2.0 07/04/2014</h4>
+<ul>
+    <li><strong>Add</strong> Add support for Amazon Product Feed!</li>
+<li><strong>Add</strong> Add support for shopzilla Product Feed!</li>             
+</ul>
+   <h4>Version 2.6.1.6 24/03/2014</h4>
+<ul>
+    <li><strong>Add</strong> Add support for unlimited time execution</li>           
+</ul>
+<h4>Version 2.6.1.5 24/03/2014</h4>
+<ul>
+    <li><strong>Fix</strong>Remove XML Parse error for other laguages than English</li>           
+</ul>
+<h4>Version 2.6.1.3 03/03/2014</h4>
+<ul>
+    <li><strong>Added</strong> Add support for one product with multiple product attributes mapping to same Google attribute</li>
+    <li><strong>Update</strong> License price udated/li>               
+</ul>
+<h4>Version 2.6.1.02 03/03/2014</h4>
+<ul>
+    <li><strong>Added</strong> Add support for one product with multiple product attributes mapping to same Google attribute</li>
+    <li><strong>Update</strong> License price udated</li>               
+</ul>
+<h4>Version 2.6.1.0 02/01/2014</h4>
+<ul>
+    <li><strong>Added</strong>  Add support for NexTag, NexTag Feed generation (.csv) added .</li>
+</ul>
+<h4>Version 2.6.0.18 26/12/2013</h4>
+<ul>
+    <li><strong>Fix</strong> remove xml parse error of some image url, if users supply images with not par-sable url.</li>
+</ul>
+<h4>Version 2.6.0.17 18/12/2013</h4>
+<ul>
+    <li><strong>Fix</strong> remove auto update class conflict with some plugins.</li>
+</ul>
+<h4>Version 2.6.0.16 18/12/2013</h4>
+<ul>
+    <li><strong>Added</strong> Add support a single product variations upto 99999 numbers.</li>
+</ul>
+<h4>Version 2.6.0.15 15/12/2013</h4>
+<ul>
+    <li><strong>Added</strong> Include post_excerpt as product feed description if post_content not available.</li>
+</ul>
+
+<h4>Version 2.6.0.14 12/12/2013</h4>
+<ul>
+    <li><strong>Fix</strong> remove updates details printing from admin area while update available.</li>
+</ul>
+<h4>Version 2.6.0.13 05/12/2013</h4>
+<ul>
+    <li><strong>Fix</strong> custom attribute value missing in some situation, bug fixed.</li>
+</ul>
+<h4>Version 2.6.0.12 04/12/2013</h4>
+<ul>
+    <li><strong>Added</strong> Add support for special characters in feed name.</li>
+    <li><strong>Added</strong> Include currency symbol to prices</li>
+    <li><strong>Added</strong> Add free shipping support to product target countries.</li>
+</ul>
+
+<h4>Version 2.6.0.11 28/11/2013</h4>
+<ul>
+    <li><strong>Fix</strong> It remove the mpn prefix from all item mpn values.</li>
+</ul>
+
+<h4>Version 2.6.0.10 27/11/2013</h4>
+<ul>
+    <li><strong>Fix</strong> modification of extra images (only show the current images , outdated images will be removed).</li>
+</ul>
+
+<h4>Version 2.6.0.9 27/11/2013</h4>
+<ul>
+    <li><strong>Added</strong> include multiple additional images, upto 10 images per product</li>
+</ul>
+
+<h4>Version 2.6.0.8 26/11/2013</h4>
+<ul>
+    <li><strong>Added</strong> shipping weight attribute added to feed</li>
+    <li><strong>Added</strong> Free shipping details added</li>
+    <li><strong>Fix</strong> attribute value missing problem resolved</li>
+</ul>
+<h4>Version 2.6.0.6 20/11/2013</h4>
+<ul>
+    <li><strong>Fix</strong> Bugs fixed</li>
+</ul>
+<h4>Version 2.6.0.5 19/11/2013</h4>
+<ul>
+    <li><strong>Added</strong> speedup proceedure with google category details</li>
+    <li><strong>Fix</strong> XML parse error fixed</li>
+</ul>
+
+<h4>Version 2.6.0.4 19/11/2013</h4>
+<ul>
+    <li><strong>Added</strong> Pro Version variable product support with selected attributes </li>
+    <li><strong>Added</strong> multiple images to feed if available</li>                    
+    <li><strong>Fix</strong> Variable Product links</li>
+    <li><strong>Fix</strong> Variable Product Name</li>
+</ul>
+<h4>Version 2.6.0.2 07/1/2013</h4>
+<ul>
+    <li><strong>Added</strong> Pro Version auto updates feature</li>
+</ul>
+<h4>Version 2.6.0.1 01/1/2013</h4>
+<ul>
+    <li><strong>Added</strong> Pro Version variable product support</li>
+</ul>
+
+<h4>Version 2.6.0.0 01/10/2013</h4>
+<ul>
+    <li><strong>Added</strong> Pro Version major updates</li>
+    <li><strong>Fix</strong> Plain XML file output</li>
 </ul>
 <h4>Version 1.3 19/10/2013</h4>
 <ul>
@@ -127,53 +229,4 @@ http://www.youtube.com/watch?v=RueV471NbJ4
 </ul>
 
 == Upgrade Notice ==
-You can upgrade it from following location : https://www.purpleturtle.pro/cart.php?gid=8
-
-Features as follows
-
-
- The Pro version supports unlimited Attributes and Variations
-
- **AUTOMATIC** // You can forget it! -Added products update the feed instantly!
-
- **SIMPLE** // Configured in less than 2 minutes, it works automatically!
-
- Still the ONLY PLUGIN that supports Attributes and Variable Products
-
- Developed to integrate with your WooCommerce Installation 
-
- Pulls Feeds from whatever categories are existing in the database
-
- Works with all versions of WooCommerce 
-
- Includes Attribute Support
-
- Includes Variable Product Support
-
- Multiple Image Links
-
- All Categories Output
-
- Feed Saves as Editable File
-
- Shipping Area Support
-
- Shipping Weight Support
-
- Currency Support
-
- Full Support Staff Available 24/7
-
- Valid for Unlimited Domains!
-
-
-Supported Sites:
-
-
-
-Google Shopping
-
-Nextag
-
-
-The plugin includes some great options to create your own customized feed.
+This is an upgraded version.
