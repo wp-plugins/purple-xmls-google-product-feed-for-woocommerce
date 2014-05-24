@@ -7,7 +7,7 @@ Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Output  any product category (and its details) in your WooCommerce installation to Google Merchant Center, Amazon Seller, Shopzilla, eBay Merchant, NexTag and  CSV/XML --  for variable & non-variable products.  
+OneClick WooCommerce Export:Google Merchant Center|Amazon Seller|Shopzilla|eBay Merchant|NexTag|CSV/XML--OneTime & Scheduled  
 
 == Description ==
 
