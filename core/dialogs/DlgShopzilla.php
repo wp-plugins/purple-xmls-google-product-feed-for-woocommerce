@@ -18,7 +18,7 @@ class ShopzillaDlg extends PBaseFeedDialog {
 	$this->form_attibutes_name = 'shopzilla_attribute_changes';
 	$this->form_attibutes_id = 'shopzilla_attributes_form';
     $this->service_name = 'Shopzilla';
-    $this->service_name_long = 'Shopzilla Products XML';
+    $this->service_name_long = 'Shopzilla Products XML Export';
 	$this->options = array(
         'Manufacturer',
         'Bid',

@@ -22,6 +22,8 @@ function check_license($licensekey, $localkey = "") {
 
     $localkeyvalid = false;
 	
+	$originalcheckdate = '';
+	
 	$localexpiry = 0;
 	
 	$status = '';

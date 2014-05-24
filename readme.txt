@@ -1,4 +1,4 @@
-=== WooCommerce Shopping Cart Export ===
+﻿=== WooCommerce Shopping Cart Export ===
 Contributors: PurpleTurtlePro
 Tags: WooCommerce, Google, Merchant, Shopping, xml, product feed, Nextag, Google product feed, Amazon, eBay, google merchant, amazon seller, shopzilla, shopify, export csv, export xml, export tab
 Requires at least: 3.0.1
@@ -27,14 +27,18 @@ The plugin includes some great options to create your own customized feed - for 
 
 
 == Installation ==
-Upload to your WordPress website, and activate.
+Upload to your WordPress website, and activate 'Cart Product Feed'.
 
-Select ‘
-Select your product category (or all categories) from the first dropdown.
-Select the corresponding Google category.
-Name your feed.
+Select ‘CartProductFeed' from admin menu, Click 'Create Feed'
+Select 'Feed Type' from the dropdown (Google Merchant, eBay, Amazon Product Feeds, ShopZilla, NextTag, XML/CSV)
+Once it refreshes, Perform attribute mapping if required
+Select your WooCommerce Product category (or all categories) from the dropdown on the right.
+Select the corresponding category in the destination start typing to matching Categories (i.e. auto, skin care, baseball)
+(Optionally) Name your feed.
+Click <Get Feed>
 
-Feeds are stored in a file that can be managed in the feeds area of the settings.
+This will not redirect to the feed URL you just created - ready for submission!
+
 
 
 == Frequently Asked Questions ==
@@ -78,6 +82,20 @@ Feeds are stored in a file that can be managed in the feeds area of the settings
 3. 3.  The category tree needs to be set up in a brand structure to work correctly ( and Its good practise anyway :) 
 
 == Changelog ==
+<h4>Version 3.0.1.0 2014-05-24</h4>
+<ul>
+  <li><strong>New</strong>Brand New Select UI for matching categories - GREATLY enhanced and easier now! :)</li>
+  <li><strong>New</strong>Now -all- attribute values are available</li>
+  <li><strong>New</strong>new tax option Google Canada and Australia</li>
+  <li><strong>New</strong>users can now override portions of the feed (eg to change/remove weight unit as provided by woocommerce or strip html tags)
+</li>
+  <li><strong>New</strong>users can now map attributes from individual product attributes (not just attributes listed under general attributes)
+</li>    
+  <li><strong>Chang</strong>changed 'in stock' from parent to child in variations</li>
+  <li><strong>Update</strong>moved to 2014 Shopzilla and Nextag specs</li>
+  <li><strong>Fix</strong>update to Cron feed refresh for Linux servers</li>
+  <li><strong>Fix</strong>manage feeds page now works from plugin setup screen</li>
+</ul>
 <h4>Version 3.0.0.2 2014-05-12</h4>
 <ul>
   <li><strong>Fix</strong>Save attribute mappings now works</li>

@@ -8,8 +8,6 @@
   ********************************************************************/
 
 include_once 'basefeeddialogs.php';
-include_once '../classes/attributesfound.php';
-require_once '../../../../../wp-load.php';
 
 class GoogleDlg extends PBaseFeedDialog {
   
@@ -19,10 +17,10 @@ class GoogleDlg extends PBaseFeedDialog {
 	$this->form_attibutes_id = 'google_attributes_form';
 	$this->form_options_id = 'googleattr';
     $this->service_name = 'Google';
-    $this->service_name_long = 'Google Products XML';
-	$this->options = array('brand', 'GTIN', 'identifier exists', 'gender', 'age group', 'color', 'size', 'material', 'pattern', 
-    'sale price effective date', 'Tax', 'multipack', 'adult', 'Adwords grouping', 'Adwords labels', 'Adwords redirect',
-	'unit pricing measure', 'unit pricing base measure', 'energy efficiency class', 'excluded destination', 'expiration date');
+    $this->service_name_long = 'Google Products XML Export'; 
+	$this->options = array('g:brand', 'g:GTIN', 'g:identifier exists', 'g:gender', 'g:age_group', 'g:color', 'g:size', 'g:material', 'g:pattern', 
+    'g:sale_price_effective_date', 'g:tax', 'g:multipack', 'g:adult', 'g:adwords_grouping', 'g:adwords_labels', 'g:adwords_redirect',
+	'g:unit_pricing_measure', 'g:unit_pricing_base_measure', 'g:energy_efficiency_class', 'g:excluded_destination', 'g:expiration_date');
   }
   
   function convert_option($option) {

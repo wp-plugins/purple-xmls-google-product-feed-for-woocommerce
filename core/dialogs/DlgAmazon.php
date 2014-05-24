@@ -8,8 +8,6 @@
   ********************************************************************/
 
 include_once 'basefeeddialogs.php';
-include_once '../classes/attributesfound.php';
-require_once '../../../../../wp-load.php';
 
 class AmazonDlg extends PBaseFeedDialog {
 
@@ -18,7 +16,7 @@ class AmazonDlg extends PBaseFeedDialog {
 	$this->form_attibutes_name = 'amazon_attribute_changes';
 	$this->form_attibutes_id = 'amazon_attributes_form';
     $this->service_name = 'Amazon';
-    $this->service_name_long = 'Amazon Product Ads Feed';
+    $this->service_name_long = 'Amazon Product Ads Export';
 	$this->options = array(
 		'Age',
         'Band material',

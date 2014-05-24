@@ -7,15 +7,23 @@
 
   ********************************************************************/
 
-require_once __DIR__ . '../../classes/md5.php';
-require_once __DIR__ . '/../registration.php';
-
 class PBasicFeed {
 
-  public $providerName = '';
-  public $providerNameL = '';
+  public $categories;
+  public $current_category; //This is the active category while in formatProduct()
+  public $currency;
+  public $descriptionFormat; //0 = short or long, 1 = long 2 = short
+  public $descriptionStrict = false; //hack out ALL special characters from the description including multinational
+  public $descriptionStrictReplacementChar = ' ';
   public $fileformat = 'xml';
   public $feed_category;
+  public $max_description_length = 10000;
+  public $providerName = '';
+  public $providerNameL = '';
+  public $productList;
+  public $stripHTML = false;
+  public $weight_unit;
+  
   
   function add_feed_selection($category, $remote_category, $filename, $url, $type) {
     global $wpdb;
@@ -28,13 +36,13 @@ class PBasicFeed {
 
     global $message;
 
-    $dir = WP_CONTENT_DIR . "/uploads/cart_product_feeds/";
-    if (!is_writable(WP_CONTENT_DIR . "/uploads/")) {
-      $message = WP_CONTENT_DIR . "/uploads/ should be writeable";
+    $dir = PFeedFolder::uploadRoot();
+    if (!is_writable($dir)) {
+      $message = $dir . ' should be writeable';
 	  return false;
     }
 	
-    $dir = WP_CONTENT_DIR . "/uploads/cart_product_feeds/";
+    $dir = PFeedFolder::uploadFolder();
     if (!is_dir($dir)) {
 	  mkdir($dir);
     }
@@ -42,18 +50,48 @@ class PBasicFeed {
 	  $message = "$dir should be writeable";
 	  return false;
     }
-    $dir2 = $dir . $this->providerNameL . '/';
+    $dir2 = $dir . $this->providerName . '/';
 	if (!is_dir($dir2)) {
 	  mkdir($dir2);
 	}
 	
 	return true;
   }
+
+  function formatLine($attribute, $value, $cdata = false, $leader_space = '') {
+	//Prep a single line for XML
+	//Allow the $attribute to be overridden
+	if (isset($this->feedOverrides->overrides[$attribute]) && (strlen($this->feedOverrides->overrides[$attribute]) > 0)) {
+	  $attribute = $this->feedOverrides->overrides[$attribute];
+	}
+	$c_leader = '';
+	$c_footer = '';
+	if ($cdata) {
+	  $c_leader = '<![CDATA[';
+	  $c_footer = ']]>';
+	}
+	//Allow force strip HTML
+	if ($this->stripHTML) {
+	  $value = strip_tags(html_entity_decode($value));
+	}
+	//if not CData, don't allow '&'
+	if (!$cdata) {
+	  $value = htmlentities($value, ENT_QUOTES,'UTF-8');
+	}
+	//Done
+	return '
+	    ' . $leader_space . '<' . $attribute . '>' . $c_leader . $value . $c_footer . '</' . $attribute . '>';
+  }
   
+  function formatProduct($product) {
+    return '';
+  }
+  
+  //What does this even do? Need to trace it one day
   function get_feed_selection_by_filename($filename) {
     global $wpdb;
     $feed_table = $wpdb->prefix . 'cp_feeds';
-    $sql = "SELECT * from $feed_table WHERE `filename`='$filename' AND `type`='" . $this->providerNameL . "'"; //! Move Type to ProviderName to eliminate case issue
+    $sql = "SELECT * from $feed_table WHERE `filename`='$filename' AND `type`='" . $this->providerName . "'";
     $list_of_feeds = $wpdb->get_results($sql, ARRAY_A);
     if ($list_of_feeds) {
         return $list_of_feeds[0];
@@ -62,52 +100,108 @@ class PBasicFeed {
     }
   }
   
-  function getFeedData_internal() {
-    return '';
+  function getFeedData_internal($remote_category) {
+    $output = null;
+
+	foreach($this->categories->items as $this_category) {
+	  $products = $this->productList->getProductList($this_category, $remote_category);
+	  foreach($products as $this_product) {
+	    if (!$this->feed_category->verifyProduct($this_product)) break;
+		//Adjust the product a little before sending it out to be Formatted
+		switch ($this->descriptionFormat) {
+		  case 1: //Force Long
+		    $this_product->description = $this_product->description_long;
+			break;
+		  case 2: //Force Short
+		    $this_product->description = $this_product->description_short;
+			break;
+		  default:
+		    //By default pick short... if no short, pick long (original behaviour)
+			if (strlen($this_product->description_short) == 0) {
+		      $this_product->description = $this_product->description_long;
+			} else {
+			  $this_product->description = $this_product->description_short;
+			}
+			break;
+		}
+		if (strlen($this_product->description) > $this->max_description_length) {
+		  $this_product->description = substr($this_product->description, 0, $this->max_description_length);
+		}
+		if ($this->descriptionStrict) {
+		  //I really should use preg_replace here one day
+		  //$this_product->description = preg_replace('/[^A-Za-z0-9\-]/', '', $this_product->description);
+		  for($i=0;$i<strlen($this_product->description);$i++) {
+		    if (($this_product->description[$i] < "\x20") || ($this_product->description[$i] > "\x7E")) {
+			  $this_product->description[$i] = $this->descriptionStrictReplacementChar;
+			}
+		  }
+		}
+	    $output .= $this->formatProduct($this_product);
+	  }
+	}
+
+    return $output;
+
   }
 
   function getFeedData() {
 
     global $message;
 
-	new PLicense();
+	$x = new PLicense();
 
 	if (!$this->checkFolders()) {
 	  return;
 	}
+	
+	//Old, uncommented code
 
 	$old_flag = FALSE;
 	$file_name = sanitize_title_with_dashes($_REQUEST['feed_filename']);
 	if ($file_name == "") {
 		$file_name = "feed" . rand(10, 1000);
 	}
-	$file_url = WP_CONTENT_DIR . "/uploads/cart_product_feeds/" . $this->providerNameL . '/' . $file_name . '.' . $this->fileformat;
+	$file_url = PFeedFolder::uploadFolder() . $this->providerName . '/' . $file_name . '.' . $this->fileformat;
 	if (file_exists($file_url)) {
 		$old_feed = $this->get_feed_selection_by_filename($file_name);
 		if ($old_feed) {
 			$old_flag = TRUE;
 		}
 	}
-	$category = $_REQUEST['category'];
-	$remote_category = $_REQUEST[$this->providerNameL . '_category'];
-	
+	$category = $_REQUEST['local_category'];
+	$remote_category = $_REQUEST['remote_category'];
 
-	$file_path = site_url() . '/wp-content/uploads/cart_product_feeds/' . $this->providerNameL . '/' . $file_name . '.' . $this->fileformat;
+
+	$file_path = site_url() . '/wp-content/uploads/cart_product_feeds/' . $this->providerName . '/' . $file_name . '.' . $this->fileformat;
 	header('Location: ' . $file_path);
-	// Generate xml file for download
-	$output = $this->getFeedData_internal($category, $remote_category, $file_name, $file_path);
 
-	$handle = fopen($file_url, "w");
-	if ($this->fileformat == 'xml') {
+
+	//Figure out what categories the user wants to export
+	$this->categories = new PCategoryList($category);
+
+	//Get the ProductList ready
+	$this->productList = new PProductList();
+
+	//Get the Feed Overrides ready
+	$this->feedOverrides = new PFeedOverride($this->providerName, $this);
+
+	//Initialize some useful data
+	$this->current_category = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
+	$this->weight_unit = esc_attr(get_option('woocommerce_weight_unit'));
+	$this->currency = get_woocommerce_currency();
+
+	//Create the Feed
+	$output = 
+	  $this->getFeedHeader($file_name, $file_path) .
+	  $this->getFeedData_internal($remote_category) .
+	  $this->getFeedFooter();
 	  
-	  fwrite($handle, $output);
-	  
-	} else {
-		foreach ($output as $fields) {
-			fputcsv($handle, $fields, ',', '"');
-		}
-	}
+	//Save the Feed
+	$handle = fopen($file_url, "w");  
+	fwrite($handle, $output);
 	fclose($handle);
+	
+	//Not too sure / Old / Uncommented
 
 	if ($old_flag) {
 		$this->update_feed_selection($old_feed['id'], $category, $remote_category, $file_name, $file_path, $this->providerName);
@@ -115,6 +209,14 @@ class PBasicFeed {
 		$this->add_feed_selection($category, $remote_category, $file_name, $file_path, $this->providerName );
 	}
 
+  }
+
+  function getFeedFooter() {
+    return '';
+  }
+  
+  function getFeedHeader() {
+    return '';
   }
   
   function updateFeed($category, $remote_category, $file_name) {
@@ -125,26 +227,53 @@ class PBasicFeed {
 	  return;
 	}
 
-	//$file_path = site_url() . '/wp-content/uploads/cart_product_feeds/' . $this->providerNameL . '/' . $file_name . '.' . $this->fileformat;
-	$file_url = WP_CONTENT_DIR . "/uploads/cart_product_feeds/" . $this->providerNameL . '/' . $file_name . '.' . $this->fileformat;
-
-	$output = $this->getFeedData_internal($category, $remote_category, $file_name, $file_url);
-
-	$handle = fopen($file_url, "w");
-	if ($this->fileformat == 'xml') {
-	  
-	  fwrite($handle, $output);
-	  
-	} else {
-		foreach ($output as $fields) {
-			fputcsv($handle, $fields, ',', '"');
+	$file_url = PFeedFolder::uploadFolder() . $this->providerName . '/' . $file_name . '.' . $this->fileformat;
+	$file_path = site_url() . '/wp-content/uploads/cart_product_feeds/' . $this->providerName . '/' . $file_name . '.' . $this->fileformat;
+	
+	$old_flag = false;
+	if (file_exists($file_url)) {
+		$old_feed = $this->get_feed_selection_by_filename($file_name);
+		if ($old_feed) {
+			$old_flag = true;
 		}
 	}
+
+	//Figure out what categories the user wants to export
+	$this->categories = new PCategoryList($category);
+
+	//Get the ProductList ready
+	$this->productList = new PProductList();
+
+	//Get the Feed Overrides ready
+	$this->feedOverrides = new PFeedOverride($this->providerName, $this);
+
+	//Initialize some useful data
+	$this->current_category = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
+	$this->weight_unit = esc_attr(get_option('woocommerce_weight_unit'));
+	$this->currency = get_woocommerce_currency();
+
+	//Create the Feed
+	$output = 
+	  $this->getFeedHeader($file_name, $file_path) .
+	  $this->getFeedData_internal($remote_category) .
+	  $this->getFeedFooter();
+
+	//Save the Feed
+	$handle = fopen($file_url, "w");  
+	fwrite($handle, $output);
 	fclose($handle);
+	
+	//Not too sure / Old / Uncommented
+
+	if ($old_flag) {
+		$this->update_feed_selection($old_feed['id'], $category, $remote_category, $file_name, $file_path, $this->providerName);
+	} else {
+		$this->add_feed_selection($category, $remote_category, $file_name, $file_path, $this->providerName );
+	}
   }
   
   function must_exit() {
-    //Yes: exit so the page will remain in place
+    //true means exit so the browser page will remain in place
     return true;
   }
   
@@ -159,7 +288,8 @@ class PBasicFeed {
   function __construct () {
     $this->feed_category = new md5y();
   }
-  
+
+  //!This function needs to die
   function loadProductList($id) {
     global $wpdb;
     //Load the products for the given category

@@ -5,7 +5,7 @@
   Plugin URI: http://www.w3bdesign.ca/
   Description: Product XML Data Feeds for WooCommerce :: Update permalinks after activating/deactivating the plugin :: <a href="http://www.youtube.com/watch?v=9VVipmBI4rk">Instruction Video</a>
   Author: Purple Turtle Productions
-  Version: 3.0.0.2
+  Version: 3.0.1.0
   Author URI: http://www.w3bdesign.ca/
   Authors: Haris, Keneto (May2014)
   Note: Unversioned files arrived before me (Keneto). I've assigned them a version number of 1.0
@@ -23,10 +23,11 @@ global $cp_feed_order, $cp_feed_order_reverse;
 
 require_once 'cart-product-functions.php';
 require_once 'core/classes/cron.php';
+require_once 'core/data/feedFolders.php';
 require_once 'core/registration.php';
 
 if (get_option('cp_feed_order_reverse') == "") {
-    add_option('cp_feed_order_reverse', FALSE);
+    add_option('cp_feed_order_reverse', false);
 }
 if (get_option('cp_feed_order') == "") {
     add_option('cp_feed_order', "id");
@@ -49,20 +50,25 @@ add_action('init', 'init_cart_product_feed');
  
 function init_cart_product_feed() {
 
+	require_once 'core/classes/md5.php';
+	require_once 'core/data/feedCategories.php';
+	require_once 'core/data/productList.php';
+	require_once 'core/data/feedOverrides.php';
+
     global $message;
 
     // Check if form was posted and select task accordingly
-    $dir = WP_CONTENT_DIR . "/uploads/cart_product_feeds/";
-    if (!is_writable(WP_CONTENT_DIR . "/uploads/")) {
-        $message = WP_CONTENT_DIR . "/uploads/ should be writable";
+	$dir = PFeedFolder::uploadRoot();
+    if (!is_writable($dir)) {
+        $message = $dir . ' should be writeable';
 		return;
     }
-	$dir = WP_CONTENT_DIR . "/uploads/cart_product_feeds/";
+	$dir = PFeedFolder::uploadFolder();
 	if (!is_dir($dir)) {
 		mkdir($dir);
 	}
 	if (!is_writable($dir)) {
-		$message = "$dir should be writable";
+		$message = "$dir should be writeable";
 		return;
 	}
 
@@ -74,7 +80,7 @@ function init_cart_product_feed() {
 	$requestCode = $_REQUEST['RequestCode'];
 	$providerFile = 'core/feeds/feed' . $requestCode . '.php';
 			
-	if (!file_exists(__DIR__ . '/' . $providerFile)) {
+	if (!file_exists(dirname(__FILE__) . '/' . $providerFile)) {
 	  return;
 	}
 
@@ -97,7 +103,7 @@ PCPCron::doSetup();
 PCPCron::scheduleUpdate();
 
 //***********************************************************
-// Update Feeds
+// Update Feeds (Cron)
 //   2014-05-09 Changed to now update all feeds... not just Google Feeds
 //***********************************************************
 
@@ -105,8 +111,13 @@ add_action('update_cartfeeds_hook', 'update_all_cart_feeds');
 
 function update_all_cart_feeds() {
 
+	require_once 'core/classes/md5.php';
+	require_once 'core/data/feedCategories.php';
+	require_once 'core/data/feedOverrides.php';
+	require_once 'core/data/productList.php';
+
     # Get Variables from storage (retrieve from wherever it's stored - DB, file, etc...)
-	
+
 	$reg = new PLicense();
     if ($reg->results["status"] == "Active") {
         global $wpdb;
@@ -119,7 +130,7 @@ function update_all_cart_feeds() {
 			//Make sure someone exists in the core who can provide the feed
 			$providerName = $feed_setting->type;
 			$providerFile = 'core/feeds/feed' . $providerName . '.php';
-			if (!file_exists(__DIR__ . '/' . $providerFile)) {
+			if (!file_exists(dirname(__FILE__) . '/' . $providerFile)) {
 			  continue;
 			}
 			require_once $providerFile;
@@ -149,24 +160,10 @@ if (defined('WP_ADMIN')) {
 
 //Function to create feed generation link  in installed plugin page
 function cart_product_manage_feeds_link($links) {
-    $settings_link = '<a href="admin.php?page=cart-product-manage-page">Manage Feeds</a>';
+    $settings_link = '<a href="admin.php?page=cart-product-feed-manage-page">Manage Feeds</a>';
     array_unshift($links, $settings_link);
     return $links;
 }
-
-function purple_xmls_get_imgdir() {
-    return plugins_url() . '/cart-product-feed/images/';
-}
-
-function purple_xmls_get_xmldir($xml_type = '') {
-    $dir = WP_CONTENT_DIR . "/uploads/cart_product_feeds/";
-    if ($xml_type) {
-        return $dir . $xml_type . "/";
-    } else {
-        return $dir;
-    }
-}
-
 
 
 ?>

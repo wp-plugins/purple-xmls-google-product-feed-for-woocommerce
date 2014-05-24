@@ -16,7 +16,7 @@
   $feedObjectName = $feedType . 'Dlg';
 
   include_once $inc;
-  $f = new $feedObjectName;
+  $f = new $feedObjectName();
   echo $f->mainDialog();
 
 ?>

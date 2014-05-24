@@ -20,7 +20,7 @@ class PFeedPageDialogs {
 	if ($reg->valid) {
 	  $notice = '
 		  <div style="float:left; width: 200px;">
-		    <a class="multi-line-button blue" type="submit" value="" id="submit" name="submit" href="http://shoppingcartproductfeed.com/" target="_blank">>Thank you for supporting the project</a>
+		    <a class="multi-line-button blue" type="submit" value="" id="submit" name="submit" href="http://shoppingcartproductfeed.com/" target="_blank">Thank you for supporting the project</a>
 		  </div>';
 	  $lic = '';
 	} else {
@@ -35,11 +35,11 @@ class PFeedPageDialogs {
 	}
 
     $output = '
-	  <h3>Select export form</h3>
+	  <h3>Export to Merchants</h3>
 	  <div class="postbox" style="width: 98%;">
 	    <div class="inside export-target">
 		  <div style="float:left;">
-			<h4>Select Feed Type</h4>
+			<h4>Select Merchant Type</h4>
 			<select id="selectFeedType" onchange="doSelectFeed()">
 			  <option></option>
 			  <option value="Google">Google Merchant Feed</option>

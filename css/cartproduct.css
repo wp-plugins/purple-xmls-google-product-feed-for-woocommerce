@@ -486,3 +486,26 @@ a.multi-line-button.orange:active, a.multi-line-button.orange.depressed {
   text-align: right;
   width: 100%;
 }
+.feed-advanced {
+  display:none;
+  width: 100%;
+}
+.feed-advanced-text {
+  height: 200px;
+  width:100%;
+}
+/* Main Feed page: Category AJAX */
+.categoryList {
+  max-height: 167px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 100%;
+}
+.categoryItem{
+  overflow-x: hidden;
+}
+.categoryItem:hover
+{ 
+  background-color:blue;
+  color: white;
+}

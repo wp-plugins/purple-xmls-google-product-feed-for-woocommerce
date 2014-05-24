@@ -33,6 +33,15 @@
 	wp_schedule_event(time(), 'refresh_interval', 'update_cartfeeds_hook');
   }
   
+  if (strpos($setting, 'cp_advancedFeedSetting') !== false) {
+
+    //Strip the provider name out of the setting
+    $target = substr($setting, strpos($setting, '-') + 1);
+	
+	//Save new advanced setting
+    update_option($target . '-cart-product-settings', $value);
+  }
+  
   echo 'Updated.';
 
 

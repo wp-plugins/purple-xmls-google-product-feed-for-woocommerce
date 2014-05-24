@@ -8,7 +8,7 @@
 
   ********************************************************************/
   
-require_once __DIR__.'/../productCategory/productCombiner.php';
+require_once dirname(__FILE__) .'/../productCategory/productCombiner.php';
   
 class ProductsByCategory {
 

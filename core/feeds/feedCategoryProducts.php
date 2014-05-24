@@ -8,11 +8,10 @@
 
   ********************************************************************/
 
-require_once __DIR__ . '/../productCategory/productExporters.php';
-require_once __DIR__ . '/../data/productCombiner.php';
-require_once __DIR__ . '/../productCategory/productFeedTypeHeader.php';
-require_once __DIR__ . '../../classes/md5.php';
-require_once __DIR__ . '../registration.php';
+require_once dirname(__FILE__) . '/../productCategory/productExporters.php';
+require_once dirname(__FILE__) . '/../data/productCombiner.php';
+require_once dirname(__FILE__) . '/../productCategory/productFeedTypeHeader.php';
+require_once dirname(__FILE__) . '/../classes/md5.php';
 
 class PCategoryProductsFeed {
 

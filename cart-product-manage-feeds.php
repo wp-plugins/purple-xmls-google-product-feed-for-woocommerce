@@ -140,14 +140,14 @@ function feeds_main_table() {
             }
         }
 
-        $downimg = '<img src="' . purple_xmls_get_imgdir() . 'down.png" alt="down" style=" height:12px; position:relative; top:2px; " />';
-        $upimg = '<img src="' . purple_xmls_get_imgdir() . 'up.png" alt="up" style=" height:12px; position:relative; top:2px; " />';
+		$downimg = '<img src="' . plugins_url( 'images/down.png' , __FILE__ ) . '" alt="down" style=" height:12px; position:relative; top:2px; " />';
+        $upimg = '<img src="' . plugins_url( 'images/up.png' , __FILE__ ) . '" alt="up" style=" height:12px; position:relative; top:2px; " />';
         ?>	
         <!--	<div class="table_wrapper">	-->
         <table class="widefat" style="margin-top:12px;" >
             <thead>
                 <tr>
-                    <?php $url = get_admin_url() . 'admin.php?page=cart-product-manage-page&amp;order_by='; ?>
+                    <?php $url = get_admin_url() . 'admin.php?page=cart-product-feed-manage-page&amp;order_by='; ?>
                     <th scope="col" style="min-width: 40px;" >
                         <a href="<?php echo $url . "id" ?>">
                             <?php
@@ -245,19 +245,23 @@ function feeds_main_table() {
                     if ($pendcount)
                         echo 'style="background-color:#ffdddd"'
                         ?>>
-                        <td><?php echo($this_feed['id']) ?></td>
-                        <td><?php echo($this_feed['filename']) ?></td>
+                        <td><?php echo $this_feed['id']; ?></td>
+                        <td><?php echo $this_feed['filename']; ?></td>
                         <td><small><?php echo esc_attr(stripslashes($this_feed['description'])) ?></small></td>
                         <td><?php echo str_replace(".and.", " & ", str_replace(".in.", " > ", esc_attr(stripslashes($this_feed['remote_category'])))); ?></td>
                         <td><?php echo$this_feed['type'] ?></td>
                         <td><?php echo $this_feed['url'] ?></td>
                         <?php //$url = get_admin_url() . 'admin.php?page=??? (edit feed) &amp;tab=edit&amp;edit_id=' . $this_feed['id']; ?>
                         <td><?php
-                            $feed_file = purple_xmls_get_xmldir('google');//! doesn't look right
-                            $feed_file = $feed_file . $this_feed['filename'] . ".xml";
+							$ext = '.xml';
+							if (strpos(strtolower($this_feed['url']), '.csv') > 0) {
+							  $ext = '.csv';
+							}
+							$feed_file = PFeedFolder::uploadFolder() . $this_feed['type'] . '/' . $this_feed['filename'] . $ext;
                             if (file_exists($feed_file)) {
                                 echo date("d-m-Y H:i:s", filemtime($feed_file));
-                            }
+                            } else echo 'DNE';
+							//echo $feed_file;
                             ?></td>
 
                         <td><a href="<?php echo $this_feed['url'] ?>" target="_blank" class="purple_xmlsedit"><?php _e('View', 'cart-product-strings'); ?></a></td>
@@ -308,7 +312,7 @@ function feeds_main_table() {
                     <th scope="col">
                         <a href="<?php echo $url . "category" ?>">
                             <?php
-                            _e('Category', 'cart-product-strings');
+                            _e('Local Category', 'cart-product-strings');
                             if ($order == 'category') {
                                 if ($reverse)
                                     echo $upimg;
@@ -321,7 +325,7 @@ function feeds_main_table() {
                     <th scope="col" style="min-width: 100px;">
                         <a href="<?php echo $url . "google_category" ?>">
                             <?php
-                            _e('Google category', 'cart-product-strings');
+                            _e('Export category', 'cart-product-strings');
                             if ($order == 'google_category') {
                                 if ($reverse)
                                     echo $upimg;
@@ -364,6 +368,8 @@ function feeds_main_table() {
             </tfoot>
 
         </table>
+		
+		<input class="navy_blue_button" type="submit" value="Update Now" id="submit" name="submit" onclick="doUpdateAllFeeds()">
         <!--	</div> -->
         <?php
     } else {
@@ -379,12 +385,16 @@ function cart_product_feed_delete_feed($delete_id = NULL) {
     $feed_table = $wpdb->prefix . 'cp_feeds';
     $sql_feeds = ("SELECT * FROM $feed_table where id=$delete_id");
     $list_of_feeds = $wpdb->get_results($sql_feeds, ARRAY_A);
-    $this_feed = $list_of_feeds[0];
 
-    if (isset($this_feed)) {
-        $feed_file = purple_xmls_get_xmldir('google'); //! Doesn't look right
+    if (isset($list_of_feeds[0])) {
+		$this_feed = $list_of_feeds[0];
+		$ext = '.xml';
+		if (strpos(strtolower($this_feed['url']), '.csv') > 0) {
+		  $ext = '.csv';
+		}
+		$upload_dir = wp_upload_dir();
+		$feed_file =  $upload_dir['basedir'] . '/cart_product_feeds/' . $this_feed['type'] . '/' . $this_feed['filename'] . $ext;
 
-        $feed_file = $feed_file . $this_feed['filename'] . ".xml";
         if(file_exists($feed_file)) {
             unlink($feed_file);
         }

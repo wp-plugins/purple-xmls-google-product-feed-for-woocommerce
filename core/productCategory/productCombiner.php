@@ -1,19 +1,5 @@
 <?php
 
-class PProductEntry {
-  public $taxonomyName;
-  public $ProductID;
-  public $Attributes = array();
-  
-  function GetAttributeList(){
-    $result = '';
-	foreach($this->Attributes as $ThisAttribute) {
-	  $result .= $ThisAttribute . ', ';
-	}
-	return '['. $this->Name . '] ' . substr($result, 0, -2);
-  }
-}
-
 class ProductCombiner {
 
   public $AttributeCategory = array();

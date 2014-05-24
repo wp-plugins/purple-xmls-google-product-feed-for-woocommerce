@@ -10,7 +10,6 @@
 
 require_once 'cart-product-setup.php';
 require_once 'core/dialogs/licensekeydialogs.php';
-require_once 'core/registration.php';
 include_once 'core/dialogs/feedpagedialogs.php';
 
 // Hook for adding admin menus

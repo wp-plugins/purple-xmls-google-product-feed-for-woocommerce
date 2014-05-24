@@ -8,7 +8,7 @@
   ********************************************************************/
 
 require_once '../../../../../wp-load.php';
-require_once __DIR__ . '/../classes/productcategories.php';
+require_once dirname(__FILE__) . '/../classes/productcategories.php';
 
 class ProductCategoriesDlg {
 

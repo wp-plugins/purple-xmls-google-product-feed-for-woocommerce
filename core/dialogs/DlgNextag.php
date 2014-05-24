@@ -8,8 +8,6 @@
   ********************************************************************/
 
 include_once 'basefeeddialogs.php';
-include_once '../classes/attributesfound.php';
-require_once '../../../../../wp-load.php';
 
 class NextagDlg extends PBaseFeedDialog {
 
@@ -18,7 +16,7 @@ class NextagDlg extends PBaseFeedDialog {
 	$this->form_attibutes_name = 'nextag_attribute_changes';
 	$this->form_attibutes_id = 'nextag_attributes_form';
     $this->service_name = 'Nextag';
-    $this->service_name_long = 'Nextag Products XML';
+    $this->service_name_long = 'Nextag Products XML Export';
 	$this->options = array(
         'Category: PriceGrabber Format',
         'Category: Shopping.com Format',

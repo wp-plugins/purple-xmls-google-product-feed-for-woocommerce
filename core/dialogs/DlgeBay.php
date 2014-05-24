@@ -8,8 +8,6 @@
   ********************************************************************/
 
 include_once 'basefeeddialogs.php';
-include_once '../classes/attributesfound.php';
-require_once '../../../../../wp-load.php';
 
 class eBayDlg extends PBaseFeedDialog {
 
@@ -18,7 +16,7 @@ class eBayDlg extends PBaseFeedDialog {
 	$this->form_attibutes_name = 'ebay_attribute_changes';
 	$this->form_attibutes_id = 'ebay_attributes_form';
     $this->service_name = 'eBay';
-    $this->service_name_long = 'eBay Products XML';
+    $this->service_name_long = 'eBay Products XML Export';
 	$this->options = array(
         'UPC',
         'EAN',

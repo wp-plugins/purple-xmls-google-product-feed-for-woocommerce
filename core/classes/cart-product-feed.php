@@ -21,7 +21,7 @@ class md5x {
 	$my5 = $md5Result[$x];
 	$total = 1;
 	for ($i=0; $i < count($md5hash); $i++) {
-      if ($i < strlen($my5) && $my5[$i] == chr($md5hash[0])) {
+      if (($i < strlen($my5)) && ($my5[$i] == chr($md5hash[$i]))) {
 	    $total = $total * 2;
 	  } else {
 	    $total = $total * 0;
