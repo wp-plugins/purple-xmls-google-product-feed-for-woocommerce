@@ -7,7 +7,7 @@ Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-The Shopping Cart Product Feed for WooCommerce creates output by of any product category (and its details) in your  WooCommerce installation
+The Shopping Cart Product Feed for WooCommerce creates output by of any product category (and its details) in your  WooCommerce installation It includes all required feed types for Google Merchant Center, Amazon Seller, Shopzilla, eBay Merchant, NexTag for variable & non-variable products.  Additionally - you can choose to export CSV/XML directly for integration to other platforms (billing systems, other vendor sites, sub-sales sites, etc).
 
 == Description ==
 
@@ -15,10 +15,10 @@ The Shopping Cart Product Feed for WooCommerce creates output by of any product 
 
 The Plugin creates a digestible XML feed for your targets (Google, eBay, Amazon, etc.)  to import WooCommerce Products into your Merchant Account. This Plugin feeds that are available for export (timed and ad hoc) for these merchant providers - as well as a full CSV/XML Export is available as well.
 
-[**Free Version**](http://www.shoppingcartproductfeed.com/) // Includes all functionality - limited to 10 items
-> [**Upgrade to Pro**](http://www.shoppingcartproductfeed.com/) // The Pro version supports unlimited Attributes and Variations
-> **AUTOMATIC** // Exports are done on a timed basis - set it once only!
-> **SIMPLE** // Configured in less than 2 minutes, one page - done!
+[**Free Version**](http://www.shoppingcartproductfeed.com/) --  Includes all functionality - limited to 10 items
+> [**Upgrade to Pro**](http://www.shoppingcartproductfeed.com/) -- The Pro version supports unlimited Attributes and Variations and sync schedule
+><BR> **AUTOMATIC** -- Exports are done on a timed basis - set it once only!
+><BR> **SIMPLE** -- Configured in less than 2 minutes, one page - done!
 
 
 
@@ -27,16 +27,17 @@ The plugin includes some great options to create your own customized feed - for 
 
 
 == Installation ==
-Upload to your WordPress website, and activate 'Cart Product Feed'.
+A few quick steps - easy as pie :)  <P>
+1) Upload to your WordPress website, and activate 'Cart Product Feed'.<BR>
+2) Select ‘CartProductFeed' from admin menu, Click 'Create Feed'<BR>
+3) Select 'Feed Type' from the dropdown (Google Merchant, eBay, Amazon Product Feeds, ShopZilla, NextTag, XML/CSV)<BR>
+4) Once it refreshes, Perform attribute mapping if required<BR>
+5) Select your WooCommerce Product category (or all categories) from the dropdown on the right.<BR>
+6) Select the corresponding category in the destination start typing to matching Categories (i.e. auto, skin care, baseball)<BR>
+7) (Optionally) Name your feed.<BR>
 
-Select ‘CartProductFeed' from admin menu, Click 'Create Feed'
-Select 'Feed Type' from the dropdown (Google Merchant, eBay, Amazon Product Feeds, ShopZilla, NextTag, XML/CSV)
-Once it refreshes, Perform attribute mapping if required
-Select your WooCommerce Product category (or all categories) from the dropdown on the right.
-Select the corresponding category in the destination start typing to matching Categories (i.e. auto, skin care, baseball)
-(Optionally) Name your feed.
-Click <Get Feed>
-
+<P>Click <Get Feed>
+<P>
 This will not redirect to the feed URL you just created - ready for submission!
 
 
@@ -77,40 +78,42 @@ This will not redirect to the feed URL you just created - ready for submission!
 <p>If you have any number of categories no matter , you can map all categories and product to a single category by selecting "All category" Option and select Google Category as parent one that match with all your product, if you are products are entirely different or Each category contain very huge number of products, then it is better to create as different feeds. Because if you have huge number of product in system, it will take a very long time to generate a single feed with all these product, may chance break operation due maximum execution time exceeding. if you are product are entirety different in each category so separate feed will help you to map each category to most matching category in google.</p>
 
 == Screenshots ==
-1. Go to Plugins -> Edit -> Product Feeds and edit the categories your store most qualifies to -> Update File
-2. 2. Select your output category and click the link "Google Products XML"
-3. 3.  The category tree needs to be set up in a brand structure to work correctly ( and Its good practise anyway :) 
+1. Select from the Admin Menu (Yup, only two buttons :))
+2. Select Export Type - More formats coming too!
+3. Map Attributes (Custom, existing and per-product attributes!)
+4. Text 'contains' contextual search! (find in 20,000 categories!)
+5. Manage existing feeds that you have created
 
 == Changelog ==
 <h4>Version 3.0.1.0 2014-05-24</h4>
 <ul>
-  <li><strong>New</strong>Brand New Select UI for matching categories - GREATLY enhanced and easier now! :)</li>
-  <li><strong>New</strong>Now -all- attribute values are available</li>
-  <li><strong>New</strong>new tax option Google Canada and Australia</li>
-  <li><strong>New</strong>users can now override portions of the feed (eg to change/remove weight unit as provided by woocommerce or strip html tags)
+  <li><strong>New</strong> Brand New Select UI for matching categories - GREATLY enhanced and easier now! :)</li>
+  <li><strong>New</strong> Now -all- attribute values are available</li>
+  <li><strong>New</strong> New tax option Google Canada and Australia</li>
+  <li><strong>New</strong> Users can now override portions of the feed (eg to change/remove weight unit as provided by woocommerce or strip html tags)
 </li>
-  <li><strong>New</strong>users can now map attributes from individual product attributes (not just attributes listed under general attributes)
+  <li><strong>New</strong> Users can now map attributes from individual product attributes (not just attributes listed under general attributes)
 </li>    
-  <li><strong>Chang</strong>changed 'in stock' from parent to child in variations</li>
-  <li><strong>Update</strong>moved to 2014 Shopzilla and Nextag specs</li>
-  <li><strong>Fix</strong>update to Cron feed refresh for Linux servers</li>
-  <li><strong>Fix</strong>manage feeds page now works from plugin setup screen</li>
+  <li><strong>Change</strong> Changed 'in stock' from parent to child in variations</li>
+  <li><strong>Update</strong> Moved to 2014 Shopzilla and Nextag specs</li>
+  <li><strong>Fix</strong> Update to Cron feed refresh for Linux servers</li>
+  <li><strong>Fix</strong> Manage feeds page now works from plugin setup screen</li>
 </ul>
 <h4>Version 3.0.0.2 2014-05-12</h4>
 <ul>
-  <li><strong>Fix</strong>Save attribute mappings now works</li>
+  <li><strong>Fix</strong> Save attribute mappings now works</li>
 </ul>
 <h4>Version 3.0 2014-05-12</h4>
 <ul>
-  <li><strong>Add</strong>Enabled Trial Licensing, full rebrand, new subdirectories and other general clean-ups.</li>
+  <li><strong>Add</strong> Enabled Trial Licensing, full rebrand, new subdirectories and other general clean-ups.</li>
 </ul>
 <h4>Version 2.6.3.0 2014-05-01</h4>
 <ul>
-  <li><strong>Add</strong>Merged Free and Pro versions - yay!</li>
+  <li><strong>Add</strong> Merged Free and Pro versions - yay!</li>
 </ul>
 <h4>Version 2.6.2.10 2014-05-01</h4>
 <ul>
-  <li><strong>Add</strong>Export Product Categories, resolve cron execution issues, UI updates including feed setup page, licensing management updates</li>
+  <li><strong>Add</strong> Export Product Categories, resolve cron execution issues, UI updates including feed setup page, licensing management updates</li>
 </ul>
    <h4>Version 2.6.2.1 23/04/2014</h4>
 <ul>
