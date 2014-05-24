@@ -36,7 +36,7 @@ A few quick steps - easy as pie :)  <P>
 6) Select the corresponding category in the destination start typing to matching Categories (i.e. auto, skin care, baseball)<BR>
 7) (Optionally) Name your feed.<BR>
 
-<P>Click <Get Feed>
+<P>Click --Get Feed--
 <P>
 This will not redirect to the feed URL you just created - ready for submission!
 
