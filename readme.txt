@@ -7,7 +7,7 @@ Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-The Shopping Cart Product Feed for WooCommerce creates output by of any product category (and its details) in your  WooCommerce installation It includes all required feed types for Google Merchant Center, Amazon Seller, Shopzilla, eBay Merchant, NexTag for variable & non-variable products.  Additionally - you can choose to export CSV/XML directly for integration to other platforms (billing systems, other vendor sites, sub-sales sites, etc).
+Output  any product category (and its details) in your WooCommerce installation to Google Merchant Center, Amazon Seller, Shopzilla, eBay Merchant, NexTag and  CSV/XML --  for variable & non-variable products.  
 
 == Description ==
 
@@ -19,8 +19,6 @@ The Plugin creates a digestible XML feed for your targets (Google, eBay, Amazon,
 > [**Upgrade to Pro**](http://www.shoppingcartproductfeed.com/) -- The Pro version supports unlimited Attributes and Variations and sync schedule
 ><BR> **AUTOMATIC** -- Exports are done on a timed basis - set it once only!
 ><BR> **SIMPLE** -- Configured in less than 2 minutes, one page - done!
-
-
 
 
 The plugin includes some great options to create your own customized feed - for export to other platforms.  Join the over 2,000 other users of our plugin to push your WooCommerce product set (all details, sale prices, etc.) to many other sales platforms - enter once - sell everywhere!
@@ -77,12 +75,18 @@ This will not redirect to the feed URL you just created - ready for submission!
 <p><strong>If I have 50 categories in my shop do I need to create 50 different feeds? Or can I map categories to google categories and export as one big feed?</strong></p>
 <p>If you have any number of categories no matter , you can map all categories and product to a single category by selecting "All category" Option and select Google Category as parent one that match with all your product, if you are products are entirely different or Each category contain very huge number of products, then it is better to create as different feeds. Because if you have huge number of product in system, it will take a very long time to generate a single feed with all these product, may chance break operation due maximum execution time exceeding. if you are product are entirety different in each category so separate feed will help you to map each category to most matching category in google.</p>
 
+
+
+
 == Screenshots ==
 1. Select from the Admin Menu (Yup, only two buttons :))
 2. Select Export Type - More formats coming too!
 3. Map Attributes (Custom, existing and per-product attributes!)
 4. Text 'contains' contextual search! (find in 20,000 categories!)
 5. Manage existing feeds that you have created
+
+
+
 
 == Changelog ==
 <h4>Version 3.0.1.0 2014-05-24</h4>
