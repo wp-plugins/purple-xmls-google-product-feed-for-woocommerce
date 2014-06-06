@@ -1,5 +1,5 @@
 === WooCommerce Shopping Cart Export ===
-Contributors: PurpleTurtlePro, KH_PDev, thisismyurl
+Contributors: PurpleTurtlePro, KH_PDev, thisismyurl, hackerninja
 Tags: WooCommerce, Google, Merchant, Shopping, xml, product feed, Nextag, Google product feed, Amazon, eBay, google merchant, amazon seller, shopzilla, shopify, export csv, export xml, export tab
 Requires at least: 3.0.1
 Tested up to: 3.9.1
