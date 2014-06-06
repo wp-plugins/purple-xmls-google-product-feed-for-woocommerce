@@ -12,7 +12,7 @@ class PFeedTypeHeader {
 
 
   function get_header_forFeedType($feedType) {
-	$result = 'Content-Type:text/xml'; 
+	$result = 'Content-Type:text/xml';
 	switch ($feedType) {
 	case 'C':
 	  $result = 'Content-Type:text/csv';

@@ -27,7 +27,7 @@ class PLicenseKeyDialog {
   }
 
   function small_registration_dialog($current_licensekey) {
-    $result = 
+    $result =
 	  '
 		  <form name="feed_update_delay_form"  action="' . admin_url() . 'admin.php?page=cart-product-feed-admin" id="cat-product-feeds-xml-form" method="post" target="">
 		    <table class="form-table">
@@ -50,7 +50,7 @@ class PLicenseKeyDialog {
 			</tbody>
 			</table>
 		  </form>';
-		  
+
 	return $result;
   }
 

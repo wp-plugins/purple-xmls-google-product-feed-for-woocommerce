@@ -13,8 +13,6 @@ class eBayDlg extends PBaseFeedDialog {
 
   function __construct() {
     parent::__construct();
-	$this->form_attibutes_name = 'ebay_attribute_changes';
-	$this->form_attibutes_id = 'ebay_attributes_form';
     $this->service_name = 'eBay';
     $this->service_name_long = 'eBay Products XML Export';
 	$this->options = array(

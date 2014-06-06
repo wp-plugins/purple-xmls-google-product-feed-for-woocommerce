@@ -10,14 +10,14 @@
 //Join attribute and corresponding remote attributes together(attributes mapping)
 
 require_once 'basicAttributeUpdate.php';
- 
+
 class PattributeUpdateNextagFeed extends PattributeUpdate {
 
   function __construct() {
     $this->attribute_tag = 'nextagattr';
 	$this->serviceName = 'Nextag';
   }
-  
+
 }
 
 ?>

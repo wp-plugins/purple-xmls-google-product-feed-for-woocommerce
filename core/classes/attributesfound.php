@@ -2,7 +2,7 @@
 
   /********************************************************************
   Version 2.0
-    Find the Attributes contained with in our DB 
+    Find the Attributes contained with in our DB
 	(these attributes will need to be compared to some outside agency's attributes)
 	By: Keneto 2014-05-05
 
@@ -20,7 +20,7 @@ class FoundAttribute {
 	  $this->fetchWoocommerceAttributes();
 	}
   }
-  
+
   function fetchWoocommerceAttributes() {
     global $wpdb;
     $attr_table = $wpdb->prefix . 'woocommerce_attribute_taxonomies';
@@ -28,7 +28,7 @@ class FoundAttribute {
     $sql = "SELECT attribute_name FROM " . $attr_table . " WHERE 1";
     $this->attributes = $wpdb->get_results($sql);
   }
-  
+
   function fetchAttrOptions($attrVal) {
     global $wpdb;
     $sql = "SELECT option_value FROM " . $this->attrOptionsTableName . " WHERE option_name='" . $attrVal . "'";

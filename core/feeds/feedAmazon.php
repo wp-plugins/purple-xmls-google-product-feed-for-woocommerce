@@ -16,9 +16,10 @@ class PAmazonFeed extends PBasicFeed{
 	$this->providerNameL = 'amazon';
 	$this->fileformat = 'csv';
 	$this->fields = explode(',', 'Category,Title,Link,SKU,Price,Brand,Department,UPC,Image,Description,Manufacturer,Mfr part number,Other image-url1,Other image-url2,Other image-url3,Other image-url4,Other image-url5,Other image-url6,Other image-url7,Other image-url8,Weight,Shipping Cost,Shipping Weight');
+	$this->fieldDelimiter = ',';
 	parent::__construct();
   }
-  
+
   function formatProduct($product) {
 	$variantUPC = '';
 	$variantMfr = '';
@@ -27,7 +28,7 @@ class PAmazonFeed extends PBasicFeed{
 	  //$variantUPC = rand();
 	  //$variantMfr = rand();
 	}
-	
+
 	//Prepare input
 	$current_feed['UPC'] = $product->id . $variantUPC;
 	$current_feed['Mfr part number'] = $product->id . $variantMfr;
@@ -36,7 +37,7 @@ class PAmazonFeed extends PBasicFeed{
 	$current_feed['Category'] = $this->current_category;
 	$current_feed['Link'] = $product->link;
 	$current_feed['Image'] = $product->feature_imgurl;
-	
+
 	$image_count = 0;
 	foreach($product->imgurls as $imgurl) {
 	  $image_index = "Other image-url$image_count";
@@ -60,9 +61,9 @@ class PAmazonFeed extends PBasicFeed{
 	$output = '';
 	foreach($this->fields as $field) {
 	  if (isset($current_feed[$field])) {
-	    $output .= $current_feed[$field] . ',';
+	    $output .= $current_feed[$field] . $this->fieldDelimiter;
 	  } else {
-	    $output .= ',';
+	    $output .= $this->fieldDelimiter;
 	  }
 	}
 
@@ -76,7 +77,7 @@ class PAmazonFeed extends PBasicFeed{
 	  if (isset($this->feedOverrides->overrides[$field])) {
 	    $field = $this->feedOverrides->overrides[$field];
 	  }
-	  $output .= $field . ',';
+	  $output .= $field . $this->fieldDelimiter;
 	}
 	//Trim trailing comma
 	return substr($output, 0, -1) . "\r\n";

@@ -7,13 +7,13 @@
   Note: One day, this needs to be moved to Joomla/VirtueMart compatibility
 
   ********************************************************************/
-  
+
 require_once dirname(__FILE__) .'/../productCategory/productCombiner.php';
-  
+
 class ProductsByCategory {
 
   function ProductList($category_id) {
-  
+
 	global $wpdb;
 	$posts_table = $wpdb->prefix . 'posts';
 
@@ -27,7 +27,7 @@ class ProductsByCategory {
 		WHERE $wpdb->posts.post_status = 'publish'
 		AND $wpdb->posts.post_type = 'product'
 		AND $wpdb->term_taxonomy.taxonomy = 'product_cat'";
-	
+
 	if ($category_id != 0) {
 	  $sql .=" AND $wpdb->term_taxonomy.term_id = " . $category_id ;
 	}
@@ -35,7 +35,7 @@ class ProductsByCategory {
 
 	return $wpdb->get_results($sql);
 	}
-	
+
   function ProductCombinations($sourcelist, $category_id) {
 
 	global $wpdb;
@@ -55,18 +55,18 @@ class ProductsByCategory {
 	}
 	$sql .=" ORDER BY post_date DESC";
 
-	//ChildList contains 
+	//ChildList contains
 	//	taxonomy (eg: pa_ProductQuality) for Product Attribute and
 	//	Attributes (eg: Excellent / Good / Poor) the value for the Product Attribute
 	$childlist = $wpdb->get_results($sql);
 
 	//Initialize
 	$combiner = new ProductCombiner();
-	
+
 	//Attribute Categories house the categories (eg: name: pa_ProductQuality)
 	//with child items for the specific attributes
 	$combiner->CreateAttributeCategories($childlist);
-	
+
 	//Now fetch back a mammoth list of products using original list
 	$combiner->CreateNewProductList($sourcelist, $childlist);
 

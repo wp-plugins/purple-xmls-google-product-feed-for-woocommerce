@@ -15,8 +15,6 @@ class ShopzillaDlg extends PBaseFeedDialog {
 
   function __construct() {
     parent::__construct();
-	$this->form_attibutes_name = 'shopzilla_attribute_changes';
-	$this->form_attibutes_id = 'shopzilla_attributes_form';
     $this->service_name = 'Shopzilla';
     $this->service_name_long = 'Shopzilla Products XML Export';
 	$this->options = array(
@@ -25,7 +23,7 @@ class ShopzillaDlg extends PBaseFeedDialog {
         'Promotional Code'
 	);
   }
-  
+
   function list_categories() {
     $data = file_get_contents('categories_' . strtolower($this->service_name) . '.txt');
     $arr = explode("\n", $data);
@@ -41,8 +39,8 @@ class ShopzillaDlg extends PBaseFeedDialog {
 		$list_val=  explode(";", $value);
         $result .= "<option value='" . trim($list_val[1]). "'>" . htmlentities(trim($list_val[0])) . "</option>";
     }
-	
+
     return $result;
   }
-  
+
 }

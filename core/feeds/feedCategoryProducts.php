@@ -15,14 +15,14 @@ require_once dirname(__FILE__) . '/../classes/md5.php';
 
 class PCategoryProductsFeed {
 
- 
+
   function getFeedData() {
 
 	$category_id = $_REQUEST['category'];
 	$feedType = $_REQUEST['feedtype'];
 	$aggregation = $_REQUEST['aggregation'];
 	new PLicense();
-	
+
 	//Tell the server what type of content we plan to return
 	header( PFeedTypeHeader::get_header_forFeedType($feedType) );
 

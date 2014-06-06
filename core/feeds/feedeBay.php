@@ -18,7 +18,7 @@ class PeBayFeed extends PBasicFeed {
   }
 
   function formatProduct($product) {
-  
+
 	$output.= '
       <Product>';
 	$output .= $this->formatLine('Product_Name', $product->title, true);
@@ -36,7 +36,7 @@ class PeBayFeed extends PBasicFeed {
 	  $output .= $this->formatLine('Alternative_Image_URL_' . $image_count++, $imgurl, true);
 	}
 	$output .= $this->formatLine('Condition', 'New');
-	
+
 	if ($product->stock_status == 1) {
 	  $product->stock_status = 'in stock';
 	} else {
@@ -49,14 +49,14 @@ class PeBayFeed extends PBasicFeed {
 	}
 	$output.= $this->formatLine('Merchant_SKU', $product->sku);
 
-	
+
 	if ($product->weight != "") {
 	  $output.= $this->formatLine('Product_Weight', $product->weight);
 	  $output.= $this->formatLine('Shipping_Weight', $product->weight);
 	  $output.= $this->formatLine('Weight_Unit_of_Measure', $this->weight_unit);
 	}
 	$output.= $this->formatLine('Shipping_Rate', '0.00 ' . $this->currency);
-				
+
 	foreach($product->attributes as $key => $a) {
 	  $output .= $this->formatLine($key, $a);
 	}

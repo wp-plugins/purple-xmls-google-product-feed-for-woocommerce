@@ -10,7 +10,7 @@
 //Join attribute and corresponding remote attributes together(attributes mapping)
 
 require_once 'basicAttributeUpdate.php';
- 
+
 class PattributeUpdateShopzillaFeed extends PattributeUpdate {
 
   function __construct() {

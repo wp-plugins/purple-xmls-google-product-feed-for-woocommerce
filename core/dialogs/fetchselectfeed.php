@@ -8,10 +8,10 @@
   ********************************************************************/
 
   $feedType = $_POST['feedtype'];
-  
+
   if (strlen($feedType) == 0)
     return;
-  
+
   $inc = 'Dlg' . $feedType . '.php';
   $feedObjectName = $feedType . 'Dlg';
 

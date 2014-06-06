@@ -72,7 +72,7 @@ Bathroom Furniture	;	10,00,01,299
 Bathtubs	;	8,655
 Bean Bags	;	8,272
 Bedding Sets	;	370
-Bedroom Furniture	;	
+Bedroom Furniture	;
 Bedroom Sets	;	8,342
 Bedroom Vanities	;	8,344
 Beds	;	8,340
@@ -115,7 +115,7 @@ Building Supplies	;	2,50,01,000
 Bulletin Boards	;	10,00,00,114
 Bunk Beds	;	10,00,01,771
 Business & Economics Books	;	8,013
-Business Forms & Record Keeping	;	
+Business Forms & Record Keeping	;
 Butcher Blocks	;	10,00,01,431
 Butter Dishes	;	347
 Cable & DSL Modems	;	9,328
@@ -523,7 +523,7 @@ Loose Gemstones	;	9,959
 Love Seats	;	8,245
 Love, Relationships & Sex Books	;	8,077
 Lubricants	;	2,30,00,600
-Luggage	;	
+Luggage	;
 Luggage Accessories	;	10,00,00,866
 Luggage Sets	;	10,00,00,867
 Lunch Boxes & Bags	;	10,00,00,863
@@ -647,7 +647,7 @@ Office, Tax & Accounting Software	;	308
 Oldies Music	;	5,211
 Operating Systems	;	307
 Oral Irrigators	;	243
-Organizers & Planners	;	
+Organizers & Planners	;
 Organizers, Etc.	;	1,30,80,202
 Original Cast Music	;	5,231
 Original Computer Cables & Adapters	;	9,469

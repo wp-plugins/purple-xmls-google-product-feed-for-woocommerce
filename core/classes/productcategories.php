@@ -13,8 +13,8 @@ class PProductCategories {
     global $wpdb;
     $term_table = $wpdb->prefix . 'terms';
     $taxo_table = $wpdb->prefix . 'term_taxonomy';
-    $sql = "SELECT taxo.term_id, taxo.parent, taxo.count, term.name FROM " . $taxo_table . " taxo 
-    		LEFT JOIN " . $term_table . " term ON taxo.term_id = term.term_id 
+    $sql = "SELECT taxo.term_id, taxo.parent, taxo.count, term.name FROM " . $taxo_table . " taxo
+    		LEFT JOIN " . $term_table . " term ON taxo.term_id = term.term_id
     		WHERE taxo.taxonomy = 'product_cat'";
     // if (is_int($cateogry_id)) {
     //   $sql .= " AND taxo.parent = '".$cateogry_id."'";

@@ -5,13 +5,13 @@
   Plugin URI: http://www.w3bdesign.ca/
   Description: Product XML Data Feeds for WooCommerce :: Update permalinks after activating/deactivating the plugin :: <a href="http://www.youtube.com/watch?v=9VVipmBI4rk">Instruction Video</a>
   Author: Purple Turtle Productions
-  Version: 3.0.1.0
+  Version: 3.0.1.22
   Author URI: http://www.w3bdesign.ca/
   Authors: Haris, Keneto (May2014)
   Note: Unversioned files arrived before me (Keneto). I've assigned them a version number of 1.0
-    When I move the code closer to a class-based design, I assign higher version numbers until 
+    When I move the code closer to a class-based design, I assign higher version numbers until
 	I hit 2.x which will be entirely class-based
-  Note: The "core" folder is to be shared to the (future) Joomla component. 
+  Note: The "core" folder is to be shared to the (future) Joomla component.
 	This should be factored in when designing... making a CMS/shopping-system-independent core
   Note: "purple" term exists from legacy plugin name. Classnames in "P" for the same reason
  ***********************************************************/
@@ -26,28 +26,27 @@ require_once 'core/classes/cron.php';
 require_once 'core/data/feedFolders.php';
 require_once 'core/registration.php';
 
-if (get_option('cp_feed_order_reverse') == "") {
+if (get_option('cp_feed_order_reverse') == '')
     add_option('cp_feed_order_reverse', false);
-}
-if (get_option('cp_feed_order') == "") {
+
+if (get_option('cp_feed_order') == '')
     add_option('cp_feed_order', "id");
-}
-if (get_option('cp_feed_delay') == "") {
+
+if (get_option('cp_feed_delay') == '')
     add_option('cp_feed_delay', "43200");
-}
-if (get_option('cp_licensekey') == "") {
+
+if (get_option('cp_licensekey') == '')
     add_option('cp_licensekey', "none");
-}
-if (get_option('cp_localkey') == "") {
+
+if (get_option('cp_localkey') == '')
     add_option('cp_localkey', "none");
-}
 
 //***********************************************************
 // Basic Initialization
 //***********************************************************
- 
+
 add_action('init', 'init_cart_product_feed');
- 
+
 function init_cart_product_feed() {
 
 	require_once 'core/classes/md5.php';
@@ -79,17 +78,17 @@ function init_cart_product_feed() {
 
 	$requestCode = $_REQUEST['RequestCode'];
 	$providerFile = 'core/feeds/feed' . $requestCode . '.php';
-			
+
 	if (!file_exists(dirname(__FILE__) . '/' . $providerFile)) {
 	  return;
 	}
 
 	require_once $providerFile;
-	
+
 	$providerClass = 'P' . $requestCode . 'Feed';
 	$x = new $providerClass;
 	$x->getFeedData();
-	
+
 	//Some of the feeds need to exit() so the page doesn't forward
 	if ($x->must_exit())
 	  exit();
@@ -138,7 +137,7 @@ function update_all_cart_feeds() {
 			//Initialize provider data
 			$category = $feed_setting->category;
 			$google_category = $feed_setting->remote_category;
-			
+
 			$providerClass = 'P' . $providerName . 'Feed';
 			$x = new $providerClass;
 			$x->updateFeed($feed_setting->category, $feed_setting->remote_category, $feed_setting->filename);
@@ -164,6 +163,3 @@ function cart_product_manage_feeds_link($links) {
     array_unshift($links, $settings_link);
     return $links;
 }
-
-
-?>

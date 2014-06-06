@@ -2,8 +2,10 @@
 
   /********************************************************************
   Version 2.0
-    A Shiopzilla Feed
+    A Shopzilla Feed
 	By: Keneto 2014-05-08
+  Note: Shopzilla (like Amazon) has limited support for FeedOverrides.
+    See the Bing feed provider for a better sample
 
   ********************************************************************/
 
@@ -20,7 +22,7 @@ class PShopzillaFeed extends PBasicFeed{
   }
 
   function formatProduct($product) {
-	
+
 	//Prepare input
 	$current_feed['Unique ID'] = $product->id;
     if ($product->isVariable) {
@@ -52,7 +54,7 @@ class PShopzillaFeed extends PBasicFeed{
 	} else {
 	  $current_feed['Availability'] = 'Out of Stock';
 	}
-	
+
 	if (strlen($product->regular_price) == 0) {
 	  $product->regular_price = '0.00';
 	}

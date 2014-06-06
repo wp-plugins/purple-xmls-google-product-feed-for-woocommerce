@@ -13,8 +13,6 @@ class NextagDlg extends PBaseFeedDialog {
 
   function __construct() {
     parent::__construct();
-	$this->form_attibutes_name = 'nextag_attribute_changes';
-	$this->form_attibutes_id = 'nextag_attributes_form';
     $this->service_name = 'Nextag';
     $this->service_name_long = 'Nextag Products XML Export';
 	$this->options = array(
@@ -70,5 +68,5 @@ class NextagDlg extends PBaseFeedDialog {
         'Coupon Rebate URL Discount',
         'Promo Rebate Discount Is Exclusive');
   }
-  
+
 }

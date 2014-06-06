@@ -20,10 +20,10 @@ class ProductCombiner {
 	  }
 	  //Save the Attribute
 	  $x->Attributes[] = $listitem->Attributes;
-	  
+
 	}
   }
-  
+
   function CreateNewProductList($list, $childlist) {
 
     //iterate the list of products
@@ -36,11 +36,11 @@ class ProductCombiner {
 	//Clean up the trailing comma from the attributes
 	foreach($this->resultlist as $listitem) {
 	  $listitem->Attributes = substr($listitem->Attributes, 0, -2);
-  
+
 	}
 
   }
-  
+
   function ExistsInChildList($needle, $haystack) {
     $result = false;
 	foreach($haystack as $x) {
@@ -51,7 +51,7 @@ class ProductCombiner {
 	}
 	return $result;
   }
-  
+
   function FindAttributeCategory($SearchTerm) {
     $Result = null;
     foreach($this->AttributeCategory as $ThisAttribute) {
@@ -62,7 +62,7 @@ class ProductCombiner {
 	}
 	return $Result;
   }
-  
+
   function InsertAttributes($product, $StartingIndex, $AttributeTrail) {
 
     //foreach($this->AttributeCategory as $key => $ThisAttribute) {
@@ -77,7 +77,7 @@ class ProductCombiner {
 	  $copyR = clone $product;
 	  $copyR->Attributes = $AttributeTrail . $x . ', ';
 	  $this->resultlist[] = $copyR;
-	  
+
 	  //if ($key >= $StartingIndex) {
 	    $this->InsertAttributes($product, $i + 1, $AttributeTrail . $x . ', ');
 	  //}

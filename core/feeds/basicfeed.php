@@ -12,26 +12,37 @@ class PBasicFeed {
   public $categories;
   public $current_category; //This is the active category while in formatProduct()
   public $currency;
+  public $currency_shipping = ''; //Defaults to $currency
+  public $default_brand = '';
   public $descriptionFormat; //0 = short or long, 1 = long 2 = short
   public $descriptionStrict = false; //hack out ALL special characters from the description including multinational
   public $descriptionStrictReplacementChar = ' ';
   public $fileformat = 'xml';
+  public $fieldDelimiter = "\t"; //For CSVs
+  public $fields; //For CSVs
   public $feed_category;
   public $max_description_length = 10000;
   public $providerName = '';
   public $providerNameL = '';
   public $productList;
+  public $productTypeFromWooCommerceCategory = false;
   public $stripHTML = false;
+  public $system_wide_shipping = true;
+  public $system_wide_shipping_rate = '0.00';
+  public $system_wide_shipping_type = 'Ground';
+  public $system_wide_tax = false;
+  public $system_wide_tax_rate = 0;
+  public $timeout = 0; //If >0 try to override max_execution time
   public $weight_unit;
-  
-  
+
+
   function add_feed_selection($category, $remote_category, $filename, $url, $type) {
     global $wpdb;
     $feed_table = $wpdb->prefix . 'cp_feeds';
     $sql = "INSERT INTO $feed_table(`category`, `remote_category`, `filename`, `url`, `type`) VALUES ('$category','$remote_category','$filename','$url','$type')";
     $wpdb->query($sql);
   }
-  
+
   function checkFolders() {
 
     global $message;
@@ -41,7 +52,7 @@ class PBasicFeed {
       $message = $dir . ' should be writeable';
 	  return false;
     }
-	
+
     $dir = PFeedFolder::uploadFolder();
     if (!is_dir($dir)) {
 	  mkdir($dir);
@@ -54,7 +65,7 @@ class PBasicFeed {
 	if (!is_dir($dir2)) {
 	  mkdir($dir2);
 	}
-	
+
 	return true;
   }
 
@@ -82,11 +93,11 @@ class PBasicFeed {
 	return '
 	    ' . $leader_space . '<' . $attribute . '>' . $c_leader . $value . $c_footer . '</' . $attribute . '>';
   }
-  
+
   function formatProduct($product) {
     return '';
   }
-  
+
   //What does this even do? Need to trace it one day
   function get_feed_selection_by_filename($filename) {
     global $wpdb;
@@ -99,15 +110,16 @@ class PBasicFeed {
         return false;
     }
   }
-  
+
   function getFeedData_internal($remote_category) {
     $output = null;
-
 	foreach($this->categories->items as $this_category) {
 	  $products = $this->productList->getProductList($this_category, $remote_category);
 	  foreach($products as $this_product) {
 	    if (!$this->feed_category->verifyProduct($this_product)) break;
+		//********************************************************************
 		//Adjust the product a little before sending it out to be Formatted
+		//********************************************************************
 		switch ($this->descriptionFormat) {
 		  case 1: //Force Long
 		    $this_product->description = $this_product->description_long;
@@ -136,6 +148,15 @@ class PBasicFeed {
 			}
 		  }
 		}
+		if ($this->productTypeFromWooCommerceCategory) {
+		  $this_product->product_type = $this_product->wooCommerceCategory;
+		}
+		if ($this->system_wide_tax  && (!isset($this_product->tax))) {
+		  $this_product->tax = $this->system_wide_tax_rate;
+		}
+		if ((!isset($this_product->attributes['brand'])) && (strlen($this->default_brand) > 0)) {
+		  $this_product->attributes['brand'] = $this->default_brand;
+		}
 	    $output .= $this->formatProduct($this_product);
 	  }
 	}
@@ -153,7 +174,7 @@ class PBasicFeed {
 	if (!$this->checkFolders()) {
 	  return;
 	}
-	
+
 	//Old, uncommented code
 
 	$old_flag = FALSE;
@@ -171,10 +192,15 @@ class PBasicFeed {
 	$category = $_REQUEST['local_category'];
 	$remote_category = $_REQUEST['remote_category'];
 
+	$file_path = PFeedFolder::uploadURL() . $this->providerName . '/' . $file_name . '.' . $this->fileformat;
 
-	$file_path = site_url() . '/wp-content/uploads/cart_product_feeds/' . $this->providerName . '/' . $file_name . '.' . $this->fileformat;
+	//Special: where admin is https and site is http, path to wp-uploads works out incorrectly as https
+	//  we check the content_url() for https... if not present, patch the file_path
+	if ((strpos($file_path, 'https://') !== false) && (strpos(content_url(), 'https') === false)) {
+	  $file_path = str_replace('https://', 'http://', $file_path);
+	}
+
 	header('Location: ' . $file_path);
-
 
 	//Figure out what categories the user wants to export
 	$this->categories = new PCategoryList($category);
@@ -182,25 +208,43 @@ class PBasicFeed {
 	//Get the ProductList ready
 	$this->productList = new PProductList();
 
-	//Get the Feed Overrides ready
-	$this->feedOverrides = new PFeedOverride($this->providerName, $this);
-
 	//Initialize some useful data
+	//(must occur before overrides)
 	$this->current_category = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
 	$this->weight_unit = esc_attr(get_option('woocommerce_weight_unit'));
 	$this->currency = get_woocommerce_currency();
 
+	//Get the Feed Overrides ready
+	$this->feedOverrides = new PFeedOverride($this->providerName, $this);
+
+	//Trying to change max_execution_time will throw privilege errors on some installs
+	//so it's been left as an option
+	if ($this->timeout > 0) {
+	  ini_set('max_execution_time', $this->timeout);
+	}
+
+	//Initialize post-override data
+	if ($this->timeout > 0) {
+	  ini_set('max_execution_time', $this->timeout);
+	}
+	if (strlen($this->currency) > 0) {
+	  $this->currency = ' ' . $this->currency;
+	}
+	if (strlen($this->currency_shipping) == 0) {
+	  $this->currency_shipping = $this->currency;
+	}
+
 	//Create the Feed
-	$output = 
+	$output =
 	  $this->getFeedHeader($file_name, $file_path) .
 	  $this->getFeedData_internal($remote_category) .
 	  $this->getFeedFooter();
-	  
+
 	//Save the Feed
-	$handle = fopen($file_url, "w");  
+	$handle = fopen($file_url, "w");
 	fwrite($handle, $output);
 	fclose($handle);
-	
+
 	//Not too sure / Old / Uncommented
 
 	if ($old_flag) {
@@ -214,22 +258,40 @@ class PBasicFeed {
   function getFeedFooter() {
     return '';
   }
-  
+
   function getFeedHeader() {
     return '';
   }
-  
+
+  function insertField($new_field, $index_field) {
+    //CSV feed providers will sometimes want to insert-field-after-this-other-field, which PHP doesn't provide
+	//insertField not currently used because the feedheader is created before productlist so there's no way to
+	//know if some later category will need to re-arrange the fields
+	//Edit: Debug Bing Feed provider uses insertField() for now
+	if (in_array($new_field, $this->fields))
+	  return;
+	$new_array = array();
+	foreach($this->fields as $key => $item) {
+	  $new_array[] = $item;
+	  if ($item == $index_field) {
+	    $new_array[] = $new_field;
+	  }
+	}
+	$this->fields = $new_array;
+  }
+
   function updateFeed($category, $remote_category, $file_name) {
     //called by the automatic updater (Cron job), so this doesn't need as much overhead as getFeedData()
 	//Note: getFeedData_Internal being fed incorrect file_path/url, but it shouldn't need it. Fix one day
+	//!updateFeed() is reeeeeallly similar to getFeedData() and the two should be folded together one day
 
 	if (!$this->checkFolders()) {
 	  return;
 	}
 
 	$file_url = PFeedFolder::uploadFolder() . $this->providerName . '/' . $file_name . '.' . $this->fileformat;
-	$file_path = site_url() . '/wp-content/uploads/cart_product_feeds/' . $this->providerName . '/' . $file_name . '.' . $this->fileformat;
-	
+	$file_path = PFeedFolder::uploadURL() . $this->providerName . '/' . $file_name . '.' . $this->fileformat;
+
 	$old_flag = false;
 	if (file_exists($file_url)) {
 		$old_feed = $this->get_feed_selection_by_filename($file_name);
@@ -238,31 +300,49 @@ class PBasicFeed {
 		}
 	}
 
+	//Special: where admin is https and site is http, path to wp-uploads works out incorrectly as https
+	//  we check the content_url() for https... if not present, patch the file_path
+	if ((strpos($file_path, 'https://') !== false) && (strpos(content_url(), 'https') === false)) {
+	  $file_path = str_replace('https://', 'http://', $file_path);
+	}
+
 	//Figure out what categories the user wants to export
 	$this->categories = new PCategoryList($category);
 
 	//Get the ProductList ready
 	$this->productList = new PProductList();
 
-	//Get the Feed Overrides ready
-	$this->feedOverrides = new PFeedOverride($this->providerName, $this);
-
 	//Initialize some useful data
+	//(must occur before overrides)
 	$this->current_category = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
 	$this->weight_unit = esc_attr(get_option('woocommerce_weight_unit'));
 	$this->currency = get_woocommerce_currency();
 
-	//Create the Feed
-	$output = 
+	//Get the Feed Overrides ready
+	$this->feedOverrides = new PFeedOverride($this->providerName, $this);
+
+	//Initialize post-override data
+	if ($this->timeout > 0) {
+	  ini_set('max_execution_time', $this->timeout);
+	}
+	if (!$this->force_currency && $this->providerName == 'Google') {
+	  $this->currency = '';
+	}
+	if (strlen($this->currency_shipping) == 0) {
+	  $this->currency_shipping = $this->currency;
+	}
+
+	//Create the Feed.
+	$output =
 	  $this->getFeedHeader($file_name, $file_path) .
 	  $this->getFeedData_internal($remote_category) .
 	  $this->getFeedFooter();
 
 	//Save the Feed
-	$handle = fopen($file_url, "w");  
+	$handle = fopen($file_url, "w");
 	fwrite($handle, $output);
 	fclose($handle);
-	
+
 	//Not too sure / Old / Uncommented
 
 	if ($old_flag) {
@@ -271,12 +351,12 @@ class PBasicFeed {
 		$this->add_feed_selection($category, $remote_category, $file_name, $file_path, $this->providerName );
 	}
   }
-  
+
   function must_exit() {
-    //true means exit so the browser page will remain in place
+    //true means exit when feed complete so the browser page will remain in place
     return true;
   }
-  
+
   function update_feed_selection($old_feed_id, $category, $remote_category, $file_name, $file_path, $type) {
 
     global $wpdb;
@@ -284,7 +364,7 @@ class PBasicFeed {
     $sql = "UPDATE $feed_table SET `category`='$category',`remote_category`='$remote_category',`filename`='$file_name',`url`='$file_path',`type`='$type' WHERE `id`=$old_feed_id";
     $wpdb->query($sql);
   }
-  
+
   function __construct () {
     $this->feed_category = new md5y();
   }
@@ -308,7 +388,7 @@ class PBasicFeed {
     		";
 
     $products = $wpdb->get_results($sql);
-	
+
 	//Find other details
 	foreach ($products as $prod) {
 	  $prod->stock_status = 1; //Assume in stock
@@ -321,7 +401,7 @@ class PBasicFeed {
 		}
 	  }
 	}
-	
+
 	return $products;
   }
 

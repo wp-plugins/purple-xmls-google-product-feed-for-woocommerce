@@ -6,9 +6,9 @@
 	By: Keneto 2014-05-18
 
   ********************************************************************/
-  
+
   //require_once '../../../../../wp-load.php';
-  
+
   $data = file_get_contents('categories_' . strtolower($_POST['service_name']) . '.txt');
   $data = explode("\n", $data);
   $searchTerm = strtolower($_POST['partial_data']);
@@ -20,24 +20,24 @@
 	}
 
     if (strpos(strtolower($this_item), $searchTerm) !== false) {
-	
+
       //Transform item from chicken-scratch into something the system can recognize later
 	  $option = str_replace(" & ", ".and.", str_replace(" / ", ".in.", trim($this_item)));
-	  
+
 	  //Transform a category from chicken-scratch into something the user can read
 	  $text = htmlentities(trim($this_item));
-	
+
 	  if ($canDisplay) {
 	    echo '<div class="categoryItem" onclick="doSelectCategory(this, \'' . $option . '\')">' . $text . '</div>';
 	  }
 	  $count++;
-	  
+
 	  if ((strlen($searchTerm) < 3) && ($count > 15)) {
 	    $canDisplay = false;
 	  }
 	}
   }
-  
+
   if ($count == 0) {
     //echo 'No matching categories found';
   }

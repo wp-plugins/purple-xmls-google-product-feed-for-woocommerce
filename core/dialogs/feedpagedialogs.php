@@ -47,6 +47,7 @@ class PFeedPageDialogs {
 			  <option value="eBay">eBay Feed</option>
 			  <option value="Shopzilla">Shopzilla Feed</option>
 			  <option value="Nextag">Nextag Feed</option>
+			  <option value="Bing">Bing Feed (Beta)</option>
 			  <option value="ProductCategories">CSV/XML Export</option>
 			</select>
 		  </div>
@@ -59,11 +60,11 @@ class PFeedPageDialogs {
 	  </div>';
 	return $output;
   }
-  
+
   public function pageBody()
   {
     $output = '
-	  
+
 	  <div id="feedPageBody" class="postbox" style="width: 98%;">
 	    <div class="inside export-target">
 	      <h4>No feed type selected.</h4>

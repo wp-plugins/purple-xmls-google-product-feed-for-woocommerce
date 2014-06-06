@@ -8,7 +8,7 @@
   ********************************************************************/
 
 //Join attribute and corresponding remote attributes together(attributes mapping)
- 
+
 class PattributeUpdate {
 
   public $attribute_tag = '';

@@ -2,29 +2,26 @@
 
   /********************************************************************
   Version 2.0
-    Core functionality of a basic feed. 
+    Core functionality of a basic feed.
 	This file could still use some presentation work
 	By: Keneto 2014-05-05
 
   ********************************************************************/
-  
+
 require_once dirname(__FILE__) . '/../classes/productcategories.php';
 require_once dirname(__FILE__) . '/../classes/attributesfound.php';
 require_once '../../../../../wp-load.php';
 
 class PBaseFeedDialog {
 
-  public $form_attibutes_name = 'attribute_changes';
-  public $form_attibutes_id = 'google_attributes_form';
-  public $form_options_id = 'googleattr';
   public $options; //Array to be filled by constructor of descendant
   public $service_name = 'Google'; //Example only
   public $service_name_long = 'Google Products XML Export'; //Example only
-  
+
   function __construct() {
     $this->options = array();
   }
-  
+
   function createDropdown($thisAttribute, $index) {
     $found_options = new FoundOptions($this->service_name, $thisAttribute);
     $output = '
@@ -40,7 +37,7 @@ class PBaseFeedDialog {
 	</select>';
 	return $output;
   }
-  
+
   function advancedTab() {
     $output = '
 	  <div class="feed-advanced" id="feed-advanced">
@@ -49,7 +46,7 @@ class PBaseFeedDialog {
 	  </div>';
 	return $output;
   }
-  
+
   function attributeMappings() {
     $FoundAttributes = new FoundAttribute();
     $output = '
@@ -64,16 +61,16 @@ class PBaseFeedDialog {
 	}
 	$output .= '
 			  </table>';
-	
+
 	return $output;
   }
-  
+
   function mainDialog()
   {
 	$servName = strtolower($this->service_name);
 
     $attrVal = array();
-    
+
     $output = '
 	  <div class="attributes-mapping">
         <div id="poststuff">
@@ -112,19 +109,20 @@ class PBaseFeedDialog {
 		  <div style="clear: both;">&nbsp;</div>
 		  <div>
 		    <label class="un_collapse_label" title="Advanced" id="toggleAdvancedSettingsButton" onclick="toggleAdvancedDialog()">[ + ]</label>
+			<label class="un_collapse_label" title="Erase existing mappings" id="erase_mappings" onclick="doEraseMappings(\'' . $this->service_name . '\')">[ Erase Mappings ]</label>
 		  </div>
 		  ' . $this->advancedTab() . '
 		</div>
 	  </div>';
 	return $output;
   }
-  
+
   //!Who even call this??
   function convert_option($option) {
 	//Some Feeds (like Google & eBay) need to modify this
     return $option;
   }
-  
+
   //This function needs to die
   function list_categories() {
     $data = file_get_contents('categories_' . strtolower($this->service_name) . '.txt');

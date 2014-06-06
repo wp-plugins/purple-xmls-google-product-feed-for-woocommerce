@@ -1,6 +1,6 @@
 <?php
 
-// Begin license Check Function 
+// Begin license Check Function
 
 require_once 'core/classes/cart-product-feed.php';
 
@@ -21,11 +21,11 @@ function check_license($licensekey, $localkey = "") {
     $allowcheckfaildays = 0; # How many days to allow after local key expiry before blocking access if connection cannot be made
 
     $localkeyvalid = false;
-	
+
 	$originalcheckdate = '';
-	
+
 	$localexpiry = 0;
-	
+
 	$status = '';
 
     if ($localkey) {
@@ -229,7 +229,7 @@ function check_license($licensekey, $localkey = "") {
             $data_encoded = wordwrap($data_encoded, 80, "\n", true);
 
             $results["localkey"] = $data_encoded;
-			
+
         }
 
         $results["remotecheck"] = true;
@@ -241,6 +241,3 @@ function check_license($licensekey, $localkey = "") {
 
     return $results;
 }
-
-// End Check Function
-?>

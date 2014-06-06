@@ -5,13 +5,13 @@ class CategoryExport {
 }
 
 class CategoryExportCSV extends CategoryExport {
-  
+
   function DoExport($products, $aggregation) {
     echo 'ID, Title, Price, slug';
 	if ($aggregation == 'C')
 	  echo ', Attributes';
 	echo PHP_EOL;
-	foreach ($products as $prod) { 
+	foreach ($products as $prod) {
 	  $product = get_product($prod->ID);
 	  if (!$this->feed_category->verifyProduct($product)) break;
 	  echo $prod->ID . ',' . $prod->post_title . ',' . $product->price;
@@ -29,13 +29,13 @@ class CategoryExportCSV extends CategoryExport {
 }
 
 class CategoryExportTabbedTextFile extends CategoryExport {
-  
+
   function DoExport($products, $aggregation) {
     echo 'ID' . "\t" . 'Title' . "\t" . 'Price' . "\t" . 'slug';
 	if ($aggregation == 'C')
 	  echo "\t" . 'Attributes';
 	echo PHP_EOL;
-	foreach ($products as $prod) { 
+	foreach ($products as $prod) {
 	  $product = get_product($prod->ID);
 	  if (!$this->feed_category->verifyProduct($product)) break;
 	  echo $prod->ID . "\t" . $prod->post_title . "\t" . $product->price;
@@ -53,9 +53,9 @@ class CategoryExportTabbedTextFile extends CategoryExport {
 }
 
 class CategoryExportXML extends CategoryExport {
-  
+
   function DoExport($products, $aggregation) {
-  
+
     echo '<?xml version="1.0" encoding="UTF-8" ?>' . PHP_EOL;
     echo '<items>' . PHP_EOL;
     foreach ($products as $prod) {
@@ -71,7 +71,7 @@ class CategoryExportXML extends CategoryExport {
             echo '	<image_link>' . $imgurl . '</image_link>' . PHP_EOL;
         }
         echo '	<slug>' . $prod->post_name . '</slug>' . PHP_EOL;
-		
+
 		if ($aggregation == 'C') {
 		        echo '	<attributes>' . $prod->Attributes . '</attributes>' . PHP_EOL;
 		}

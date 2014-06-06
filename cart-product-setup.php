@@ -27,4 +27,3 @@ function cart_product_deactivate_plugin(){
 	wp_unschedule_event($next_refresh, 'update_cartfeeds_hook');
   }
 }
-?>

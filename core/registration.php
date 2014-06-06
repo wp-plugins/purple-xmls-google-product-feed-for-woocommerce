@@ -13,7 +13,7 @@ class PLicense {
   public $valid = false;
 
   function __construct() {
-  
+
     //When loading license key, we must be careful to check for valid licenses from prior versions
     $licensekey = get_option('cp_licensekey');
 	if (strlen($licensekey) == 0) {
@@ -36,7 +36,7 @@ class PLicense {
 	  $this->valid = true;
 	}
   }
-  
+
   function unregister() {
     //This will remove the license key (which is likely an undesirable course of action)
 	update_option('cp_licensekey', '');

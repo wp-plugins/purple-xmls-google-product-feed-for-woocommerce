@@ -14,10 +14,15 @@ class PFeedFolder {
     $upload_dir = wp_upload_dir();
 	return $upload_dir['basedir'] . '/cart_product_feeds/';
   }
-  
+
   function uploadRoot () {
     $upload_dir = wp_upload_dir();
 	return $upload_dir['basedir'];
+  }
+
+  function uploadURL() {
+    $upload_dir = wp_upload_dir();
+	return $upload_dir['baseurl'] . '/cart_product_feeds/';
   }
 
 }
