@@ -5,7 +5,7 @@
   Plugin URI: http://www.w3bdesign.ca/
   Description: Product XML Data Feeds for WooCommerce :: Update permalinks after activating/deactivating the plugin :: <a href="http://www.youtube.com/watch?v=9VVipmBI4rk">Instruction Video</a>
   Author: Purple Turtle Productions
-  Version: 3.0.1.22
+  Version: 3.0.1.26
   Author URI: http://www.w3bdesign.ca/
   Authors: Haris, Keneto (May2014)
   Note: Unversioned files arrived before me (Keneto). I've assigned them a version number of 1.0
