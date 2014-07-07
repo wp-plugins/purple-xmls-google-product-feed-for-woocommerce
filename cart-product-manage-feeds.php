@@ -8,17 +8,17 @@
 
   ********************************************************************/
 global $cp_feed_order, $cp_feed_order_reverse;
-require_once 'core/dialogs/feedsettingsdialogs.php';
+require_once 'core/classes/dialogfeedsettings.php';
 
 ?>
-<div class="wrap">
+    <div class="wrap">
     <?php $iconurl = plugins_url( '/', __FILE__ ) . '/images/cp_feed32.png'; ?>
     <div id="icon-purple_feed" class="icon32" style="background: transparent url( <?php echo( $iconurl ); ?> ) no-repeat">
         <br />
     </div>
 
     <h2><?php _e( 'Manage Cart Product Feeds', 'cart-product-strings' ); ?></h2>
-    <br />
+    <?php CPF_print_info(); ?>
 
     <?php
     $message = NULL;

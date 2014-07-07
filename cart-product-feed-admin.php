@@ -14,12 +14,8 @@
  *
  */
 require_once 'cart-product-setup.php';
-require_once 'core/dialogs/licensekeydialogs.php';
-include_once 'core/dialogs/feedpagedialogs.php';
-
-
-
-
+require_once 'core/classes/dialoglicensekey.php';
+include_once 'core/classes/dialogfeedpage.php';
 
 /**
  * Hooks for adding admin specific styles and scripts
@@ -78,7 +74,7 @@ function cart_product_admin_menu() {
 }
 add_action( 'admin_menu', 'cart_product_admin_menu' );
 
-
+//include_once('cart-product-version-check.php');
 /**
  * Create news feed page
  *
@@ -87,9 +83,12 @@ function cart_product_feed_admin_page() {
 
 	$iconurl = plugins_url( '/', __FILE__ ) . '/images/cp_feed32.png';
     echo "<div class='purplefeedspage wrap'>";
-    echo '<div id="icon-purple_feed" class="icon32" style="background: transparent url( ' . $iconurl . ' ) no-repeat">
-        <br />
-    </div><h2>Cart Product Feed</h2><br />';
+    echo '<div id="icon-purple_feed" class="icon32" style="background: transparent url( ' . $iconurl . ' ) no-repeat"><br>
+          </div>
+          <h2>Shopping Cart Product Feed</h2>';
+    //prints right-hand info: links and version number/check
+    CPF_print_info();
+
     $message2 = NULL;
     $icon_image2 = plugins_url( '/', __FILE__ ) . "/images/BuyLicenseButton.png";
     // check for updating feed delay ID
@@ -125,6 +124,14 @@ function cart_product_feed_admin_page() {
         echo "<script> window.location.assign( '" . admin_url() . "admin.php?page=cart-product-feed-admin' );</script>";
     }
 
+	if (isset( $_GET['debug'])) {
+		$debug = $_GET['debug'];
+	  if ($debug == 'phpinfo') {
+			phpinfo(INFO_GENERAL + INFO_CONFIGURATION + INFO_MODULES);
+			return;
+		}
+	}
+
   # Get Variables from storage ( retrieve from wherever it's stored - DB, file, etc... )
 
 	$reg = new PLicense();
@@ -140,9 +147,12 @@ function cart_product_feed_admin_page() {
 
 	//WordPress Header ( May contain a message )
 	global $message;
-	if ( $message != "" ) {
-	echo '<div id="setting-error-settings_updated" class="updated settings-error">
-		  <p><strong>' . $message . '</strong></p></div>';
+	if (strlen($message) > 0 && strlen($reg->error_message) > 0)
+		$message .= '<br>';
+	$message .= $reg->error_message;
+	if (strlen($message) > 0 ) {
+		echo '<div id="setting-error-settings_updated" class="updated settings-error">
+				<p><strong>' . $message . '</strong></p></div>';
 	}
 
 	//Page Header
@@ -155,10 +165,6 @@ function cart_product_feed_admin_page() {
 	}
 
 }
-
-
-
-
 
 /**
  * Display the manage feed page
@@ -173,4 +179,5 @@ function cart_product_feed_manage_page() {
   if ( !$reg->valid ) {
 	 //echo PLicenseKeyDialog::large_registration_dialog( '' );
   }
+
 }

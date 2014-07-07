@@ -1,5 +1,4 @@
 <?php
-
 require_once 'core/classes/cron.php';
 
 //callback function

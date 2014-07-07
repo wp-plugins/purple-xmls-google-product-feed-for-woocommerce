@@ -1,5 +1,5 @@
 === WooCommerce Shopping Cart Export ===
-Contributors: PurpleTurtlePro, KH_PDev, hackerninja
+Contributors: PurpleTurtlePro
 Tags: WooCommerce, Google, Merchant, Shopping, xml, product feed, Nextag, Google product feed, Amazon, eBay, google merchant, amazon seller, shopzilla, shopify, export csv, export xml, export tab
 Requires at least: 3.0.1
 Tested up to: 3.9.1
@@ -7,13 +7,13 @@ Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-OneClick WooCommerce Export:Google Merchant Center|Amazon Seller|Bing!|Shopzilla|eBay Merchant|NexTag|CSV/XML--OneTime & Scheduled
+OneClick WooCommerce Export:Google Merchant Center|Amazon Seller|Shopzilla|eBay Merchant|NexTag|CSV/XML--OneTime & Scheduled
 
 == Description ==
 
 The Shopping Cart Product Feed for WooCommerce creates output by of any product category (and its details) in your  WooCommerce installation It includes all required feed types for Google Merchant Center, Amazon Seller, Shopzilla, eBay Merchant, NexTag for variable & non-variable products.  Additionally - you can choose to export CSV/XML directly for integration to other platforms (billing systems, other vendor sites, sub-sales sites, etc).
 
-The Plugin creates a digestible XML feed for your targets (Google, eBay, Amazon, Bing!, etc.)  to import WooCommerce Products into your Merchant Account. This Plugin feeds that are available for export (timed and ad hoc) for these merchant providers - as well as a full CSV/XML Export is available as well.
+The Plugin creates a digestible XML feed for your targets (Google, eBay, Amazon, etc.)  to import WooCommerce Products into your Merchant Account. This Plugin feeds that are available for export (timed and ad hoc) for these merchant providers - as well as a full CSV/XML Export is available as well.
 
 [**Free Version**](http://www.shoppingcartproductfeed.com/) --  Includes all functionality - limited to 10 items
 > [**Upgrade to Pro**](http://www.shoppingcartproductfeed.com/) -- The Pro version supports unlimited Attributes and Variations and sync schedule
@@ -85,13 +85,6 @@ This will not redirect to the feed URL you just created - ready for submission!
 5. Manage existing feeds that you have created
 
 == Changelog ==
-
-<h4>Version 3.0.1.22 2014-05-06</h4>
-<ul>
-  <li><strong>New</strong> Added Bing! support as a target for feeds.<li> 
-  <li><strong>Fix</strong> Bug fix, wc-brands, tax/shipping improvements.<li> 
-</ul>
-
 <h4>Version 3.0.1.0 2014-05-24</h4>
 <ul>
   <li><strong>New</strong> Brand New Select UI for matching categories - GREATLY enhanced and easier now!</li>

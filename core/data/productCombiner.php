@@ -3,12 +3,16 @@
   /********************************************************************
   Version 2.0
     This gets a little complex. See design-document -> ProductCategoryExport
+	  Copyright 2014 Purple Turtle Productions. All rights reserved.
+		license	GNU General Public License version 3 or later; see GPLv3.txt
 	By: Keneto 2014-05-07
   Note: One day, this needs to be moved to Joomla/VirtueMart compatibility
 
   ********************************************************************/
+  
+//File needs to die when Product Export moved to basic feed
 
-require_once dirname(__FILE__) .'/../productCategory/productCombiner.php';
+require_once 'productCombiner2.php';
 
 class ProductsByCategory {
 
