@@ -509,3 +509,16 @@ a.multi-line-button.orange:active, a.multi-line-button.orange.depressed {
   background-color:blue;
   color: white;
 }
+.version-style
+{
+    text-align:right;
+    padding-right:40px;
+    color:#777;
+}
+.version-style-j
+{
+    color:#777;
+	font-size:50%;
+	padding-left:250px;
+	text-align:right;
+}
