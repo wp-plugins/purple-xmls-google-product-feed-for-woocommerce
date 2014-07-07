@@ -56,7 +56,7 @@ add_action('init', 'init_cart_product_feed');
 
 function init_cart_product_feed() {
 
-	require_once 'cart-product-wpincludes.php'; //The rest of the required-files moved here
+	include_once 'cart-product-wpincludes.php'; //The rest of the required-files moved here
 
 	global $message;
 
@@ -122,7 +122,7 @@ add_action('update_cartfeeds_hook', 'update_all_cart_feeds');
 
 function update_all_cart_feeds() {
 
-	require_once 'cart-product-wpincludes.php'; //The rest of the required-files moved here
+	include_once 'cart-product-wpincludes.php'; //The rest of the required-files moved here
 
 	$reg = new PLicense();
 	if ($reg->results["status"] == "Active") {
