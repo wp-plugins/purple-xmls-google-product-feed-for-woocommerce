@@ -5,12 +5,14 @@
   Plugin URI: www.shoppingcartproductfeed.com
   Description: WooCommerce Shopping Cart Export :: <a href="http://shoppingcartproductfeed.com/tos/">How-To Click Here</a>
   Author: ShoppingCartProductFeed.com
-  Version: 3.0.2.0
+  Version: 3.0.3.6
   Author URI: www.shoppingcartproductfeed.com
   Authors: Haris, Keneto (May2014)
   Note: The "core" folder is shared to the Joomla component.
 	Changes to the core, especially /core/data, should be considered carefully
   Note: "purple" term exists from legacy plugin name. Classnames in "P" for the same reason
+	Copyright 2014 Purple Turtle Productions. All rights reserved.
+	license	GNU General Public License version 3 or later; see GPLv3.txt
  ***********************************************************/
 
 require_once dirname(__FILE__) . '/../../../wp-admin/includes/plugin.php';
@@ -56,7 +58,7 @@ add_action('init', 'init_cart_product_feed');
 
 function init_cart_product_feed() {
 
-	include_once 'cart-product-wpincludes.php'; //The rest of the required-files moved here
+	require_once 'cart-product-wpincludes.php'; //The rest of the required-files moved here
 
 	global $message;
 
@@ -122,38 +124,39 @@ add_action('update_cartfeeds_hook', 'update_all_cart_feeds');
 
 function update_all_cart_feeds() {
 
-	include_once 'cart-product-wpincludes.php'; //The rest of the required-files moved here
+	require_once 'cart-product-wpincludes.php'; //The rest of the required-files moved here
+	require_once 'core/data/savedfeed.php';
 
 	$reg = new PLicense();
 	if ($reg->results["status"] == "Active") {
+
 		global $wpdb;
 		$feed_table = $wpdb->prefix . 'cp_feeds';
-		$sql = 'SELECT * FROM ' . $feed_table;
-		$feed_settings = $wpdb->get_results($sql);
+		$sql = 'SELECT id FROM ' . $feed_table;
+		$feed_ids = $wpdb->get_results($sql);
 		$savedProductList = null;
 
-		foreach ($feed_settings as $feed_setting) {
+		foreach ($feed_ids as $this_feed_id) {
+
+			$saved_feed = new PSavedFeed($this_feed_id->id);
 
 			//Make sure someone exists in the core who can provide the feed
-			$providerName = $feed_setting->type;
-			$providerFile = 'core/feeds/' . $providerName . '/feed.php';
-			if (!file_exists(dirname(__FILE__) . '/' . $providerFile)) {
+			$providerName = $saved_feed->provider;
+			$providerFile = 'core/feeds/' . strtolower($providerName) . '/feed.php';
+			if (!file_exists(dirname(__FILE__) . '/' . $providerFile))
 				continue;
-			}
 			require_once $providerFile;
 
 			//Initialize provider data
-			$category = $feed_setting->category;
-			$google_category = $feed_setting->remote_category;
-
 			$providerClass = 'P' . $providerName . 'Feed';
 			$x = new $providerClass($savedProductList);
-			$x->getFeedData($feed_setting->category, $feed_setting->remote_category, $feed_setting->filename);
+			$x->getFeedData($saved_feed->category_id, $saved_feed->remote_category, $saved_feed->filename, $saved_feed);
 			
 			$savedProductList = $x->productList;
 
 		}
 	}
+
 }
 
 //***********************************************************

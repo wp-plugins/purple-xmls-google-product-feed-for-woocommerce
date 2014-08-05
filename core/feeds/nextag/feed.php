@@ -29,28 +29,28 @@ class PNextagFeed extends PBasicFeed{
     //if ($product->isVariable) {
 	  //$current_feed[????] = $product->item_group_id; // Nothing in Nextag specs about product variations
 	//}
-	$current_feed['Product Name'] = $product->title;
+	$current_feed['Product Name'] = $product->attributes['title'];
 	if (strlen($product->description) > 500) {
 	  $product->description = substr($product->description, 0, 500);
 	}
 	$current_feed['Description'] = '"' . $product->description . '"';
-	if (strlen($product->regular_price) == 0) {
-	  $product->regular_price = '0.00';
+	if (strlen($product->attributes['regular_price']) == 0) {
+	  $product->attributes['regular_price'] = '0.00';
 	}
-	$current_feed['Price'] = $product->regular_price . ' ' . $this->currency;
-	$current_feed['Click-out URL'] = $product->link;
+	$current_feed['Price'] = $product->attributes['regular_price'] . ' ' . $this->currency;
+	$current_feed['Click-out URL'] = $product->attributes['link'];
 	$current_feed['Category'] = '"' . $this->current_category . '"';
 
 	//Input: Optional
 	$current_feed['Image URL'] = $product->feature_imgurl;
-	if ($product->stock_status == 1) {
+	if ($product->attributes['stock_status'] == 1) {
 	  $current_feed['Stock Status'] = 'In Stock';
 	} else {
 	  $current_feed['Stock Status'] = 'Out Of Stock';
 	}
 
-	if (isset($product->sale_price)) {
-		$current_feed['List Price'] = $product->sale_price;
+	if ($product->attributes['has_sale_price']) {
+		$current_feed['List Price'] = $product->attributes['sale_price'];
 	}
 
 	//Build output in order of fields

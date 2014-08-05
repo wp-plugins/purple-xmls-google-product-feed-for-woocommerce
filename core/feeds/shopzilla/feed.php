@@ -30,11 +30,11 @@ class PShopzillaFeed extends PBasicFeed{
     if ($product->isVariable) {
 	  $current_feed['Item Group ID'] = $product->item_group_id;
 	}
-	$current_feed['Title'] = $product->title;
+	$current_feed['Title'] = $product->attributes['title'];
 	$current_feed['Description'] = '"' . $product->description . '"';
     $current_feed['Category'] = '"' . str_replace(",", '', $this->current_category) . '"';
 	//$current_feed['Category'] = '"' . $this->current_category . '"';
-	$current_feed['Product URL'] = $product->link;
+	$current_feed['Product URL'] = $product->attributes['link'];
 	$current_feed['Image URL'] = $product->feature_imgurl;
 
 	$current_feed['Additional Image URL'] = '';
@@ -50,24 +50,24 @@ class PShopzillaFeed extends PBasicFeed{
 	if (strlen($current_feed['Additional Image URL']) > 0)
 	  $current_feed['Additional Image URL'] = substr($current_feed['Additional Image URL'], 0, -1);
 
-	$current_feed['Condition'] = "New";
-	if ($product->stock_status == 1) {
+	$current_feed['Condition'] = $product->attributes['condition'];
+	if ($product->attributes['stock_status'] == 1) {
 	  $current_feed['Availability'] = 'In Stock';
 	} else {
 	  $current_feed['Availability'] = 'Out of Stock';
 	}
 	
-	if (strlen($product->regular_price) == 0) {
-	  $product->regular_price = '0.00';
+	if (strlen($product->attributes['regular_price']) == 0) {
+	  $product->attributes['regular_price'] = '0.00';
 	}
-	$current_feed['Current Price'] = $product->regular_price;
-	$current_feed['Original Price'] = $product->regular_price;
-	if (isset($product->sale_price)) {
-		$current_feed['Current Price'] = $product->sale_price;
+	$current_feed['Current Price'] = $product->attributes['regular_price'];
+	$current_feed['Original Price'] = $product->attributes['regular_price'];
+	if ($product->attributes['has_sale_price']) {
+		$current_feed['Current Price'] = $product->attributes['sale_price'];
 	}
-	//$current_feed['SKU'] = $product->sku;
+	//$current_feed['SKU'] = $product->attributes['sku'];
 	//$current_feed['Ship Cost'] = '0.00 ' . $this->currency;
-	$current_feed['Ship Weight'] = $product->weight;
+	$current_feed['Ship Weight'] = $product->attributes['weight'];
 
 	//Build output in order of fields
 	$output = '';

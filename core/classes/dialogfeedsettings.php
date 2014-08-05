@@ -6,12 +6,12 @@
 	  Copyright 2014 Purple Turtle Productions. All rights reserved.
 		license	GNU General Public License version 3 or later; see GPLv3.txt
 	By: Keneto 2014-05-05
-
+		Note: Joomla version does not use this part of the core... it defines its own component screens
   ********************************************************************/
 
 class PFeedSettingsDialogs {
 
-  function formatIntervalOption($value, $descriptor, $current_delay) {
+  static function formatIntervalOption($value, $descriptor, $current_delay) {
     $selected = '';
 	if ($value == $current_delay) {
 	  $selected = ' selected="selected"';
@@ -19,7 +19,7 @@ class PFeedSettingsDialogs {
 	return '<option value="' . $value . '"' . $selected . '>' . $descriptor . '</option>';
   }
 
-  function fetchRefreshIntervalSelect() {
+  static function fetchRefreshIntervalSelect() {
     $current_delay = get_option('cp_feed_delay');
     return '
 					<select name="delay" class="select_medium" id="selectDelay">' . "\r\n" .
@@ -32,7 +32,7 @@ class PFeedSettingsDialogs {
 					</select>';
   }
 
-  public function refreshTimeOutDialog() {
+  public static function refreshTimeOutDialog() {
     global $wpdb;
     return '
       <div id="poststuff">

@@ -49,9 +49,11 @@ class PFeedPageDialogs {
 			  <option value="eBay">eBay Feed</option>
 			  <option value="Shopzilla">Shopzilla Feed</option>
 			  <option value="Nextag">Nextag Feed</option>
-			  <option value="Bing">Bing Feed (Beta)</option>
-			  <option value="PriceGrabber">PriceGrabber (Beta)</option>
-			  <option value="ProductCategories">CSV/XML Export</option>
+			  <option value="Bing">Bing Feed</option>
+			  <option value="PriceGrabber">PriceGrabber</option>
+				<option value="Rakuten">Rakuten Feed (Beta)</option>
+				<option value="Productlistxml">Product List XML Export</option>
+				<option value="Productlistcsv">Product List CSV Export</option>
 			</select>
 		  </div>
 		  <div style="float:left; width: 200px;">

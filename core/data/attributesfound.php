@@ -12,35 +12,41 @@
 
 class FoundAttribute {
 
-  public $attributes;
-  public $attrOptionsTableName = '';
-  public $attrOptions;
+	public $attributes;
+	public $attrOptionsTableName = '';
+	public $attrOptions;
 
-  function __construct() {
-	global $pfcore;
-	$fetchAttributes = 'fetchAttributes' . $pfcore->callSuffix;
-	$this->$fetchAttributes();
-  }
+	function __construct() {
+		global $pfcore;
+		$fetchAttributes = 'fetchAttributes' . $pfcore->callSuffix;
+		$this->$fetchAttributes();
+	}
 
-  function fetchAttributesJ() {
-    //From Joomla / Virtuemart
-	$db = JFactory::getDBO();
-	$query = 'SELECT a.custom_title as attribute_name
-      FROM #__virtuemart_customs a
-	  WHERE (CHAR_LENGTH(a.custom_element) > 0) AND (a.published = 1)';
-	$db->setQuery($query);
-	$db->query();
-	$this->attributes = $db->loadObjectList();
-  }
+	function fetchAttributesJ() {
+		//From Joomla / Virtuemart
+		$db = JFactory::getDBO();
+		$query = '
+			SELECT a.custom_title as attribute_name
+			FROM #__virtuemart_customs a
+			WHERE (CHAR_LENGTH(a.custom_element) > 0) AND (a.published = 1)';
+		$db->setQuery($query);
+		$db->query();
+		$this->attributes = $db->loadObjectList();
+	}
 
-  function fetchAttributesW() {
-    //From WordPress / Woocommerce
-    global $wpdb;
-    $attr_table = $wpdb->prefix . 'woocommerce_attribute_taxonomies';
-    $this->attrOptionsTableName = $wpdb->prefix . 'options';
-    $sql = "SELECT attribute_name FROM " . $attr_table . " WHERE 1";
-    $this->attributes = $wpdb->get_results($sql);
-  }
+	function fetchAttributesW() {
+		//From WordPress / Woocommerce
+		global $wpdb;
+		$attr_table = $wpdb->prefix . 'woocommerce_attribute_taxonomies';
+		$this->attrOptionsTableName = $wpdb->prefix . 'options';
+		$sql = "SELECT attribute_name FROM " . $attr_table . " WHERE 1";
+		$this->attributes = $wpdb->get_results($sql);
+	}
+
+	function fetchAttributesWe() {
+		//From WordPress / WP-ECommerce
+		$this->attributes = array();
+	}
 
   /*function fetchAttrOptions($attrVal) {
     global $wpdb;
@@ -52,28 +58,33 @@ class FoundAttribute {
 
 class FoundOptions {
 
-  public $option_value = '';
+	public $option_value = '';
 
-  function __construct($service_name, $attribute) {
-	global $pfcore;
-	$internalFetch = 'internalFetch' . $pfcore->callSuffix;
-	$this->$internalFetch($service_name, $attribute);
-  }
+	function __construct($service_name, $attribute) {
+		global $pfcore;
+		$internalFetch = 'internalFetch' . $pfcore->callSuffix;
+		$this->$internalFetch($service_name, $attribute);
+	}
 
-  function internalFetchJ($service_name, $attribute) {
-    $option_name = $service_name . '_cp_' . $attribute;
-	$db = JFactory::getDBO();
-	$query = "SELECT a.value
-      FROM #__cartproductfeed_options a
-	  WHERE (a.state = 1) AND (a.name='$option_name')";
-	$db->setQuery($query);
-	$db->query();
-	$this->option_value = $db->loadResult();
-  }
-  
-  function internalFetchW($service_name, $attribute) {
-	$this->option_value = get_option($service_name . '_cp_' . $attribute);
-  }
+	function internalFetchJ($service_name, $attribute) {
+		$option_name = $service_name . '_cp_' . $attribute;
+		$db = JFactory::getDBO();
+		$query = "
+			SELECT a.value
+			FROM #__cartproductfeed_options a
+			WHERE (a.state = 1) AND (a.name='$option_name')";
+		$db->setQuery($query);
+		$db->query();
+		$this->option_value = $db->loadResult();
+	}
+
+	function internalFetchW($service_name, $attribute) {
+		$this->option_value = get_option($service_name . '_cp_' . $attribute);
+	}
+
+	function internalFetchWe($service_name, $attribute) {
+		$this->option_value = get_option($service_name . '_cp_' . $attribute);
+	}
 
 }
 

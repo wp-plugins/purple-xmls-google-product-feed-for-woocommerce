@@ -11,6 +11,7 @@
   ********************************************************************/
 
 require_once 'core/classes/md5.php';
+require_once 'core/data/attributedefaults.php';
 require_once 'core/data/feedactivitylog.php';
 require_once 'core/data/feedcore.php';
 require_once 'core/data/productcategories.php';

@@ -15,6 +15,7 @@ require_once dirname(__FILE__) . '/../data/feedfolders.php';
 
 class PBaseFeedDialog {
 
+	public $blockCategoryList = false;
 	public $options; //Array to be filled by constructor of descendant
 	public $service_name = 'Google'; //Example only
 	public $service_name_long = 'Google Products XML Export'; //Example only
@@ -26,12 +27,13 @@ class PBaseFeedDialog {
   function createDropdown($thisAttribute, $index) {
     $found_options = new FoundOptions($this->service_name, $thisAttribute);
     $output = '
-	<select id="attribute_select' . $index . '" onchange="setAttributeOption(\'' . $this->service_name . '\', \'' . $thisAttribute . '\', ' . $index . ')">
+	<select class="attribute_select" id="attribute_select' . $index . '" onchange="setAttributeOption(\'' . $this->service_name . '\', \'' . $thisAttribute . '\', ' . $index . ')">
 	  <option value=""></option>';
 		foreach($this->options as $option) {
-			if ($option == $found_options->option_value) {
+			if ($option == $found_options->option_value)
 				$selected = 'selected="selected"';
-			} else $selected = '';
+			else
+				$selected = '';
 			$output .= '<option value="' . $this->convert_option($option) . '"' . $selected . '>' . $option . '</option>';
 		}
 		$output .= '
@@ -39,20 +41,45 @@ class PBaseFeedDialog {
 		return $output;
   }
 
-  function advancedTab() {
+	function advancedTab($source_feed) {
+
 		global $pfcore;
-		$output = '
-	  <div class="feed-advanced" id="feed-advanced">
-	    <textarea class="feed-advanced-text" id="feed-advanced-text">' . $pfcore->settingGet($this->service_name . '-cart-product-settings') . '</textarea>
-		<input class="navy_blue_button" type="submit" value="Update" id="submit" name="submit" onclick="doUpdateSetting(\'feed-advanced-text\', \'cp_advancedFeedSetting-' . $this->service_name . '\')">
-		<div id="updateSettingMessage">&nbsp;</div>
-	  </div>';
+
+		$output = '';
+
+		$advancedSettings = $pfcore->settingGet($this->service_name . '-cart-product-settings');
+		if ($source_feed == null)
+			$cbUnique = '';
+		else {
+			$cbUnique = '<div><label><input type="checkbox" id="cbUniqueOverride" />Advanced commands unique to this feed</label></div>';
+			if ($source_feed->own_overrides == 1) {
+				$advancedSettings = $source_feed->feed_overrides;
+				$output .= '
+					<script type="text/javascript">
+						jQuery( document ).ready( function( $ ) {
+								jQuery("#cbUniqueOverride").prop("checked", true);
+						} );
+					</script>';
+			}
+		}
+
+		$output .= '
+			<div class="feed-advanced" id="feed-advanced">
+				<textarea class="feed-advanced-text" id="feed-advanced-text">' . $advancedSettings . '</textarea>
+				' . $cbUnique . '
+				<input class="navy_blue_button" type="submit" value="Update" id="submit" name="submit" onclick="doUpdateSetting(\'feed-advanced-text\', \'cp_advancedFeedSetting-' . $this->service_name . '\')">
+				<div id="updateSettingMessage">&nbsp;</div>
+			</div>';
 		return $output;
-  }
+	}
 
   function attributeMappings() {
+		if (count($this->options) == 0)
+			return;
+		global $pfcore;
 		$FoundAttributes = new FoundAttribute();
 		$output = '
+				<p>This Export Feed will map your ' . $pfcore->cmsPluginName . ' attributes to ' .$this->service_name.'\'s required attributes.</p>
 			  <h2>Attribute Mapping</h2>
 			  <table>
 			  <tr>
@@ -67,8 +94,23 @@ class PBaseFeedDialog {
 		return $output;
   }
 
-  function mainDialog() {
+  function mainDialog($source_feed = null) {
+
 		global $pfcore;
+
+		$output = '';
+
+		if ($source_feed == null) {
+			$initial_local_category = '';
+			$initial_local_category_id = '';
+			$initial_remote_category = '';
+			$initial_filename = '';
+		} else {
+			$initial_local_category = $source_feed->local_category;
+			$initial_local_category_id = $source_feed->category_id;
+			$initial_remote_category = $source_feed->remote_category;
+			$initial_filename = $source_feed->filename;
+		}
 
 		$servName = strtolower($this->service_name);
 
@@ -76,31 +118,50 @@ class PBaseFeedDialog {
 		$folders = new PFeedFolder();
 		$product_categories = new PProductCategories();
 
-    $output = '
+		/*$output .= '
+		<script type="text/javascript">
+			$( document ).ready() {
+				//$(".recorderlink").colorbox({iframe:true, width:"600", height:"300"});
+				alert("ready");
+			}
+		</script>
+		';*/
+
+		//$localCategoryList = '<select name="local_category" id="local_category" class="select_big">' . $product_categories->getOptionList() . '</select>'; //legacy
+		$localCategoryList = '
+			<input type="text" name="local_category_display" class="text_big" id="local_category_display"  onclick="showLocalCategories(\'' . $this->service_name . '\')" value="' . $initial_local_category . '" autocomplete="off" readonly="true" />
+			<input type="hidden" name="local_category" id="local_category" value="' . $initial_local_category_id .'" />';
+
+		if ($this->blockCategoryList)
+			$categoryList = '';
+		else
+			$categoryList = '
+				  <span class="label">' . $this->service_name . ' Category : </span>
+				  <span><input type="text" name="categoryDisplayText" class="text_big" id="categoryDisplayText"  onkeyup="doFetchCategory_timed(\'' . $this->service_name . '\',  this.value)" value="' . $initial_remote_category . '" autocomplete="off" /></span>
+				  <div id="categoryList" class="categoryList"></div>
+				  <input type="hidden" id="remote_category" name="remote_category" value="' . $initial_remote_category . '">';
+
+    $output .= '
 	  <div class="attributes-mapping">
         <div id="poststuff">
 		  <div class="postbox" style="width: 98%;">
 		    <h3 class="hndle">' . $this->service_name_long . '</h3>
 			<div class="inside export-target">
 			<div class="feed-left">
-			<p>This Export Feed will map your ' . $pfcore->cmsPluginName . ' Attributes to ' .$this->service_name.'\'s required ones.</p>
 			' . $this->attributeMappings() . '
 			</div>
 			<div class="feed-right">
 				<form action="' . $folders->feedURL() . '" name="' . $servName . '" id="cat-feeds-xml-' . $servName . '-form" method="' . $pfcore->form_method . '" target="_blank">
 				<div class="feed-right-row">
 				  <span class="label">' . $pfcore->cmsPluginName . ' Category : </span>
-				  <select name="local_category" id="local_category" class="select_big">' . $product_categories->getOptionList() . '</select>
+				  ' . $localCategoryList . '
 				</div>
-				<div class="feed-right-row">
-				  <span class="label">' . $this->service_name . ' Category : </span>
-				  <span><input type="text" name="categoryDisplayText" class="text_big" id="categoryDisplayText"  onkeyup="doFetchCategory_timed(\'' . $this->service_name . '\',  this.value)" autocomplete="off"></span>
-				  <div id="categoryList" class="categoryList"></div>
-				  <input type="hidden" id="remote_category" name="remote_category">
+				<div class="feed-right-row">' .
+					$categoryList . '
 				</div>
 				<div class="feed-right-row">
 				  <span class="label">File name for feed : </span>
-				  <span ><input type="text" name="feed_filename" id="feed_filename" class="text_big" /></span>
+				  <span ><input type="text" name="feed_filename" id="feed_filename" class="text_big" value="' . $initial_filename . '" /></span>
 				</div>
 				<div class="feed-right-row">
 				  <label>* If you use an existing file name, the file will be overwritten.</label>
@@ -116,9 +177,9 @@ class PBaseFeedDialog {
 		  <div style="clear: both;">&nbsp;</div>
 		  <div>
 		    <label class="un_collapse_label" title="Advanced" id="toggleAdvancedSettingsButton" onclick="toggleAdvancedDialog()">[ Open Advanced Commands ]</label>
-			<label class="un_collapse_label" title="Erase existing mappings" id="erase_mappings" onclick="doEraseMappings(\'' . $this->service_name . '\')">[ Clear Deleted Attributes ]</label>
+			<label class="un_collapse_label" title="Erase existing mappings" id="erase_mappings" onclick="doEraseMappings(\'' . $this->service_name . '\')">[ Reset Attribute Mappings ]</label>
 		  </div>
-		  ' . $this->advancedTab() . '
+		  ' . $this->advancedTab($source_feed) . '
 		</div>
 	  </div>';
 		return $output;
@@ -128,21 +189,6 @@ class PBaseFeedDialog {
 	function convert_option($option) {
 		//Some Feeds (like Google & eBay) need to modify this
 		return $option;
-  }
-
-  //This function needs to die
-	function list_categories() {
-		$data = file_get_contents('categories_' . strtolower($this->service_name) . '.txt');
-		$arr = explode("\n", $data);
-		$key = 0;
-		$result = NULL;
-    foreach ($arr as $k => $value) {
-			if ($value == '') {
-				$value = '--- Select ' . $this->service_name . ' Category ---';
-			}
-			$result .= "<option value='" . str_replace(" & ", ".and.", str_replace(" / ", ".in.", trim($value))) . "'>" . htmlentities(trim($value)) . "</option>";
-    }
-    return $result;
   }
 
 }

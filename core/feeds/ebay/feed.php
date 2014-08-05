@@ -21,9 +21,11 @@ class PeBayFeed extends PBasicFeed {
 
   function formatProduct($product) {
 
-	$output.= '
+	$output = '
       <Product>';
-	$output .= $this->formatLine('Product_Name', $product->title, true);
+	$output .= $this->formatLine('Product_Name', $product->attributes['title'], true);
+	if (!isset($product->parent_title))
+		$product->parent_title = '';
 	$output .= $this->formatLine('Parent_Name', $product->parent_title, true);
 	$output .= $this->formatLine('Product_Description', $product->description, true);
 	$category = explode(":", $this->current_category);
@@ -31,30 +33,30 @@ class PeBayFeed extends PBasicFeed {
 	$output .= $this->formatLine('Category', $this_category, true);
 	$output .= $this->formatLine('Product_Type', $this_category, true);
 	$output .= $this->formatLine('Category_ID', $category[0]);
-	$output .= $this->formatLine('Product_URL', $product->link, true);
+	$output .= $this->formatLine('Product_URL', $product->attributes['link'], true);
 	$output .= $this->formatLine('Image_URL', $product->feature_imgurl, true);
 	$image_count = 0;
 	foreach($product->imgurls as $imgurl) {
 	  $output .= $this->formatLine('Alternative_Image_URL_' . $image_count++, $imgurl, true);
 	}
-	$output .= $this->formatLine('Condition', 'New');
+	$output .= $this->formatLine('Condition', $product->attributes['condition']);
 
-	if ($product->stock_status == 1) {
-	  $product->stock_status = 'in stock';
+	if ($product->attributes['stock_status'] == 1) {
+	  $stockStatus = 'in stock';
 	} else {
-	  $product->stock_status = 'out of stock';
+	  $stockStatus = 'out of stock';
 	}
-	$output.= $this->formatLine('Stock_Availability', $product->stock_status);
-	$output.= $this->formatLine('Original_Price', $product->regular_price . ' ' . $this->currency);
-	if ($product->has_sale_price) {
-	  $output.= $this->formatLine('Current_Price', $product->sale_price . ' ' . $this->currency);
+	$output.= $this->formatLine('Stock_Availability', $stockStatus);
+	$output.= $this->formatLine('Original_Price', $product->attributes['regular_price'] . ' ' . $this->currency);
+	if ($product->attributes['has_sale_price']) {
+	  $output.= $this->formatLine('Current_Price', $product->attributes['sale_price'] . ' ' . $this->currency);
 	}
-	$output.= $this->formatLine('Merchant_SKU', $product->sku);
+	$output.= $this->formatLine('Merchant_SKU', $product->attributes['sku']);
 
 
-	if ($product->weight != "") {
-	  $output.= $this->formatLine('Product_Weight', $product->weight);
-	  $output.= $this->formatLine('Shipping_Weight', $product->weight);
+	if ($product->attributes['weight'] != "") {
+	  $output.= $this->formatLine('Product_Weight', $product->attributes['weight']);
+	  $output.= $this->formatLine('Shipping_Weight', $product->attributes['weight']);
 	  $output.= $this->formatLine('Weight_Unit_of_Measure', $this->weight_unit);
 	}
 	$output.= $this->formatLine('Shipping_Rate', '0.00 ' . $this->currency);

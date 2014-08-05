@@ -10,13 +10,18 @@
 
 class PProductList {
 
-  public function getProductList($parent, $remote_category) {
-    global $pfcore;
+	public $products = null;
+
+	public function loadProducts($parent) {
+
+		global $wpdb;
+
 		//********************************************************************
-			//Load the products for the given category
+		//Load the products for the given category
 		//********************************************************************
+
 		$db = JFactory::getDBO();
-			$lang = JComponentHelper::getParams('com_languages')->get('site');
+		$lang = JComponentHelper::getParams('com_languages')->get('site');
 		$lang = strtolower(str_replace('-', '_', $lang));
     $sql = '
 			SELECT a.virtuemart_product_id as product_id, a.product_parent_id as parent_id, details.product_name, 
@@ -49,87 +54,107 @@ class PProductList {
 				) as attributes ON attributes.virtuemart_product_id = a.virtuemart_product_id
 			WHERE a.published = 1';
 
-	$db->setQuery($sql);
-	$db->query();
-	$products = $db->loadObjectList();
-
-	$master_product_list = array();
-
-	foreach ($products as $prod) {
-	
-	  if ($prod->parent_id > 0) {
-	    //Seek parent...
-		$my_parent = null;
-		foreach ($products as $potential_parent)
-		  if ($potential_parent->product_id == $prod->parent_id) {
-			$my_parent = $potential_parent;
-			$prod->category_id = $potential_parent->category_id;
-			break;
-		  }
-	  }
-
-	  if (!$parent->categories->containsCategory($prod->category_id))
-	    continue;
-
-	  $item = new PAProduct();
-	  
-	  //Basics
-	  $item->id = $prod->product_id;
-	  $item->title = $prod->product_name;
-	  $item->taxonomy = '';
-	  $item->isVariable = false;
-	  $item->description_short = substr(strip_tags($prod->excerpt), 0, 1000); //!Need strip_shortcodes
-      $item->description_long = substr(strip_tags($prod->description), 0, 1000); //!Need strip_shortcodes
-
-	  $item->category = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
-	  $item->product_type = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
-	  $item->localCategory = str_replace(".and.", " & ", str_replace(".in.", " > ", $prod->category_name));
-	  $item->localCategory = str_replace("|", ">", $item->localCategory);
-	  $item->link = $pfcore->siteHost . '/index.php?option=com_virtuemart&view=productdetails&virtuemart_product_id=' . $prod->product_id;
-	  $item->feature_imgurl = $prod->file_url;
-	  $item->condition = 'New';
-	  $item->regular_price = $prod->product_price;
-	  $item->has_sale_price = false;
-	  if ($prod->po == 1) {
-	    $item->has_sale_price = true;
-		$item->sale_price = $prod->sale_price;
-	  }
-	  $item->sku = $prod->sku;
-	  $item->weight = $prod->weight;
-	  
-	  //If this has a parent, use the parent's attributes if necessary
-	  //one day we need to figure out how to know if attributes are blank
-	  //on purpose (eg user hit "override parent" then left it empty
-	  if ($prod->parent_id > 0) {
-	    if ((strlen($prod->attribute_names) == 0) && ($my_parent)) {
-		  $prod->attribute_names = $my_parent->attribute_names;
-		  $prod->attribute_values = $my_parent->attribute_values;
-		}
-	  }
-
-	  //Attributes
-	  $attribute_names = explode(',', $prod->attribute_names);
-	  $attribute_values = explode(',', $prod->attribute_values);
-	  foreach($attribute_names as $key => $value)
-	    $item->attributes[$value] = $attribute_values[$key];
-
-	  //Variations
-	  if ($prod->parent_id > 0) {
-		$item->item_group_id = $prod->parent_id;
-		$item->parent_title = $item->title; //This is for eBay feed only, and could otherwise be deleted
-		$item->isVariable = true;
-	  }
-		
-
-	  //In-stock status
-	  $item->stock_status = 1;
-	  if ($prod->stock_quantity == 0)
-	    $item->stock_status = 0;
-	  
-	  $master_product_list[] = $item;
+		$db->setQuery($sql);
+		$db->query();
+		$this->products = $db->loadObjectList();
 	}
 
-	return $master_product_list;
+	public function getProductList($parent, $remote_category) {
+	
+		global $pfcore;
+
+		$parent->logActivity('Retrieving product list from database');
+		if ($this->products == null)
+			$this->loadProducts($parent);
+
+		$master_product_list = array();
+
+		//********************************************************************
+		//Convert the WP_Product List into a Cart-Product Master List (ListItems)
+		//********************************************************************
+
+		foreach ($this->products as $index => $prod) {
+		
+			if ($index % 100 == 0)
+				$parent->logActivity('Converting master product list...' . round($index / count($this->products) * 100) . '%' );
+
+			if ($prod->parent_id > 0) {
+				//Seek parent...
+				$my_parent = null;
+				foreach ($this->products as $potential_parent)
+					if ($potential_parent->product_id == $prod->parent_id) {
+						$my_parent = $potential_parent;
+						$prod->category_id = $potential_parent->category_id;
+						break;
+					}
+			}
+
+			if (!$parent->categories->containsCategory($prod->category_id))
+				continue;
+
+			$item = new PAProduct();
+	  
+			//Basics
+			$item->id = $prod->product_id;
+			$item->attributes['title'] = $prod->product_name;
+			$item->taxonomy = '';
+			$item->isVariable = false;
+			$item->description_short = substr(strip_tags($prod->excerpt), 0, 1000); //!Need strip_shortcodes
+			$item->description_long = substr(strip_tags($prod->description), 0, 1000); //!Need strip_shortcodes
+			$item->attributes['valid'] = true;
+
+			//Fetch any default attributes (Mapping 3.0)
+			foreach ($parent->attributeDefaults as $thisDefault)
+				$item->attributes[$thisDefault->attributeName] = $thisDefault->value;
+
+			$item->attributes['category'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
+			$item->attributes['product_type'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
+			$item->attributes['localCategory'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $prod->category_name));
+			$item->attributes['localCategory'] = str_replace("|", ">", $item->attributes['localCategory']);
+			$item->attributes['link'] = $pfcore->siteHost . '/index.php?option=com_virtuemart&view=productdetails&virtuemart_product_id=' . $prod->product_id;
+			$item->feature_imgurl = $prod->file_url;
+			$item->attributes['condition'] = 'New';
+			$item->attributes['regular_price'] = $prod->product_price;
+			$item->attributes['has_sale_price'] = false;
+			if ($prod->po == 1) {
+				$item->attributes['has_sale_price'] = true;
+				$item->attributes['sale_price'] = $prod->sale_price;
+			}
+			$item->attributes['sku'] = $prod->sku;
+			$item->attributes['weight'] = $prod->weight;
+	  
+			//If this has a parent, use the parent's attributes if necessary
+			//one day we need to figure out how to know if attributes are blank
+			//on purpose (eg user hit "override parent" then left it empty
+			if ($prod->parent_id > 0)
+				if ((strlen($prod->attribute_names) == 0) && ($my_parent)) {
+					$prod->attribute_names = $my_parent->attribute_names;
+					$prod->attribute_values = $my_parent->attribute_values;
+				}
+
+			//Attributes
+			$attribute_names = explode(',', $prod->attribute_names);
+			$attribute_values = explode(',', $prod->attribute_values);
+			foreach($attribute_names as $key => $value)
+				$item->attributes[$value] = $attribute_values[$key];
+
+			//Variations
+			if ($prod->parent_id > 0) {
+				$item->item_group_id = $prod->parent_id;
+				$item->parent_title = $item->attributes['title']; //This is for eBay feed only, and could otherwise be deleted
+				$item->isVariable = true;
+			}
+
+			//In-stock status
+			$item->attributes['stock_status'] = 1;
+			$item->attributes['stock_quantity'] = $prod->stock_quantity;
+			if ($prod->stock_quantity == 0)
+				$item->attributes['stock_status'] = 0;
+	  
+			$master_product_list[] = $item;
+		}
+
+		return $master_product_list;
   }
 
 }

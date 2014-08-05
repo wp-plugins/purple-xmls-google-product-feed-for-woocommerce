@@ -3,22 +3,24 @@
   /********************************************************************
   Version 2.0
     A Feed for Products by Category
+		This gets a little complex. See design-document -> ProductCategoryExport
 	  Copyright 2014 Purple Turtle Productions. All rights reserved.
 		license	GNU General Public License version 3 or later; see GPLv3.txt
-	This gets a little complex. See design-document -> ProductCategoryExport
 	By: Keneto 2014-05-08
-
+	2014-07-27 This Feed Provider Deprecated
   ********************************************************************/
 
-require_once 'productExporters.php';
-require_once dirname(__FILE__) . '/../../data/productCombiner.php';
-require_once 'productFeedTypeHeader.php';
-require_once dirname(__FILE__) . '/../../classes/md5.php';
+//require_once 'productExporters.php';
+//require_once 'productFeedTypeHeader.php';
+//require_once dirname(__FILE__) . '/../../classes/md5.php';
 
 class PCategoryProductsFeed {
 
+	function getFeedData() {
+		//PCategoryProductsFeed no longer exists
+	}
 
-  function getFeedData() {
+  /*function getFeedData() {
 
 	$category_id = $_REQUEST['category'];
 	$feedType = $_REQUEST['feedtype'];
@@ -54,7 +56,7 @@ class PCategoryProductsFeed {
   function must_exit() {
     //Yes: exit so the page will remain in place
     return true;
-  }
+  }*/
 
 }
 

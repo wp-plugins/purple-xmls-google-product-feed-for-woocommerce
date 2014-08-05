@@ -3,6 +3,8 @@
   /********************************************************************
   Version 2.0
     AJAX script fetches the feed the user needs when they change selection
+		Copyright 2014 Purple Turtle Productions. All rights reserved.
+		license	GNU General Public License version 3 or later; see GPLv3.txt
 	By: Keneto 2014-05-05
   2014-06-08 feedcore now loads wp-load.php and handles other init tasks
   ********************************************************************/

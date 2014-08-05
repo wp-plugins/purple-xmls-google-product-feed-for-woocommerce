@@ -3,6 +3,8 @@
 	/********************************************************************
 	Version 2.0
 		AJAX script updates a setting
+		Copyright 2014 Purple Turtle Productions. All rights reserved.
+		license	GNU General Public License version 3 or later; see GPLv3.txt
 	By: Keneto 2014-05-09
 
   ********************************************************************/
@@ -13,6 +15,10 @@
   }
 
   $setting = $_POST['setting'];
+	if (isset($_POST['feedid']))
+		$feedid = $_POST['feedid'];
+	else
+		$feedid = '';
   $value = $_POST['value'];
 
   require_once dirname(__FILE__) . '/../../../../../../wp-load.php';
@@ -34,10 +40,13 @@
 
   //Some PHPs don't return the post correctly when it's long data
   if (strlen($setting) == 0) {
-		$setting = substr(file_get_contents("php://input"), 8);
-		$indexOfAmp = strpos($setting, '&');
-		if ($indexOfAmp !== false)
-			$setting = substr($setting, 0, $indexOfAmp);
+		$lines = explode('&', file_get_contents("php://input"));
+		foreach($lines as $line) {
+			if ( (strpos($line, 'feedid') == 0) && (strlen($feedid) == 0) )
+				$feedid = substr($line, 7);
+			if ( (strpos($line, 'setting') == 0) && (strlen($setting) == 0) )
+				$setting = substr($line, 8);
+		}
   }
 
   if (strpos($setting, 'cp_advancedFeedSetting') !== false) {
@@ -45,7 +54,7 @@
 		//$value may get truncated on an & because $_POST can't parse
 		//so pull value manually
 		$postdata = file_get_contents("php://input");
-		$i = strpos($postdata, '&');
+		$i = strpos($postdata, '&value=');
 		if ($i !== false)
 			$postdata = substr($postdata, $i + 7);
 
@@ -53,7 +62,19 @@
 		$target = substr($setting, strpos($setting, '-') + 1);
 
 		//Save new advanced setting
-		update_option($target . '-cart-product-settings', $postdata);
+		if (strlen($feedid) == 0)
+			update_option($target . '-cart-product-settings', $postdata);
+		else {
+			global $wpdb;
+			$feed_table = $wpdb->prefix . 'cp_feeds';
+			$sql = "
+				UPDATE $feed_table 
+				SET
+					`own_overrides`=1,
+					`feed_overrides`='$postdata'
+				WHERE `id`=$feedid";
+			$wpdb->query($sql);
+		}
   }
 
   echo 'Updated.';

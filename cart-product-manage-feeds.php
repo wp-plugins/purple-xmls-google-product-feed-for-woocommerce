@@ -9,6 +9,7 @@
   ********************************************************************/
 global $cp_feed_order, $cp_feed_order_reverse;
 require_once 'core/classes/dialogfeedsettings.php';
+require_once 'core/data/savedfeed.php';
 
 ?>
     <div class="wrap">
@@ -59,6 +60,7 @@ jQuery( document ).ready( function( $ ) {
 
 // The feeds table flat
 function feeds_main_table() {
+
     global $wpdb;
 
     $feed_table = $wpdb->prefix . 'cp_feeds';
@@ -96,12 +98,13 @@ function feeds_main_table() {
         $seq = false;
         $num = false;
         foreach ( $list_of_feeds as $this_feed ) {
+						$this_feed_ex = new PSavedFeed($this_feed['id']);
             switch ( $order ) {
                 case 'name':
                     $seq[] = strtolower( stripslashes( $this_feed['filename'] ) );
                     break;
                 case 'description':
-                    $seq[] = strtolower( stripslashes( $this_feed['description'] ) );
+                    $seq[] = strtolower( stripslashes( $this_feed_ex->local_category ) );
                     break;
                 case 'url':
                     $seq[] = strtolower( $this_feed['url'] );
@@ -227,8 +230,10 @@ function feeds_main_table() {
                         </a>
                     </th>
                     <th scope="col" style="width: 80px;"><?php _e( 'Last Updated', 'cart-product-strings' ); ?></th>
-                    <th scope="col"><?php _e( 'View', 'cart-product-strings' ); ?></th>
-                    <th scope="col"><?php _e( 'Delete', 'cart-product-strings' ); ?></th>
+                    <th scope="col" width="50px"><?php //_e( 'View', 'cart-product-strings' ); ?></th>
+										<th scope="col" width="50px"><?php _e( 'Options', 'cart-product-strings' ); ?></th>
+                    <th scope="col" width="50px"><?php //_e( 'Delete', 'cart-product-strings' ); ?></th>
+										<th scope="col"><?php _e( 'Products', 'cart-product-strings' ); ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -238,6 +243,7 @@ function feeds_main_table() {
                 $idx = '0';
                 foreach ( array_keys( $seq ) as $s ) {
                     $this_feed = $list_of_feeds[$s];
+										$this_feed_ex = new PSavedFeed($this_feed['id']);
                     $pendcount = FALSE;
                     ?>
                     <tr <?php
@@ -247,7 +253,7 @@ function feeds_main_table() {
                         ?>>
                         <td><?php echo $this_feed['id']; ?></td>
                         <td><?php echo $this_feed['filename']; ?></td>
-                        <td><small><?php echo esc_attr( stripslashes( $this_feed['description'] ) ) ?></small></td>
+                        <td><small><?php echo esc_attr( stripslashes( $this_feed_ex->local_category ) ) ?></small></td>
                         <td><?php echo str_replace( ".and.", " & ", str_replace( ".in.", " > ", esc_attr( stripslashes( $this_feed['remote_category'] ) ) ) ); ?></td>
                         <td><?php echo$this_feed['type'] ?></td>
                         <td><?php echo $this_feed['url'] ?></td>
@@ -261,12 +267,14 @@ function feeds_main_table() {
                             if ( file_exists( $feed_file ) ) {
                                 echo date( "d-m-Y H:i:s", filemtime( $feed_file ) );
                             } else echo 'DNE';
-							//echo $feed_file;
                             ?></td>
 
                         <td><a href="<?php echo $this_feed['url'] ?>" target="_blank" class="purple_xmlsedit"><?php _e( 'View', 'cart-product-strings' ); ?></a></td>
+												<?php $url_edit = get_admin_url() . 'admin.php?page=cart-product-feed-admin&action=edit&id=' . $this_feed['id']; ?>
+												<td><a href="<?php echo( $url_edit ) ?>" class="purple_xmlsedit"><?php _e( 'Edit', 'cart-product-strings' ); ?></a></td>
                         <?php $url = get_admin_url() . 'admin.php?page=cart-product-feed-manage-page&action=delete&id=' . $this_feed['id']; ?>
-                        <td><a href="<?php echo( $url ) ?>" class="purple_xmlsdelete"><?php _e( 'Delete', 'cart-product-strings' ); ?></a></td>
+                        <td><a href="<?php echo( $url ) ?>" class="purple_xmlsedit"><?php _e( 'Delete', 'cart-product-strings' ); ?></a></td>
+												<td><?php echo $this_feed['product_count'] ?></td>
 
                     </tr>
                     <?php
@@ -362,14 +370,17 @@ function feeds_main_table() {
                         </a>
                     </th>
                     <th scope="col" style="width: 80px;"><?php _e( 'Last Updated', 'cart-product-strings' ); ?></th>
-                    <th scope="col"><?php _e( 'View', 'cart-product-strings' ); ?></th>
-                    <th scope="col"><?php _e( 'Delete', 'cart-product-strings' ); ?></th>
+                    <th scope="col"><?php //_e( 'View', 'cart-product-strings' ); ?></th>
+										<th scope="col"><?php _e( 'Options', 'cart-product-strings' ); ?></th>
+                    <th scope="col"><?php //_e( 'Delete', 'cart-product-strings' ); ?></th>
+										<th scope="col"><?php _e( 'Products', 'cart-product-strings' ); ?></th>
                 </tr>
             </tfoot>
 
         </table>
 
 		<input class="navy_blue_button" type="submit" value="Update Now" id="submit" name="submit" onclick="doUpdateAllFeeds()">
+		<div id="update-message">&nbsp;</div>
         <!--	</div> -->
         <?php
     } else {

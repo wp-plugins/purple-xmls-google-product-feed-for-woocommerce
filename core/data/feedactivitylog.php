@@ -26,13 +26,13 @@ class PFeedActivityLog {
 	Add a record to the activity log for "Manage Feeds"
 	********************************************************************/
 
-	private static function addNewFeedData($category, $remote_category, $file_name, $file_path, $providerName) {
+	private static function addNewFeedData($category, $remote_category, $file_name, $file_path, $providerName, $productCount) {
 		global $pfcore;
 		$addNewFeedData = 'addNewFeedData' . $pfcore->callSuffix;
-		PFeedActivityLog::$addNewFeedData($category, $remote_category, $file_name, $file_path, $providerName);
+		PFeedActivityLog::$addNewFeedData($category, $remote_category, $file_name, $file_path, $providerName, $productCount);
 	}
 
-	private static function addNewFeedDataJ($category, $remote_category, $file_name, $file_path, $providerName) {
+	private static function addNewFeedDataJ($category, $remote_category, $file_name, $file_path, $providerName, $productCount) {
 		$date	= JFactory::getDate();
 		$user	= JFactory::getUser();
 		$db = JFactory::getDBO();
@@ -49,20 +49,26 @@ class PFeedActivityLog {
 		$newData->filename = $file_name;
 		$newData->url = $file_path;
 		$newData->type = $providerName;
+		$newData->product_count = $productCount;
 		$newData->ordering = $ordering;
 		$newData->created = $date->toSql();
 		$newData->created_by = $user->get('id');
 		//$newData->catid int,
 		$newData->modified = $user->get('id');
 		$newData->modified_by = $date->toSql();
+		//$productCount
 		$db->insertObject('#__cartproductfeed_feeds', $newData, 'id');
 	}
 
-	private static function addNewFeedDataW($category, $remote_category, $file_name, $file_path, $providerName) {
+	private static function addNewFeedDataW($category, $remote_category, $file_name, $file_path, $providerName, $productCount) {
 		global $wpdb;
 		$feed_table = $wpdb->prefix . 'cp_feeds';
-		$sql = "INSERT INTO $feed_table(`category`, `remote_category`, `filename`, `url`, `type`) VALUES ('$category','$remote_category','$file_name','$file_path','$providerName')";
+		$sql = "INSERT INTO $feed_table(`category`, `remote_category`, `filename`, `url`, `type`, `product_count`) VALUES ('$category','$remote_category','$file_name','$file_path','$providerName', '$productCount')";
 		$wpdb->query($sql);
+	}
+
+	private static function addNewFeedDataWe($category, $remote_category, $file_name, $file_path, $providerName, $productCount) {
+		PFeedActivityLog::addNewFeedDataW($category, $remote_category, $file_name, $file_path, $providerName, $productCount);
 	}
 
 	/********************************************************************
@@ -103,29 +109,33 @@ class PFeedActivityLog {
 		}
 	}
 
+	private static function feedDataToIDWe($file_name, $providerName) {
+		return PFeedActivityLog::feedDataToIDW($file_name, $providerName);
+	}
+
 	/********************************************************************
 	Called from outside... this class has to make sure the feed shows under "Manage Feeds"
 	********************************************************************/
 
-	public static function updateFeedList($category, $remote_category, $file_name, $file_path, $providerName) {
+	public static function updateFeedList($category, $remote_category, $file_name, $file_path, $providerName, $productCount) {
 		$id = PFeedActivityLog::feedDataToID($file_name, $providerName);
 		if ($id == -1)
-			PFeedActivityLog::addNewFeedData($category, $remote_category, $file_name, $file_path, $providerName);
+			PFeedActivityLog::addNewFeedData($category, $remote_category, $file_name, $file_path, $providerName, $productCount);
 		else
-			PFeedActivityLog::updateFeedData($id, $category, $remote_category, $file_name, $file_path, $providerName);
+			PFeedActivityLog::updateFeedData($id, $category, $remote_category, $file_name, $file_path, $providerName, $productCount);
 	}
 
 	/********************************************************************
 	Update a record in the activity log
 	********************************************************************/
 
-	private static function updateFeedData($id, $category, $remote_category, $file_name, $file_path, $providerName) {
+	private static function updateFeedData($id, $category, $remote_category, $file_name, $file_path, $providerName, $productCount) {
 		global $pfcore;
 		$updateFeedData = 'updateFeedData' . $pfcore->callSuffix;
-		PFeedActivityLog::$updateFeedData($id, $category, $remote_category, $file_name, $file_path, $providerName);
+		PFeedActivityLog::$updateFeedData($id, $category, $remote_category, $file_name, $file_path, $providerName, $productCount);
 	}
 
-	private static function updateFeedDataJ($id, $category, $remote_category, $file_name, $file_path, $providerName) {
+	private static function updateFeedDataJ($id, $category, $remote_category, $file_name, $file_path, $providerName, $productCount) {
 		$date	= JFactory::getDate();
 		$user	= JFactory::getUser();
 		$db = JFactory::getDBO();
@@ -138,16 +148,31 @@ class PFeedActivityLog {
 		$newData->filename = $file_name;
 		$newData->url = $file_path;
 		$newData->type = $providerName;
+		$newData->product_count = $productCount;
 		$newData->modified = $user->get('id');
 		$newData->modified_by = $date->toSql();
+		//$productCount
 		$db->insertObject('#__cartproductfeed_feeds', $newData, 'id');
 	}
 
-	private static function updateFeedDataW($id, $category, $remote_category, $file_name, $file_path, $providerName) {
+	private static function updateFeedDataW($id, $category, $remote_category, $file_name, $file_path, $providerName, $productCount) {
 		global $wpdb;
 		$feed_table = $wpdb->prefix . 'cp_feeds';
-		$sql = "UPDATE $feed_table SET `category`='$category',`remote_category`='$remote_category',`filename`='$file_name',`url`='$file_path',`type`='$providerName' WHERE `id`=$id";
+		$sql = "
+			UPDATE $feed_table 
+			SET 
+				`category`='$category',
+				`remote_category`='$remote_category',
+				`filename`='$file_name',
+				`url`='$file_path',
+				`type`='$providerName',
+				`product_count`='$productCount'
+			WHERE `id`=$id";
 		$wpdb->query($sql);
+	}
+
+	private static function updateFeedDataWe($id, $category, $remote_category, $file_name, $file_path, $providerName, $productCount) {
+		PFeedActivityLog::updateFeedDataW($id, $category, $remote_category, $file_name, $file_path, $providerName, $productCount);
 	}
 
 	/********************************************************************
@@ -156,11 +181,12 @@ class PFeedActivityLog {
 
 	function logPhase($activity) {
 		global $pfcore;
-		$logPhase = 'logPhase' . $pfcore->callSuffix;
-		$this->$logPhase($activity);
+		$pfcore->settingSet('cp_feedActivity_' . $this->feedIdentifier, $activity);
 	}
 
 	function logPhaseJ($activity) {
+
+		
 	}
 
 	function logPhaseW($activity) {
@@ -176,6 +202,10 @@ class PFeedActivityLog {
 	}
 
 	function deleteLogDataW() {
+		delete_option('cp_feedActivity_' . $this->feedIdentifier);
+	}
+
+	function deleteLogDataWe() {
 		delete_option('cp_feedActivity_' . $this->feedIdentifier);
 	}
 

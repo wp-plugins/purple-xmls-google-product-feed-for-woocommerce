@@ -3,17 +3,17 @@
   /********************************************************************
   Check the license key
   Version 2.0
-	By: Keneto 2014-05-12
-
+    By: Keneto 2014-05-12
+		license	GNU General Public License version 3 or later; see GPLv3.txt
   ********************************************************************/
 
 class PLicense {
 
-  public $error_message = '';
-  public $results;
-  public $valid = false;
+	public $error_message = '';
+	public $results = array();
+	public $valid = false;
 
-  function __construct() {
+	function __construct() {
 
 		global $pfcore;
 
@@ -23,292 +23,216 @@ class PLicense {
 			//Look for old version of key
 			$licensekey = $pfcore->settingGet('purplexml_licensekey');
 			if (strlen($licensekey) > 0)
-				$pfcore->settingSet('cp_licensekey', $licensekey);
+				$pfcore->settingSet('cp_licensekey', $licensekey);   
 		}
+
+		//check if cp_licensekey == 'none' ?
+		if (strlen($pfcore->settingGet('cp_licensekey')) == 0 )
+			$this->error_message = 'Register for the pro version to get full functionality at <a target=\'_blank\' href = \'http://shoppingcartproductfeed.com/\'>shoppingcartproductfeed.com</a>';
+
 		$localkey = $pfcore->settingGet('cp_localkey');
 		if (strlen($localkey) == 0) {
 			//Look for old version of key
 			$localkey = $pfcore->settingGet('purplexml_localkey');
-			if (strlen($localkey) > 0) {
-				$pfcore->settingSet('cp_localkey', $localkey);
-			}
+			if (strlen($localkey) > 0)
+			$pfcore->settingSet('cp_localkey', $localkey);
 		}
+
+		$this->results["status"] = 'Invalid';
+		$this->error_message = '';
 
 		//If there are keys set, remember this fact
 		$hasKeys = false;
 		if (strlen($localkey) > 0 || strlen($licensekey) > 0)
-		  $hasKeys = true;
-		$this->results = $this->checkLicense($licensekey, $localkey);
-		if ($this->results["status"] == "Active") {
+			$hasKeys = true;
+		$this->checkLicense($licensekey, $localkey);
+		$this->results["checkmd5x"] = new md5x($licensekey . $localkey, $this->results);
+		if ($this->results["status"] == "Active")
 			$this->valid = true;
-		} else if ($hasKeys) {
-		  $this->error_message = 'License Key Error: ' . $this->results["status"] . '<br>' . $this->results["description"];
+		elseif ($hasKeys) 
+			$this->error_message = 'License Key Error: ' . $this->error_message;
+
+	}
+
+
+	function checkLicense($licensekey, $localkey = "") {
+
+		//initial values
+    $whmcsurl = "https://www.purpleturtle.pro/";
+    $licensing_secret_key = "437682532"; # Unique value, should match what is set in the product configuration for MD5 Hash Verification
+    $check_token = time() . md5(mt_rand(1000000000, 9999999999) . $licensekey);
+    $checkdate = date("Ymd"); # Current date
+    $usersip = isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : $_SERVER['LOCAL_ADDR'];
+    $localkeydays = 1; # How long the local key is valid for in between remote checks
+    $allowcheckfaildays = 0; # How many days to allow after local key expiry before blocking access if connection cannot be made
+    $localkeyvalid = false;
+    $originalcheckdate = '';
+    $localexpiry = 0;
+    $status = '';
+
+		$Results = $this->validateLocalKey($localkey, $localkeydays, $licensing_secret_key, $localexpiry);
+		if ($Results) {
+			foreach($Results as $k => $result)
+				$this->results[$k] = $result;
+			return;
 		}
-  }
 
-
-function checkLicense($licensekey, $localkey = "") {
-
-	$whmcsurl = "https://www.purpleturtle.pro/";
-
-	$licensing_secret_key = "437682532"; # Unique value, should match what is set in the product configuration for MD5 Hash Verification
-
-	$check_token = time() . md5(mt_rand(1000000000, 9999999999) . $licensekey);
-
-	$checkdate = date("Ymd"); # Current date
-
-	$usersip = isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : $_SERVER['LOCAL_ADDR'];
-
-	$localkeydays = 1; # How long the local key is valid for in between remote checks
-
-	$allowcheckfaildays = 0; # How many days to allow after local key expiry before blocking access if connection cannot be made
-
-	$localkeyvalid = false;
-
-	$originalcheckdate = '';
-
-	$localexpiry = 0;
-
-	$status = '';
-
-	$fail_message = '';
-
-    if ($localkey) {
-
-        $localkey = str_replace("\n", '', $localkey); # Remove the line breaks
-
-        $localdata = substr($localkey, 0, strlen($localkey) - 32); # Extract License Data
-
-        $md5hash = substr($localkey, strlen($localkey) - 32); # Extract MD5 Hash
-
-        if ($md5hash == md5($localdata . $licensing_secret_key)) {
-
-            $localdata = strrev($localdata); # Reverse the string
-
-            $md5hash = substr($localdata, 0, 32); # Extract MD5 Hash
-
-            $localdata = substr($localdata, 32); # Extract License Data
-
-            $localdata = base64_decode($localdata);
-
-            $localkeyresults = unserialize($localdata);
-
-            $originalcheckdate = $localkeyresults["checkdate"];
-
-            if ($md5hash == md5($originalcheckdate . $licensing_secret_key)) {
-
-                $locheck_licensecalexpiry = date("Ymd", mktime(0, 0, 0, date("m"), date("d") - $localkeydays, date("Y")));
-
-                if ($originalcheckdate > $localexpiry) {
-
-                    $localkeyvalid = true;
-
-                    $results = $localkeyresults;
-
-                    $validdomains = explode(",", $results["validdomain"]);
-
-                    if (!in_array($_SERVER['SERVER_NAME'], $validdomains)) {
-
-                        $localkeyvalid = false;
-
-                        $localkeyresults["status"] = "Invalid";
-
-                        $results = array();
-
-												$fail_message = "Valid domain incorrect";
-                    }
-
-                    $validips = explode(",", $results["validip"]);
-
-                    if (!in_array($usersip, $validips)) {
-
-                        $localkeyvalid = false;
-
-                        $localkeyresults["status"] = "Invalid";
-
-                        $results = array();
-
-												$fail_message = "IP incorrect";
-                    }
-
-                    if ($results["validdirectory"] != dirname(__FILE__)) {
-
-                        $localkeyvalid = false;
-
-                        $localkeyresults["status"] = "Invalid";
-
-                        $results = array();
-												
-												$fail_message = "Valid directory mismatch";
-                    }
-                }
-            }
-        }
-    }
-
-    if (!$localkeyvalid) {
-
-        $postfields["licensekey"] = $licensekey;
-
-        $postfields["domain"] = $_SERVER['SERVER_NAME'];
-
-        $postfields["ip"] = $usersip;
-
-        $postfields["dir"] = dirname(__FILE__);
-
-        if ($check_token)
-
-            $postfields["check_token"] = $check_token;
-
-        if (function_exists("curl_exec")) {
-
-            $ch = curl_init();
-
-            curl_setopt($ch, CURLOPT_URL, $whmcsurl . "modules/servers/licensing/verify.php");
-
-            curl_setopt($ch, CURLOPT_POST, 1);
-
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
-
-            curl_setopt($ch, CURLOPT_TIMEOUT, 150);
-
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-            $data = curl_exec($ch);
-
-            if (curl_errno($ch)) {
-
-							$fail_message = 'Curl error: ' . curl_error($ch);
-
-            }
-
-            curl_close($ch);
-
-        } else {
-
-            $fp = fsockopen($whmcsurl, 80, $errno, $errstr, 5);
-
-            if ($fp) {
-
-                $querystring = "";
-
-                foreach ($postfields AS $k => $v) {
-
-                    $querystring .= "$k=" . urlencode($v) . "&";
-                }
-
-                $header = "POST " . $whmcsurl . "modules/servers/licensing/verify.php HTTP/1.0\r\n";
-
-                $header.="Host: " . $whmcsurl . "\r\n";
-
-                $header.="Content-type: application/x-www-form-urlencoded\r\n";
-
-                $header.="Content-length: " . @strlen($querystring) . "\r\n";
-
-                $header.="Connection: close\r\n\r\n";
-
-                $header.=$querystring;
-
-                $data = "";
-
-                @stream_set_timeout($fp, 20);
-
-                @fputs($fp, $header);
-
-                $status = @socket_get_status($fp);
-
-                while (!@feof($fp) && $status) {
-
-                    $data .= @fgets($fp, 1024);
-
-                    $status = @socket_get_status($fp);
-                }
-
-                @fclose($fp);
-            }
-        }
-
-        if (!$data) {
-
-            $localexpiry = date("Ymd", mktime(0, 0, 0, date("m"), date("d") - ($localkeydays + $allowcheckfaildays), date("Y")));
-
-            if ($originalcheckdate > $localexpiry) {
-
-                $results = $localkeyresults;
-
-            } else {
-
-                $results["status"] = "Invalid";
-
-                $results["description"] = "Remote Check Failed";
-
-                return $results;
-            }
-
-        } else {
-
-            preg_match_all('/<(.*?)>([^<]+)<\/\\1>/i', $data, $matches);
-
-            $results = array();
-
-            foreach ($matches[1] AS $k => $v) {
-
-                $results[$v] = $matches[2][$k];
-            }
-        }
-
-        if (isset($results["md5hash"]) && $results["md5hash"]) {
-
-            if ($results["md5hash"] != md5($licensing_secret_key . $check_token)) {
-
-                $results["status"] = "Invalid";
-
-                $results["description"] = "MD5 Checksum Verification Failed";
-
-                return $results;
-            }
-        }
-
-        if ($results["status"] == "Active") {
-
-            $results["checkdate"] = $checkdate;
-
-            $data_encoded = serialize($results);
-
-            $data_encoded = base64_encode($data_encoded);
-
-            $data_encoded = md5($checkdate . $licensing_secret_key) . $data_encoded;
-
-            $data_encoded = strrev($data_encoded);
-
-            $data_encoded = $data_encoded . md5($data_encoded . $licensing_secret_key);
-
-            $data_encoded = wordwrap($data_encoded, 80, "\n", true);
-
-            $results["localkey"] = $data_encoded;
-
-        } else
-
-				  $results["description"] = $fail_message;
-
-        $results["remotecheck"] = true;
-    }
-
-	$results["checkmd5x"] = new md5x($checkdate . $licensing_secret_key, $results);
-
-	unset($postfields, $data, $matches, $whmcsurl, $licensing_secret_key, $checkdate, $usersip, $localkeydays, $allowcheckfaildays, $md5hash);
-
-	return $results;
-}
+		$postfields["licensekey"] = $licensekey;
+		$postfields["domain"] = $_SERVER['SERVER_NAME'];
+		$postfields["ip"] = $usersip;
+		$postfields["dir"] = dirname(__FILE__);
+
+		if ($check_token)
+			$postfields["check_token"] = $check_token;
+
+		if (function_exists("curl_exec")) {
+
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $whmcsurl . "modules/servers/licensing/verify.php");
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 150);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			//added for users who experience 'Remote Check Failed' license issue.
+			//it is not enough to disable CURLOPT_SSL_VERIFYPEER
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			$data = curl_exec($ch);
+			//echo curl_error($ch); //debug
+
+			if (curl_errno($ch))
+				$this->error_message = 'Curl error: ' . curl_error($ch);
+
+			curl_close($ch);
+
+		} else {
+
+			$fp = fsockopen($whmcsurl, 80, $errno, $errstr, 5);
+
+			if ($fp) {
+
+				$querystring = "";
+				foreach ($postfields as $k => $v)
+					$querystring .= "$k=" . urlencode($v) . "&";
+
+				$header = "POST " . $whmcsurl . "modules/servers/licensing/verify.php HTTP/1.0\r\n";
+				$header.="Host: " . $whmcsurl . "\r\n";
+				$header.="Content-type: application/x-www-form-urlencoded\r\n";
+				$header.="Content-length: " . @strlen($querystring) . "\r\n";
+				$header.="Connection: close\r\n\r\n";
+				$header.=$querystring;
+
+				$data = "";
+				@stream_set_timeout($fp, 20);
+				@fputs($fp, $header);
+				$status = @socket_get_status($fp);
+
+				while (!@feof($fp) && $status) {
+					$data .= @fgets($fp, 1024);
+					$status = @socket_get_status($fp);
+				}
+
+				@fclose($fp);
+			}
+
+		}
+
+		if (!$data) {
+			$this->error_message = "Remote Check Failed";
+			return;
+		}
+
+		preg_match_all('/<(.*?)>([^<]+)<\/\\1>/i', $data, $matches);
+		$inputdata = array();
+		foreach ($matches[1] as $k => $v) {
+			$inputdata[$v] = $matches[2][$k];
+			$this->results[$v] = $matches[2][$k];
+		}
+
+		if (isset($inputdata["md5hash"]) && $inputdata["md5hash"]) {
+			if ($inputdata["md5hash"] != md5($licensing_secret_key . $check_token)) {
+				$this->error_message = "MD5 Checksum Verification Failed";
+				return;
+			}
+		}
+
+		if ($inputdata["status"] == "Active") {
+
+			$inputdata["checkdate"] = $checkdate;
+			$data_encoded = serialize($inputdata);
+			$data_encoded = base64_encode($data_encoded);
+			$data_encoded = md5($checkdate . $licensing_secret_key) . $data_encoded;
+			$data_encoded = strrev($data_encoded);
+			$data_encoded = $data_encoded . md5($data_encoded . $licensing_secret_key);
+			$data_encoded = wordwrap($data_encoded, 80, "\n", true);
+			$inputdata["localkey"] = $data_encoded;
+
+		} else
+			$this->error_message .= '<br>Register for the pro version to get full functionality at <a target=\'_blank\' href = \'http://shoppingcartproductfeed.com/\'>shoppingcartproductfeed.com</a>';
+
+		$this->inputdata["remotecheck"] = true;
+
+
+		
+		unset($postfields, $data, $matches, $whmcsurl, $licensing_secret_key, $checkdate, $usersip, $localkeydays, $allowcheckfaildays, $md5hash);
+
+	}
 
 	function unregister() {
 		//This will remove the license key (which is likely an undesirable course of action)
 		$pfcore->settingSet('cp_licensekey', '');
 		$pfcore->settingSet('cp_localkey', '');
-  }
+	}
+
+	function validateLocalKey($localkey, $localkeydays, $licensing_secret_key, $localexpiry){
+
+		if (!$localkey) 
+			return false;
+
+		$localkey = str_replace("\n", '', $localkey); # Remove the line breaks
+		$localdata = substr($localkey, 0, strlen($localkey) - 32); # Extract License Data
+		$md5hash = substr($localkey, strlen($localkey) - 32); # Extract MD5 Hash
+
+		if ($md5hash != md5($localdata . $licensing_secret_key))
+			return false;
+
+		$localdata = strrev($localdata); # Reverse the string
+		$md5hash = substr($localdata, 0, 32); # Extract MD5 Hash
+		$localdata = substr($localdata, 32); # Extract License Data
+		$localdata = base64_decode($localdata);
+		$localkeyresults = unserialize($localdata);
+		$originalcheckdate = $localkeyresults["checkdate"];
+
+		if ($md5hash != md5($originalcheckdate . $licensing_secret_key))
+			return false;
+
+		$locheck_licensecalexpiry = date("Ymd", mktime(0, 0, 0, date("m"), date("d") - $localkeydays, date("Y")));
+
+		if ($originalcheckdate < $localexpiry)
+			return false;
+
+			
+		$validdomains = explode(",", $localkeyresults["validdomain"]);
+		if (!in_array($_SERVER['SERVER_NAME'], $validdomains)) {
+			$this->error_message = "Valid domain incorrect.";
+			return false;
+		}
+
+		$validips = explode(",", $localkeyresults["validip"]);
+		if (!in_array($usersip, $validips)) {
+			$this->error_message = "IP incorrect.";
+			return false;
+		}
+
+		if ($localkeyresults["validdirectory"] != dirname(__FILE__)) {
+			$this->error_message = "Valid directory mismatch.";
+			return false;
+
+		}
+
+		return $localkeyresults;
+
+	}
+
 
 }
-
-?>

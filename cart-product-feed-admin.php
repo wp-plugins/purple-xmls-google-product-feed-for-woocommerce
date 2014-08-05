@@ -1,11 +1,11 @@
 <?php
 
   /********************************************************************
-  Version 1.1
-
-  Modified: 2014-05-01 Now Product Categories can export to both XML and TXT ( CSV or Tabbed )
+  Version 1.2
+		Modified: 2014-05-01 Now Product Categories can export to both XML and TXT ( CSV or Tabbed )
+		Copyright 2014 Purple Turtle Productions. All rights reserved.
+		license	GNU General Public License version 3 or later; see GPLv3.txt
     By: Keneto
-
   ********************************************************************/
 
 
@@ -26,10 +26,16 @@ function register_cart_product_styles_and_scripts() {
   wp_register_style( 'cart-product-style', plugins_url( 'css/cart-product.css', __FILE__ ) );
   wp_enqueue_style( 'cart-product-style' );
 
+  wp_register_style( 'cart-product-colorstyle', plugins_url( 'css/colorbox.css', __FILE__ ) );
+  wp_enqueue_style( 'cart-product-colorstyle' );
+
   wp_enqueue_script( 'jquery' );
 
   wp_register_script( 'cart-product-script', plugins_url( 'js/cart-product.js', __FILE__ ), array( 'jquery' ) );
   wp_enqueue_script( 'cart-product-script' );
+
+	wp_register_script( 'cart-product-colorbox', plugins_url( 'js/jquery.colorbox-min.js', __FILE__ ), array( 'jquery' ) );
+  wp_enqueue_script( 'cart-product-colorbox' );
 
 }
 add_action( 'admin_enqueue_scripts', 'register_cart_product_styles_and_scripts' );
@@ -82,51 +88,54 @@ add_action( 'admin_menu', 'cart_product_admin_menu' );
 function cart_product_feed_admin_page() {
 
 	$iconurl = plugins_url( '/', __FILE__ ) . '/images/cp_feed32.png';
-    echo "<div class='purplefeedspage wrap'>";
-    echo '<div id="icon-purple_feed" class="icon32" style="background: transparent url( ' . $iconurl . ' ) no-repeat"><br>
-          </div>
-          <h2>Shopping Cart Product Feed</h2>';
-    //prints right-hand info: links and version number/check
-    CPF_print_info();
+	echo "<div class='purplefeedspage wrap'>";
+	echo '<div id="icon-purple_feed" class="icon32" style="background: transparent url( ' . $iconurl . ' ) no-repeat"><br>
+				</div>
+				<h2>Shopping Cart Product Feed</h2>';
+	//prints right-hand info: links and version number/check
+	CPF_print_info();
+	$action = '';
+	$source_feed_id = -1;
 
-    $message2 = NULL;
-    $icon_image2 = plugins_url( '/', __FILE__ ) . "/images/BuyLicenseButton.png";
-    // check for updating feed delay ID
-    if ( isset( $_POST['action'] ) ) {
-        $action = $_POST['action'];
-        if ( $action == "update_license" ) {
-            if ( isset( $_POST['license_key'] ) ) {
-                $licence_key = $_POST['license_key'];
-                if ( $licence_key != "" ) {
-                    update_option( 'cp_licensekey', $licence_key );
-                }
-            }
-        }
-    } elseif ( isset( $_GET['action'] ) ) {
-        $action = $_GET['action'];
-        if ( $action == "reset_attributes" ) {
-            global $wpdb, $woocommerce;
-            $attr_table = $wpdb->prefix . 'woocommerce_attribute_taxonomies';
-            $sql = "SELECT attribute_name FROM " . $attr_table . " WHERE 1";
-            $attributes = $wpdb->get_results( $sql );
-            foreach ( $attributes as $attr ) {
-                delete_option( $attr->attribute_name );
-            }
-        } elseif ( $action == "reset_nextag_attributes" ) {
-            global $wpdb, $woocommerce;
-            $attr_table = $wpdb->prefix . 'woocommerce_attribute_taxonomies';
-            $sql = "SELECT attribute_name FROM " . $attr_table . " WHERE 1";
-            $attributes = $wpdb->get_results( $sql );
-            foreach ( $attributes as $attr ) {
-                delete_option( "nextag_pa_" . $attr->attribute_name );
-            }
-        }
-        echo "<script> window.location.assign( '" . admin_url() . "admin.php?page=cart-product-feed-admin' );</script>";
-    }
+	$message2 = NULL;
+	$icon_image2 = plugins_url( '/', __FILE__ ) . "/images/BuyLicenseButton.png";
+	
+	//check action
+	if ( isset( $_POST['action'] ) )
+		$action = $_POST['action'];
+	if ( isset( $_GET['action'] ) )
+		$action = $_GET['action'];
+				
+	switch ($action) {
+		case 'update_license':
+			//I think this is AJAX only now -K
+			if ( isset( $_POST['license_key'] ) ) {
+				$licence_key = $_POST['license_key'];
+				if ( $licence_key != '' )
+					update_option( 'cp_licensekey', $licence_key );
+			}
+			break;
+		case 'reset_attributes':
+			//I don't think this is used -K
+			global $wpdb, $woocommerce;
+			$attr_table = $wpdb->prefix . 'woocommerce_attribute_taxonomies';
+			$sql = "SELECT attribute_name FROM " . $attr_table . " WHERE 1";
+			$attributes = $wpdb->get_results( $sql );
+			foreach ( $attributes as $attr )
+				delete_option( $attr->attribute_name );
+			break;
+		case 'edit':
+			$action = '';
+			$source_feed_id = $_GET['id'];
+			break;
+	}
+
+	if (isset($action) && (strlen($action) > 0) )
+		echo "<script> window.location.assign( '" . admin_url() . "admin.php?page=cart-product-feed-admin' );</script>";
 
 	if (isset( $_GET['debug'])) {
 		$debug = $_GET['debug'];
-	  if ($debug == 'phpinfo') {
+		if ($debug == 'phpinfo') {
 			phpinfo(INFO_GENERAL + INFO_CONFIGURATION + INFO_MODULES);
 			return;
 		}
@@ -136,12 +145,14 @@ function cart_product_feed_admin_page() {
 
 	$reg = new PLicense();
 
-    //Main content
+	//Main content
 	echo '
 	<script type="text/javascript">
 	jQuery( document ).ready( function( $ ) {
-	   ajaxhost = "' . plugins_url( '/', __FILE__ ) . '";
-	   jQuery( "#selectFeedType" ).val( "&nbsp;" );
+		ajaxhost = "' . plugins_url( '/', __FILE__ ) . '";
+		jQuery( "#selectFeedType" ).val( "&nbsp;" );
+		doFetchLocalCategories();
+		feed_id = ' . $source_feed_id . ';
 	} );
 	</script>';
 
@@ -155,10 +166,15 @@ function cart_product_feed_admin_page() {
 				<p><strong>' . $message . '</strong></p></div>';
 	}
 
-	//Page Header
-	echo PFeedPageDialogs::pageHeader();
-	//Page Body
-	echo PFeedPageDialogs::pageBody();
+	if ($source_feed_id == -1) {
+		//Page Header
+		echo PFeedPageDialogs::pageHeader();
+		//Page Body
+		echo PFeedPageDialogs::pageBody();
+	} else {
+		require_once dirname(__FILE__) . '/core/classes/dialogeditfeed.php';
+		echo PEditFeedDialog::pageBody($source_feed_id);
+	}
 
 	if ( !$reg->valid ) {
 	  //echo PLicenseKeyDialog::large_registration_dialog( '' );
@@ -180,4 +196,8 @@ function cart_product_feed_manage_page() {
 	 //echo PLicenseKeyDialog::large_registration_dialog( '' );
   }
 
+}
+
+function cart_product_feed_edit_page() {
+	echo 'edit page';
 }

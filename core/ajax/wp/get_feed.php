@@ -3,6 +3,8 @@
 	/********************************************************************
 	Version 2.0
 		Get a feed
+		Copyright 2014 Purple Turtle Productions. All rights reserved.
+		license	GNU General Public License version 3 or later; see GPLv3.txt
 	By: Keneto 2014-07-01
 	********************************************************************/
 
@@ -20,6 +22,7 @@
 	$remote_category = safeGetPostData('remote_category');
 	$file_name = safeGetPostData('file_name');
 	$feedIdentifier = safeGetPostData('feed_identifier');
+	$saved_feed_id = safeGetPostData('feed_id');
 	
 	if (strlen($requestCode) * strlen($local_category) == 0) {
 		echo 'Error: error in AJAX request. Insufficient data';
@@ -58,19 +61,24 @@
 
 	//Load form data
 	$file_name = sanitize_title_with_dashes($file_name);
-	if ($file_name == '') {
+	if ($file_name == '')
 		$file_name = 'feed' . rand(10, 1000);
+
+	$saved_feed = null;
+	if ( (strlen($saved_feed_id) > 0) && ($saved_feed_id > -1) ) {
+		require_once dirname(__FILE__) . '/../../data/savedfeed.php';
+		$saved_feed = new PSavedFeed($saved_feed_id);
 	}
 
 	$providerClass = 'P' . $requestCode . 'Feed';
 	$x = new $providerClass;
 	if (strlen($feedIdentifier) > 0)
 	  $x->activityLogger = new PFeedActivityLog($feedIdentifier);
-	$x->getFeedData($local_category, $remote_category, $file_name);
+	$x->getFeedData($local_category, $remote_category, $file_name, $saved_feed);
 
 	if ($x->success)
 		echo 'Success: ' .  PFeedFolder::uploadURL() . $x->providerName . '/' . $file_name . '.' . $x->fileformat;
 	else
-		echo 'Error: ' . $x->message;
+		echo 'Error: ' . $x->getErrorMessages();
 
 ?>

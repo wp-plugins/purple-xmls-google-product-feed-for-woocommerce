@@ -22,23 +22,4 @@ class ShopzillaDlg extends PBaseFeedDialog {
 	);
   }
 
-  function list_categories() {
-    $data = file_get_contents('categories_' . strtolower($this->service_name) . '.txt');
-    $arr = explode("\n", $data);
-    $key = 0;
-    $result = NULL;
-
-    foreach ($arr as $k => $value) {
-        if ($value == '') {
-            $value = '--- Select ' . $this->service_name . ' Category ---';
-			$result .= "<option value='" . $value. "'>" . $value . "</option>";
-			continue;
-        }
-		$list_val=  explode(";", $value);
-        $result .= "<option value='" . trim($list_val[1]). "'>" . htmlentities(trim($list_val[0])) . "</option>";
-    }
-
-    return $result;
-  }
-
 }
