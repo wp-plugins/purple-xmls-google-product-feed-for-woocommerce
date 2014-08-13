@@ -1,4 +1,4 @@
-=== WooCommerce Shopping Cart Export ===
+﻿=== WooCommerce Shopping Cart Export ===
 Contributors: PurpleTurtlePro
 Tags: WooCommerce, Google, Merchant, Shopping, xml, product feed, Nextag, Google product feed, Amazon, eBay, google merchant, amazon seller, shopzilla, shopify, export csv, export xml, export tab
 Requires at least: 3.0.1
@@ -85,9 +85,12 @@ This will not redirect to the feed URL you just created - ready for submission!
 5. Manage existing feeds that you have created
 
 == Changelog ==
+<h4>Version 3.0.3.24 2014-08-05</h4>
+<ul>
+  <li><strong>Fix</strong>Introduces several fixes including error-reporting and cron updates</li>
+</ul>
 <h4>Version 3.0.3.0 2014-08-05</h4>
 <ul>
-  <li><strong>New</strong></li>
   <li><strong>New</strong>Multi-Category Selector</li>
   <li><strong>New</strong>Custom Feed Output filtering</li>
   <li><strong>New</strong>Rakuten Feed Provider Added</li>
@@ -99,8 +102,10 @@ This will not redirect to the feed URL you just created - ready for submission!
   <li><strong>New</strong> Brand New Select UI for matching categories - GREATLY enhanced and easier now!</li>
   <li><strong>New</strong> Now -all- attribute values are available</li>
   <li><strong>New</strong> New tax option Google Canada and Australia</li>
-  <li><strong>New</strong> Users can now override portions of the feed (eg to change/remove weight unit as provided by woocommerce or strip html tags)</li>
-  <li><strong>New</strong> Users can now map attributes from individual product attributes (not just attributes listed under general attributes)</li>
+  <li><strong>New</strong> Users can now override portions of the feed (eg to change/remove weight unit as provided by woocommerce or strip html tags)
+</li>
+  <li><strong>New</strong> Users can now map attributes from individual product attributes (not just attributes listed under general attributes)
+</li>
   <li><strong>Change</strong> Changed 'in stock' from parent to child in variations</li>
   <li><strong>Update</strong> Moved to 2014 Shopzilla and Nextag specs</li>
   <li><strong>Fix</strong> Update to Cron feed refresh for Linux servers</li>

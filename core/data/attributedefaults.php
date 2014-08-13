@@ -59,6 +59,15 @@ class PActionAfterFeed extends PAttributeDefault {
 
 }
 
+class PConvertSpecialCharacters extends PActionAfterFeed {
+
+	public function postProcess($product, &$output) {
+		//For WordPress only
+		$output = ent2ncr($output);
+	}
+
+}
+
 class PFirstFoundColor extends PAttributeDefault {
 
 	public $colorwords = array(

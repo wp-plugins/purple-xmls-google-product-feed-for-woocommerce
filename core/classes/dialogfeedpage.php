@@ -46,12 +46,16 @@ class PFeedPageDialogs {
 			  <option></option>
 			  <option value="Google">Google Merchant Feed</option>
 			  <option value="Amazon">Amazon Product Ads Feed</option>
+				<option value="AmazonSC">Amazon Seller Central</option>
 			  <option value="eBay">eBay Feed</option>
-			  <option value="Shopzilla">Shopzilla Feed</option>
-			  <option value="Nextag">Nextag Feed</option>
-			  <option value="Bing">Bing Feed</option>
+				<option value="">------</option>
+				<option value="Bing">Bing Feed</option>
+				<option value="Nextag">Nextag Feed</option>
 			  <option value="PriceGrabber">PriceGrabber</option>
 				<option value="Rakuten">Rakuten Feed (Beta)</option>
+				<option value="ShareASale">ShareASale Merchant Data Feed</option>
+				<option value="Shopzilla">Shopzilla Feed</option>
+				<option value="">------</option>
 				<option value="Productlistxml">Product List XML Export</option>
 				<option value="Productlistcsv">Product List CSV Export</option>
 			</select>

@@ -2,7 +2,7 @@
 
   /********************************************************************
   Version 2.0
-    Am Amazon Feed
+    An Amazon Feed (Product Ads)
 	  Copyright 2014 Purple Turtle Productions. All rights reserved.
 		license	GNU General Public License version 3 or later; see GPLv3.txt
 	By: Keneto 2014-05-08
@@ -11,78 +11,69 @@
 
 require_once dirname(__FILE__) . '/../basicfeed.php';
 
-class PAmazonFeed extends PBasicFeed{
+class PAmazonFeed extends PCSVFeed {
 
 	function __construct () {
+
+		parent::__construct();
 		$this->providerName = 'Amazon';
 		$this->providerNameL = 'amazon';
 		$this->fileformat = 'csv';
 		$this->fields = explode(',', 'Category,Title,Link,SKU,Price,Brand,Department,UPC,Image,Description,Manufacturer,Mfr part number,Other image-url1,Other image-url2,Other image-url3,Other image-url4,Other image-url5,Other image-url6,Other image-url7,Other image-url8,Weight,Shipping Cost,Shipping Weight');
 		$this->fieldDelimiter = ',';
-		parent::__construct();
+
+		//Create some attributes (Mapping 3.0)
+		$this->addAttributeMapping('id', 'UPC');
+		$this->addAttributeMapping('mfr_part_number', 'Mfr part number');
+		$this->addAttributeMapping('title', 'Title', true);
+		$this->addAttributeMapping('description', 'Description', true);
+		$this->addAttributeMapping('category', 'Category');
+		$this->addAttributeMapping('link', 'Link');
+		$this->addAttributeMapping('feature_imgurl', 'Image');
+		for ($i = 0; $i < 9; $i++)
+			$this->addAttributeMapping("other_image_url_$i", "Other image-url$i");
+		$this->addAttributeMapping('price', 'Price');
+		$this->addAttributeMapping('sku', 'SKU');
+		$this->addAttributeMapping('shipping_cost', 'Shipping Cost');
+		$this->addAttributeMapping('shipping_weight', 'Shipping Weight');
+		$this->addAttributeMapping('weight', 'Weight');
+		
 	}
 
 	function formatProduct($product) {
 
 		$variantUPC = '';
 		$variantMfr = '';
-			if ($product->isVariable) {
-			//Not used in original
+		if ($product->isVariable) {
+			//Not used in original code
 			//$variantUPC = rand();
 			//$variantMfr = rand();
 		}
 
-		//Prepare input
-		$current_feed['UPC'] = $product->id . $variantUPC;
-		$current_feed['Mfr part number'] = $product->id . $variantMfr;
-		$current_feed['Title'] = '"' . $product->attributes['title'] . '"';
-		$current_feed['Description'] = '"' . $product->description . '"';
-		$current_feed['Category'] = $this->current_category;
-		$current_feed['Link'] = $product->attributes['link'];
-		$current_feed['Image'] = $product->feature_imgurl;
+		//Prepare
 
+		//$product->attributes['id'] = $product->attributes['id'] . $variantUPC; //Not used in original code
+		$product->attributes['mfr_part_number'] = $product->attributes['id'] . $variantMfr;
+		$product->attributes['description'] = $product->description;
+		$product->attributes['category'] = $this->current_category;
+		$product->attributes['feature_imgurl'] = $product->feature_imgurl;
 		$image_count = 0;
 		foreach($product->imgurls as $imgurl) {
-			$image_index = "Other image-url$image_count";
-			$current_feed[$image_index] = $imgurl;
+			$image_index = "other_image_url_$image_count";
+			$product->attributes[$image_index] = $imgurl;
 			$image_count++;
 			if ($image_count >= 9)
 				break;
 		}
-
-		$current_feed['Price'] = $product->attributes['regular_price'] . ' ' . $this->currency;
+		$product->attributes['price'] = $product->attributes['regular_price'] . ' ' . $this->currency;
 		if (($product->attributes['has_sale_price']) && ($product->attributes['sale_price'] != ""))
-			$current_feed['Price'] = $product->attributes['sale_price'] . ' ' . $this->currency;
+			$product->attributes['price'] = $product->attributes['sale_price'] . ' ' . $this->currency;
+		$product->attributes['shipping_cost'] = '0.00 ' . $this->currency;
+		$product->attributes['shipping_weight'] = $product->attributes['weight'] . ' ' . $this->weight_unit;
+		$product->attributes['weight'] = $product->attributes['weight'] . $this->weight_unit;
 
-		$current_feed['SKU'] = $product->attributes['sku'];
-		$current_feed['Shipping Cost'] = '0.00 ' . $this->currency;
-		$current_feed['Shipping Weight'] = $product->attributes['weight'] . ' ' . $this->weight_unit;
-		$current_feed['Weight'] = $product->attributes['weight'] . $this->weight_unit;
-
-		//Build output in order of fields
-		$output = '';
-		foreach($this->fields as $field) {
-			if (isset($current_feed[$field]))
-				$output .= $current_feed[$field] . $this->fieldDelimiter;
-			else
-				$output .= $this->fieldDelimiter;
-		}
-
-		//Trim trailing comma
-		return substr($output, 0, -1) . "\r\n";
-	}
-
-	function getFeedHeader($file_name, $file_path) {
-
-		$output = '';
-		foreach($this->fields as $field) {
-			if (isset($this->feedOverrides->overrides[$field]))
-				$field = $this->feedOverrides->overrides[$field];
-			$output .= $field . $this->fieldDelimiter;
-		}
-
-		//Trim trailing comma
-		return substr($output, 0, -1) . "\r\n";
+		return parent::formatProduct($product);
+		
 	}
 
 }

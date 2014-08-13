@@ -53,7 +53,7 @@ class PBasicFeed {
 	public $success = false;
 	public $stripHTML = false;
 	public $system_wide_shipping = true;
-	public $system_wide_shipping_rate = '0.00';  //Deprecated as of v3.0.1.23: Use $shipping_amount
+	public $system_wide_shipping_rate = '0.00';  //Deprecated as of v3.0.1.23: Use $shipping
 	public $system_wide_shipping_type = 'Ground';
 	public $system_wide_tax = false;
 	public $system_wide_tax_rate = 0;
@@ -61,6 +61,10 @@ class PBasicFeed {
 	public $weight_unit;
 
 	public function addAttributeDefault($attributeName, $value, $defaultClass) {
+		if (!class_exists($defaultClass)) {
+			$this->addErrorMessage(5, 'AttributeDefault class "' . $defaultClass . '" not found. Reconfigure Advanced Commands to resolve.');
+			return;
+		}
 		$thisDefault = new $defaultClass();
 		//$thisDefault = new PAttributeDefault();
 		$thisDefault->attributeName = $attributeName;
@@ -193,6 +197,7 @@ class PBasicFeed {
 			if ($this->productTypeFromLocalCategory)
 				$this_product->attributes['product_type'] = $this_product->attributes['localCategory'];
 
+			//This form of handling brand is deprecated as of v3.0.3.0
 			if ((!isset($this_product->attributes['brand'])) && (strlen($this->default_brand) > 0))
 				$this_product->attributes['brand'] = $this->default_brand;
 
@@ -259,11 +264,14 @@ class PBasicFeed {
 	function getFeedData($category, $remote_category, $file_name, $saved_feed = null) {
 
 		$this->logActivity('Initializing...');
+
 		global $message;
 		global $pfcore;
 
 		$x = new PLicense();
+		$this->initializeFeed($category, $remote_category);
 
+		$this->logActivity('Loading paths...');
 		if (!$this->checkFolders())
 			return;
 
@@ -275,8 +283,11 @@ class PBasicFeed {
 		if (($pfcore->cmsName == 'WordPress') && (strpos($file_path, 'https://') !== false) && (strpos(content_url(), 'https') === false))
 			$file_path = str_replace('https://', 'http://', $file_path);
 
-		//Redirect the client to the feed file instead of this script
-		//header('Location: ' . $file_path); //Header no longer needed since AJAX
+		//Shipping and Taxation systems
+		$this->shipping = new PShippingData($this);
+		$this->shipping = new PTaxationData($this);
+
+		$this->logActivity('Initializing categories...');
 
 		//Figure out what categories the user wants to export
 		$this->categories = new PProductCategories($category);
@@ -288,9 +299,8 @@ class PBasicFeed {
 		//Initialize some useful data 
 		//(must occur before overrides)
 		$this->current_category = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
-		
-		//Get the Feed Overrides ready
-		$this->feedOverrides = new PFeedOverride($this->providerName, $this, $saved_feed);
+
+		$this->initializeOverrides($saved_feed);
 
 		//Trying to change max_execution_time will throw privilege errors on some installs
 		//so it's been left as an option
@@ -338,6 +348,25 @@ class PBasicFeed {
 		foreach($this->attributeMappings as $thisAttributeMapping)
 			if ($thisAttributeMapping->attributeName == $name)
 				return $thisAttributeMapping;
+		return null;
+	}
+
+	function getMappingByMapto($name) {
+		foreach($this->attributeMappings as $thisAttributeMapping)
+			if ($thisAttributeMapping->mapTo == $name)
+				return $thisAttributeMapping;
+		return null;
+	}
+
+	function initializeFeed($category, $remote_category) {
+		//Allow descendant to perform initialization based on category/remote category
+	}
+
+	function initializeOverrides($saved_feed) {
+
+		$this->logActivity('Initializing overrides...');
+		$this->feedOverrides = new PFeedOverride($this->providerName, $this, $saved_feed);
+
 	}
   
 	function insertField($new_field, $index_field) {
@@ -414,7 +443,39 @@ class PCSVFeed extends PBasicFeed {
 
 	}
 
+	function formatProduct($product) {
+
+		//Trigger Mapping 3.0 Before-Feed Event
+		foreach ($this->attributeDefaults as $thisDefault)
+			if ($thisDefault->stage == 2)
+				$product->attributes[$thisDefault->attributeName] = $thisDefault->getValue($product);
+
+		//Build output in order of fields
+		$output = '';
+		foreach($this->fields as $field) {
+			$thisAttributeMapping = $this->getMappingByMapto($field);
+			if (($thisAttributeMapping != null) && $thisAttributeMapping->enabled && !$thisAttributeMapping->deleted && isset($product->attributes[$thisAttributeMapping->attributeName]) ) {
+				if ($thisAttributeMapping->usesCData)
+					$quotes = '"';
+				else
+					$quotes = '';
+				$output .= $quotes . $product->attributes[$thisAttributeMapping->attributeName] . $quotes;
+			}
+			$output .= $this->fieldDelimiter;
+		}
+
+		//Trigger Mapping 3.0 After-Feed Event
+		foreach ($this->attributeDefaults as $thisDefault)
+			if ($thisDefault->stage == 3)
+				$thisDefault->postProcess($product, $output);
+
+		//Trim trailing comma
+		return substr($output, 0, -1) . "\r\n";
+
+	}
+
 	function getFeedHeader($file_name, $file_path) {
+
 		$output = '';
 		foreach($this->fields as $field) {
 			if (isset($this->feedOverrides->overrides[$field]))
@@ -422,7 +483,71 @@ class PCSVFeed extends PBasicFeed {
 			$output .= $field . $this->fieldDelimiter;
 		}
 		//Trim trailing comma
+		return;
+
+	}
+
+}
+
+
+//********************************************************************
+// PCSVFeedEx has functions a CSV Feed would need
+// but phasing out deprecated functions
+//********************************************************************
+
+class PCSVFeedEx extends PBasicFeed {
+
+	function formatProduct($product) {
+
+		//Trigger Mapping 3.0 Before-Feed Event
+		foreach ($this->attributeDefaults as $thisDefault)
+			if ($thisDefault->stage == 2)
+				$product->attributes[$thisDefault->attributeName] = $thisDefault->getValue($product);
+
+		//Build output
+		$output = '';
+		foreach($this->attributeMappings as $thisAttributeMapping) {
+			if ($thisAttributeMapping->enabled && !$thisAttributeMapping->deleted && isset($product->attributes[$thisAttributeMapping->attributeName]) ) {
+				if ($thisAttributeMapping->usesCData)
+					$quotes = '"';
+				else
+					$quotes = '';
+				$output .= $quotes . $product->attributes[$thisAttributeMapping->attributeName] . $quotes;
+			}
+			$output .= $this->fieldDelimiter;
+		}
+
+		//Trigger Mapping 3.0 After-Feed Event
+		foreach ($this->attributeDefaults as $thisDefault)
+			if ($thisDefault->stage == 3)
+				$thisDefault->postProcess($product, $output);
+
+		//Trim trailing comma
+		return substr($output, 0, -1) . "\r\n";
+
+	}
+
+	function getFeedHeader($file_name, $file_path) {
+
+		$output = '';
+
+		foreach($this->attributeMappings as $thisMapping)
+			if ($thisMapping->enabled && !$thisMapping->deleted)
+				$output .= $thisMapping->mapTo . $this->fieldDelimiter;
+
 		return substr($output, 0, -1) .  "\r\n";
+
+	}
+
+	function initializeOverrides($saved_feed) {
+		parent::initializeOverrides($saved_feed);
+		foreach($this->feedOverrides->overrides as $key => $mapTo) {
+			$n = $this->getMappingByMapto($mapTo);
+			if ($n == null)
+				$this->addAttributeMapping($key, $mapTo, true);
+			else
+				$n->attributeName = $key;
+		}
 	}
 
 }

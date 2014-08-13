@@ -8,7 +8,15 @@
 	By: Keneto 2014-05-18
 	********************************************************************/
 
-	$data = file_get_contents(dirname(__FILE__) . '/../../feeds/' . strtolower($_POST['service_name']) . '/categories.txt');
+	require_once dirname(__FILE__) . '/../../../../../../wp-load.php';
+
+	$data = '';
+	if (class_exists('PCategoryModule'))
+		$data = PCategoryModule::getCategoryList(strtolower($_POST['service_name']));
+
+	if (strlen($data) == 0)
+		$data = file_get_contents(dirname(__FILE__) . '/../../feeds/' . strtolower($_POST['service_name']) . '/categories.txt');
+
 	$data = explode("\n", $data);
 	$searchTerm = strtolower($_POST['partial_data']);
 	$count = 0;
@@ -38,6 +46,7 @@
 	if ($count == 0) {
 		//echo 'No matching categories found';
 	}
+
 	if (!$canDisplay)
 		echo '<div class="categoryItem">(' . $count . ' results)</div>';
 

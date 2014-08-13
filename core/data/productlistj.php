@@ -14,10 +14,8 @@ class PProductList {
 
 	public function loadProducts($parent) {
 
-		global $wpdb;
-
 		//********************************************************************
-		//Load the products for the given category
+		//Load the products
 		//********************************************************************
 
 		$db = JFactory::getDBO();
@@ -103,6 +101,9 @@ class PProductList {
 			$item->description_long = substr(strip_tags($prod->description), 0, 1000); //!Need strip_shortcodes
 			$item->attributes['valid'] = true;
 
+			//Cheat! (temp)
+			$item->attributes['id'] = $prod->product_id;
+
 			//Fetch any default attributes (Mapping 3.0)
 			foreach ($parent->attributeDefaults as $thisDefault)
 				$item->attributes[$thisDefault->attributeName] = $thisDefault->value;
@@ -143,6 +144,9 @@ class PProductList {
 				$item->item_group_id = $prod->parent_id;
 				$item->parent_title = $item->attributes['title']; //This is for eBay feed only, and could otherwise be deleted
 				$item->isVariable = true;
+				//Cheat!
+				$item->attributes['item_group_id'] = $prod->parent_id;
+				$item->attributes['parent_title'] = $item->attributes['title'];
 			}
 
 			//In-stock status

@@ -13,6 +13,34 @@
 
   ********************************************************************/
 
+function ptokens($source) {
+
+	//Old: $items = explode(' ' , $source); (Couldn't account for quotes)
+	$items = array();
+	$index = 0;
+	$used_so_far = 0;
+	$this_token = '';
+	while ($used_so_far < strlen($source)) {
+		if ($source[$used_so_far] == ' ') {
+			$items[$index] = $this_token;
+			$this_token = '';
+			$index++;
+		} elseif ($source[$used_so_far] == '"') {
+			$used_so_far++;
+			while (($used_so_far < strlen($source)) && ($source[$used_so_far] != '"')) {
+				$this_token .= $source[$used_so_far];
+				$used_so_far++;
+			}
+		} else
+			$this_token .= $source[$used_so_far];
+		$used_so_far++;
+	}
+	$items[$index] = $this_token;
+
+	return $items;
+
+}
+
 class PFeedOverride {
 
 	public $overrides = array();
@@ -45,7 +73,7 @@ class PFeedOverride {
 			if (substr($this_option, 0, 1) == '$')
 				$command = '$';
 			else {
-				$params = explode(' ', $this_option);
+				$params = ptokens($this_option);
 				$command = strtolower($params[0]);
 			}
 
@@ -309,6 +337,12 @@ class PFeedOverride {
 		//Note: $parent->seller_id is unset by default (not even null)
 		if ($this_option == '$seller-id')
 			$parent->seller_id = $value;
+
+		//ShareASale Feeds need merchant, merchant-id
+		if ($this_option == '$merchant-id')
+			$parent->merchant_id = $value;
+		if ($this_option == '$merchant')
+			$parent->merchant = $value;
 
 	}
 

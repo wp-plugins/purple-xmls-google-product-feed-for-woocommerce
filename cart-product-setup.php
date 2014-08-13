@@ -19,6 +19,8 @@ function cart_product_activate_plugin(){
 			`own_overrides` int(10),
 			`feed_overrides` text,
 			`product_count` int,
+			`errors` text,
+			`title` varchar(250),
 			PRIMARY KEY (`id`)
 		)";
 		//)" ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
@@ -37,6 +39,8 @@ function cart_product_activate_plugin(){
 		own_overrides int(10),
 		feed_overrides text,
 		product_count int,
+		errors text,
+		title varchar(250),
 		PRIMARY KEY  (id)
 	)";
 

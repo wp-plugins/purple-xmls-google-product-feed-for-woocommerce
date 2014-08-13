@@ -152,6 +152,7 @@ class PProductCategories {
 		//convert to objects
 		$this->categories = array();
 		foreach($source_categories as $a_source_category) {
+
 			$this_category = new stdClass();
 			$this_category->id = $a_source_category->id;
 			$this_category->title = $a_source_category->title;
@@ -164,6 +165,38 @@ class PProductCategories {
 			SELECT taxo.term_id as child_category, taxo.parent as parent_category 
 			FROM $wpdb->term_taxonomy taxo
 			WHERE taxo.taxonomy = 'product_cat'";
+		$links = $wpdb->get_results($sql);
+
+		$this->interpretCategories($links);
+	}
+
+	public function getListWe() {
+
+		global $wpdb;
+
+		//Fetch: id, title, tally-of-products
+		$sql = "
+			SELECT taxo.term_id as id, term.name as title, taxo.count as tally 
+			FROM $wpdb->term_taxonomy taxo
+			LEFT JOIN $wpdb->terms term ON taxo.term_id = term.term_id
+			WHERE taxo.taxonomy = 'wpsc_product_category'";
+		$source_categories = $wpdb->get_results($sql);
+
+		//convert to objects
+		$this->categories = array();
+		foreach($source_categories as $a_source_category) {
+			$this_category = new stdClass();
+			$this_category->id = $a_source_category->id;
+			$this_category->title = $a_source_category->title;
+			$this_category->tally = $a_source_category->tally;
+			$this->categories[] = $this_category;
+		}
+
+		//Fetch: parent_category, child_category
+		$sql = "
+			SELECT taxo.term_id as child_category, taxo.parent as parent_category 
+			FROM $wpdb->term_taxonomy taxo
+			WHERE taxo.taxonomy = 'wpsc_product_category'";
 		$links = $wpdb->get_results($sql);
 
 		$this->interpretCategories($links);

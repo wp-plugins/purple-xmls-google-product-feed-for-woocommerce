@@ -84,11 +84,11 @@ class PFeedCore {
 	}
 
 	function settingGetJ($settingName) {
+		$db = JFactory::getDBO();
 		$query = '
 			SELECT value
 			FROM #__cartproductfeed_options
 			WHERE name = ' . $db->quote( $db->escape($settingName), false);
-		$db = JFactory::getDBO();
 		$db->setQuery($query);
 		$db->query();
 

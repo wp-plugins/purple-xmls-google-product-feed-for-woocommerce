@@ -5,7 +5,7 @@
   Plugin URI: www.shoppingcartproductfeed.com
   Description: WooCommerce Shopping Cart Export :: <a href="http://shoppingcartproductfeed.com/tos/">How-To Click Here</a>
   Author: ShoppingCartProductFeed.com
-  Version: 3.0.3.6
+  Version: 3.0.3.24
   Author URI: www.shoppingcartproductfeed.com
   Authors: Haris, Keneto (May2014)
   Note: The "core" folder is shared to the Joomla component.
@@ -27,6 +27,33 @@ include_once ('cart-product-information.php');
 //action hook for plugin activation
 register_activation_hook( __FILE__, 'cart_product_activate_plugin' );
 register_deactivation_hook( __FILE__, 'cart_product_deactivate_plugin' );
+
+							//**********************Debug Code only: START
+							/*
+							global $wpdb;
+
+							$table_name = $wpdb->prefix . "cp_feeds";
+							$sql = "
+								CREATE TABLE $table_name (
+								id bigint(20) NOT NULL AUTO_INCREMENT,
+								category varchar(250) NOT NULL,
+								remote_category varchar(1000) NOT NULL,
+								filename varchar(250) NOT NULL,
+								url varchar(500) NOT NULL,
+								type varchar(50) NOT NULL,
+								own_overrides int(10),
+								feed_overrides text,
+								product_count int,
+								title varchar(250),
+								errors text,
+								PRIMARY KEY  (id)
+							)";
+
+							require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+							dbDelta( $sql );
+
+							//**********************Debug Code only: END
+							*/
 
 global $cp_feed_order, $cp_feed_order_reverse;
 
@@ -122,39 +149,39 @@ PCPCron::scheduleUpdate();
 
 add_action('update_cartfeeds_hook', 'update_all_cart_feeds');
 
-function update_all_cart_feeds() {
+function update_all_cart_feeds($doRegCheck = true) {
 
 	require_once 'cart-product-wpincludes.php'; //The rest of the required-files moved here
 	require_once 'core/data/savedfeed.php';
 
 	$reg = new PLicense();
-	if ($reg->results["status"] == "Active") {
+	if ($doRegCheck && ($reg->results["status"] != "Active"))
+		return;
 
-		global $wpdb;
-		$feed_table = $wpdb->prefix . 'cp_feeds';
-		$sql = 'SELECT id FROM ' . $feed_table;
-		$feed_ids = $wpdb->get_results($sql);
-		$savedProductList = null;
+	global $wpdb;
+	$feed_table = $wpdb->prefix . 'cp_feeds';
+	$sql = 'SELECT id FROM ' . $feed_table;
+	$feed_ids = $wpdb->get_results($sql);
+	$savedProductList = null;
 
-		foreach ($feed_ids as $this_feed_id) {
+	foreach ($feed_ids as $this_feed_id) {
 
-			$saved_feed = new PSavedFeed($this_feed_id->id);
+		$saved_feed = new PSavedFeed($this_feed_id->id);
 
-			//Make sure someone exists in the core who can provide the feed
-			$providerName = $saved_feed->provider;
-			$providerFile = 'core/feeds/' . strtolower($providerName) . '/feed.php';
-			if (!file_exists(dirname(__FILE__) . '/' . $providerFile))
-				continue;
-			require_once $providerFile;
+		//Make sure someone exists in the core who can provide the feed
+		$providerName = $saved_feed->provider;
+		$providerFile = 'core/feeds/' . strtolower($providerName) . '/feed.php';
+		if (!file_exists(dirname(__FILE__) . '/' . $providerFile))
+			continue;
+		require_once $providerFile;
 
-			//Initialize provider data
-			$providerClass = 'P' . $providerName . 'Feed';
-			$x = new $providerClass($savedProductList);
-			$x->getFeedData($saved_feed->category_id, $saved_feed->remote_category, $saved_feed->filename, $saved_feed);
-			
-			$savedProductList = $x->productList;
+		//Initialize provider data
+		$providerClass = 'P' . $providerName . 'Feed';
+		$x = new $providerClass($savedProductList);
+		$x->getFeedData($saved_feed->category_id, $saved_feed->remote_category, $saved_feed->filename, $saved_feed);
+		
+		$savedProductList = $x->productList;
 
-		}
 	}
 
 }

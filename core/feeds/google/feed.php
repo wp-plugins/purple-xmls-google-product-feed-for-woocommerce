@@ -125,6 +125,7 @@ class PGoogleFeed extends PBasicFeed{
 			}
 		}
 
+		//Mapping 3.0 post processing
 		foreach ($this->attributeDefaults as $thisDefault)
 			if ($thisDefault->stage == 3)
 				$thisDefault->postProcess($product, $output);

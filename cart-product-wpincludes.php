@@ -17,5 +17,7 @@ require_once 'core/data/feedcore.php';
 require_once 'core/data/productcategories.php';
 require_once 'core/data/feedoverrides.php';
 require_once 'core/data/productlist.php';
+require_once 'core/data/shippingdata.php';
+require_once 'core/data/taxationdata.php';
 
 ?>

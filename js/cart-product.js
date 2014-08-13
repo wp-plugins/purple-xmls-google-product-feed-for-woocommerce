@@ -37,13 +37,15 @@ function parseGetFeedResults(res) {
 	feedFetchTimer = null;
 	jQuery('#feed-status-display').html("");
 
+	results = jQuery.parseJSON(res);
+
 	//Show results
-  if (res.indexOf("Success:") > -1) {
+  if (results.url.length > 0) {
 		jQuery('#feed-error-display').html("&nbsp;");
-		var url = res.substring(9);
-		window.open(url);
-	} else
-		jQuery('#feed-error-display').html(res);
+		window.open(results.url);
+	}
+	if (results.errors.length > 0)
+		jQuery('#feed-error-display').html(results.errors);
 }
 
 function parseGetFeedStatus(res) {

@@ -23,13 +23,19 @@
 	$file_name = safeGetPostData('file_name');
 	$feedIdentifier = safeGetPostData('feed_identifier');
 	$saved_feed_id = safeGetPostData('feed_id');
-	
+
+	$output = new stdClass();
+	$output->url = '';
+
 	if (strlen($requestCode) * strlen($local_category) == 0) {
-		echo 'Error: error in AJAX request. Insufficient data';
+		$output->errors = 'Error: error in AJAX request. Insufficient data';
+		echo json_encode($output);
 		return;
 	}
+
 	if (strlen($remote_category) == 0) {
-		echo 'Error: Insufficient data. Please fill in "' . $requestCode . ' category"';
+		$output->errors = 'Error: Insufficient data. Please fill in "' . $requestCode . ' category"';
+		echo json_encode($output);
 		return;
 	}
 	
@@ -38,7 +44,8 @@
 	// Check if form was posted and select task accordingly
 	$dir = PFeedFolder::uploadRoot();
 	if (!is_writable($dir)) {
-		echo "Error: $dir should be writeable";
+		$output->errors = "Error: $dir should be writeable";
+		echo json_encode($output);
 		return;
 	}
 	$dir = PFeedFolder::uploadFolder();
@@ -46,14 +53,16 @@
 		mkdir($dir);
 	}
 	if (!is_writable($dir)) {
-		echo "Error: $dir should be writeable";
+		$output->errors = "Error: $dir should be writeable";
+		echo json_encode($output);
 		return;
 	}
 
 	$providerFile = 'feeds/' . strtolower($requestCode) . '/feed.php';
 
 	if (!file_exists(dirname(__FILE__) . '/../../' . $providerFile)) {
-	  echo 'Error: Provider file not found.';
+	  $output->errors = 'Error: Provider file not found.';
+		echo json_encode($output);
 	  return;
 	}
 
@@ -77,8 +86,9 @@
 	$x->getFeedData($local_category, $remote_category, $file_name, $saved_feed);
 
 	if ($x->success)
-		echo 'Success: ' .  PFeedFolder::uploadURL() . $x->providerName . '/' . $file_name . '.' . $x->fileformat;
-	else
-		echo 'Error: ' . $x->getErrorMessages();
+		$output->url = PFeedFolder::uploadURL() . $x->providerName . '/' . $file_name . '.' . $x->fileformat;
+	$output->errors = $x->getErrorMessages();
+
+	echo json_encode($output);
 
 ?>

@@ -94,6 +94,17 @@ class PBaseFeedDialog {
 		return $output;
   }
 
+	function categoryList($initial_remote_category) {
+		if ($this->blockCategoryList)
+			return '';
+		else
+			return '
+				  <span class="label">' . $this->service_name . ' Category : </span>
+				  <span><input type="text" name="categoryDisplayText" class="text_big" id="categoryDisplayText"  onkeyup="doFetchCategory_timed(\'' . $this->service_name . '\',  this.value)" value="' . $initial_remote_category . '" autocomplete="off" /></span>
+				  <div id="categoryList" class="categoryList"></div>
+				  <input type="hidden" id="remote_category" name="remote_category" value="' . $initial_remote_category . '">';
+	}
+
   function mainDialog($source_feed = null) {
 
 		global $pfcore;
@@ -118,28 +129,9 @@ class PBaseFeedDialog {
 		$folders = new PFeedFolder();
 		$product_categories = new PProductCategories();
 
-		/*$output .= '
-		<script type="text/javascript">
-			$( document ).ready() {
-				//$(".recorderlink").colorbox({iframe:true, width:"600", height:"300"});
-				alert("ready");
-			}
-		</script>
-		';*/
-
-		//$localCategoryList = '<select name="local_category" id="local_category" class="select_big">' . $product_categories->getOptionList() . '</select>'; //legacy
 		$localCategoryList = '
 			<input type="text" name="local_category_display" class="text_big" id="local_category_display"  onclick="showLocalCategories(\'' . $this->service_name . '\')" value="' . $initial_local_category . '" autocomplete="off" readonly="true" />
 			<input type="hidden" name="local_category" id="local_category" value="' . $initial_local_category_id .'" />';
-
-		if ($this->blockCategoryList)
-			$categoryList = '';
-		else
-			$categoryList = '
-				  <span class="label">' . $this->service_name . ' Category : </span>
-				  <span><input type="text" name="categoryDisplayText" class="text_big" id="categoryDisplayText"  onkeyup="doFetchCategory_timed(\'' . $this->service_name . '\',  this.value)" value="' . $initial_remote_category . '" autocomplete="off" /></span>
-				  <div id="categoryList" class="categoryList"></div>
-				  <input type="hidden" id="remote_category" name="remote_category" value="' . $initial_remote_category . '">';
 
     $output .= '
 	  <div class="attributes-mapping">
@@ -157,7 +149,7 @@ class PBaseFeedDialog {
 				  ' . $localCategoryList . '
 				</div>
 				<div class="feed-right-row">' .
-					$categoryList . '
+					$this->categoryList($initial_remote_category) . '
 				</div>
 				<div class="feed-right-row">
 				  <span class="label">File name for feed : </span>

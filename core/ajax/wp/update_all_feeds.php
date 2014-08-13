@@ -11,8 +11,8 @@
 
   require_once dirname(__FILE__) . '/../../../../../../wp-load.php';
 	
-  update_all_cart_feeds();
+  update_all_cart_feeds(false);
 
-	echo "Update successful";
+	echo 'Update successful';
 
 ?>
