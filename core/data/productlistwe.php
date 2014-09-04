@@ -221,7 +221,7 @@ class PProductList {
 				$item->parent_title = ''; //This is for eBay feed only, and could otherwise be deleted //! Need to go find this
 			}
 
-			$item->attributes['title'] = $prod->product_name;
+			$item->attributes['title'] = $prod->post_title;
 			$item->taxonomy = '';
 			
 			$item->description_short = substr(strip_shortcodes(strip_tags($prod->post_excerpt)), 0, 1000);
@@ -236,8 +236,14 @@ class PProductList {
 			$item->attributes['product_type'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
 			$item->attributes['localCategory'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $prod->category_name));
 			$item->attributes['localCategory'] = str_replace("|", ">", $item->attributes['localCategory']);
-			$item->attributes['link'] = $pfcore->siteHost . '';
-			//!$item->feature_imgurl = $prod->image_link; //Should explode?
+			$item->attributes['link'] = $pfcore->siteHost . '?wpsc-product=' . $item->attributes['title'];
+			$images = explode(',', $prod->image_link);
+			if (count($images) == 0)
+				$item->feature_imgurl = '';
+			else
+				$item->feature_imgurl = $images[0];
+			for ($i = 1; $i < count($images); $i++)
+				$item->imgurls[] = $images[$i];
 			$item->attributes['condition'] = 'New';
 			
 			//$item->attributes['weight'] = $prod->weight;

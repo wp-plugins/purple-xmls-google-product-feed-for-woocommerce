@@ -40,7 +40,7 @@ function parseGetFeedResults(res) {
 	results = jQuery.parseJSON(res);
 
 	//Show results
-  if (results.url.length > 0) {
+	if (results.url.length > 0) {
 		jQuery('#feed-error-display').html("&nbsp;");
 		window.open(results.url);
 	}
@@ -51,6 +51,10 @@ function parseGetFeedResults(res) {
 function parseGetFeedStatus(res) {
 	if (feedFetchTimer != null)
 		jQuery('#feed-status-display').html(res);
+}
+
+function parseLicenseKeyChange(res) {
+	jQuery("#tblLicenseKey").remove();
 }
 
 function parseSelectFeedChange(res) {
@@ -208,6 +212,15 @@ function setAttributeOption(service_name, attribute, select_index) {
 		type: "post",
 		url: ajaxhost + cmdSetAttributeOption,
 		data: "service_name=" + service_name + "&attribute=" + attribute + '&mapto=' + jQuery('#attribute_select' + select_index).val(),
+	});
+}
+
+function submitLicenseKey(keyname) {
+	jQuery.ajax({
+		type: "post",
+		url: ajaxhost + cmdUpdateSetting,
+		data: "setting=" + keyname + "&value==" + jQuery("#edtLicenseKey").val(),
+		success: function(res){parseLicenseKeyChange(res)}
 	});
 }
 

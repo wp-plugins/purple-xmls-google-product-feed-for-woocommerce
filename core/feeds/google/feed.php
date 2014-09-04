@@ -39,13 +39,9 @@ class PGoogleFeed extends PBasicFeed{
 		$output = '
       <item>';
 
-		//$output .= $this->formatLine('g:id', $product->attributes['id']);
-		//if (isset($product->item_group_id))
-			//$output .= $this->formatLine('g:item_group_id', $product->item_group_id);
-
-		//$output .= $this->formatLine('description', $product->description, true);    
-		//$output .= $this->formatLine('g:google_product_category', $this->current_category, true);
-		//$output .= $this->formatLine('g:image_link', $product->feature_imgurl, true);
+		//********************************************************************
+		//Prepare the Product Attributes
+		//********************************************************************
 		
 		//Cheat: These three fields aren't ready to be attributes yet, so adding manually:
 		$product->attributes['description'] = $product->description;
@@ -78,7 +74,10 @@ class PGoogleFeed extends PBasicFeed{
 			if ($thisDefault->stage == 2)
 				$product->attributes[$thisDefault->attributeName] = $thisDefault->getValue($product);
 
+		//********************************************************************
 		//Add attributes (Mapping 3.0)
+		//********************************************************************
+
 		foreach($this->attributeMappings as $thisAttributeMapping)
 			if ($thisAttributeMapping->enabled && !$thisAttributeMapping->deleted && isset($product->attributes[$thisAttributeMapping->attributeName]) )
 				$output .= $this->formatLine($thisAttributeMapping->mapTo, $product->attributes[$thisAttributeMapping->attributeName], $thisAttributeMapping->usesCData);
@@ -92,6 +91,10 @@ class PGoogleFeed extends PBasicFeed{
 					break;
 			}
 		}
+
+		//********************************************************************
+		//Shipping & Tax = Special Attributes
+		//********************************************************************
 
 		if ($this->system_wide_shipping) {
 			/*Deprecated / Legacy
@@ -115,7 +118,10 @@ class PGoogleFeed extends PBasicFeed{
         </g:tax>';
 		}
 
-		//This is mapping 2.0
+		//********************************************************************
+		//This is mapping 2.0 > Deprecated
+		//********************************************************************
+
 		$used_so_far = array();
 		foreach($product->attributes as $key => $a) {
 			//Only use the override if it's set and hasn't been used_so_far in this product
@@ -125,10 +131,21 @@ class PGoogleFeed extends PBasicFeed{
 			}
 		}
 
+		//********************************************************************
 		//Mapping 3.0 post processing
+		//********************************************************************
+
 		foreach ($this->attributeDefaults as $thisDefault)
 			if ($thisDefault->stage == 3)
 				$thisDefault->postProcess($product, $output);
+
+		//********************************************************************
+		//Validation checks & Error messages
+		//********************************************************************
+
+		if (!isset($product->attributes['brand']) || (strlen($product->attributes['brand']) == 0))
+			if (($this->getMappingByMapto('g:identifier_exists') == null) && ($this->getMappingByMapto('g:gtin') == null) && ($this->getMappingByMapto('g:brand') == null))
+				$this->addErrorMessage(2000, 'Missing brand for ' . $product->attributes['title']);
 
     $output .= '
       </item>';

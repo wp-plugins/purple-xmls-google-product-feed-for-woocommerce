@@ -23,10 +23,26 @@ function CPF_check_version()
 
 function CPF_print_info()
 {
+	$iconurl = plugins_url( '/', __FILE__ ) . '/images/cpf-sm-logo.png';
+	$gts_iconurl = plugins_url( '/', __FILE__ ) . '/images/gts-logo.png';
 	echo 
-	'<div class=\'version-style\'>
-	 <a target="_blank" href="http://www.shoppingcartproductfeed.com">Product Site</a> | 
-	 <a target="_blank" href="http://www.shoppingcartproductfeed.com/tos">How To\'s</a><br>
-	 Version: ' . FEED_PLUGIN_VERSION . CPF_check_version() .'<br>
-	 </div>';
+	//'<div class=\'cpf-logo\'>
+	//</div>';
+	'<div class="cpf-logo-header">
+		<div class="cpf-logo-link">
+	 		<a target="_blank" href="http://www.shoppingcartproductfeed.com"><img class="cpf-logo-style" src=' . $iconurl . ' alt="shopping cart logo"></a>
+	 	</div>
+	 	<div class=\'version-style\'>
+	 		<a target="_blank" href="http://www.shoppingcartproductfeed.com">Product Site</a> | 
+	 		<a target="_blank" href="http://www.shoppingcartproductfeed.com/tos">How To\'s</a><br>
+	 		Version: ' . FEED_PLUGIN_VERSION . CPF_check_version() .'<br>
+	 	</div>
+	 	<div class="gts-link">
+	 		<a target="_blank" href="http://shoppingcartproductfeed.com/google-trusted-store-woocommerce/">Get the Google Trusted Store Plugin<br>Sell More - Be placed 1st!</a>
+	 	</div>
+	 	<div class="gts-logo-link" >
+	 		<a target="_blank" href="http://shoppingcartproductfeed.com/google-trusted-store-woocommerce/"><img class="cpf-logo-style" src=' . $gts_iconurl . ' alt="google trusted stores"></a>
+	 	</div>
+	 </div>
+	 <div style="clear:both"></div>';	 
 }

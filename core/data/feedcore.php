@@ -1,11 +1,13 @@
 <?php
 
   /********************************************************************
-  Version 2.0
+  Version 2.1
     PFeedCore points to site url
 	  Copyright 2014 Purple Turtle Productions. All rights reserved.
 		license	GNU General Public License version 3 or later; see GPLv3.txt
 	By: Keneto 2014-06-06
+		2014-08 Added getVersion because in the future, GTS Trusted Stores 
+			will need to know what services are available.
 
   ********************************************************************/
 
@@ -42,7 +44,7 @@ class PFeedCore {
 			$pluginName = 'WooCommerce';
 			$all_plugins = get_plugins();
 			foreach($all_plugins as $index => $this_plugin)
-				if ($this_plugin['Name'] == 'WP e-Commerce__') {
+				if ($this_plugin['Name'] == 'WP e-Commerce') {
 					$pluginName = 'WP e-Commerce';
 					break;
 				}
@@ -94,6 +96,10 @@ class PFeedCore {
 
 		$result = $db->loadResult();
 		return $result;
+	}
+
+	function getVersion() {
+		return 2;
 	}
   
 	function settingGetW($settingName) {

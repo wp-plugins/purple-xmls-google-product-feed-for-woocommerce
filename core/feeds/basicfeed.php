@@ -1,6 +1,6 @@
 <?php
 
-  /********************************************************************
+	/********************************************************************
   Version 2.0
     A Feed
 	  Copyright 2014 Purple Turtle Productions. All rights reserved.
@@ -39,14 +39,17 @@ class PBasicFeed {
 	public $force_currency = false;
 	public $gmc_enabled = false; //Allow Google merchant centre woothemes extension (WordPress)
 	public $gmc_attributes = array(); //If anything added in here, restrict GMC list to these
+	public $has_product_range = false;
 	public $ignoreDuplicates = false; //useful when products are assigned multiple categories and insufficient identifiers to distinguish them
 	public $max_description_length = 10000;
+	public $max_custom_field = 10000;
 	public $message = ''; //For Error detection
 	public $providerName = '';
 	public $providerNameL = '';
 	public $productCount = 0; //Number of products successfully exported
 	public $productList;
 	public $productTypeFromLocalCategory = false;
+	//public $sellerName = ''; //Required Bing attribute - Merchant/Store that provides this product
 	public $shipping_amount = '0.00';
 	public $shipping_multiplier = 0;
 	public $shipping_sale_multiplier = 0;
@@ -70,6 +73,7 @@ class PBasicFeed {
 		$thisDefault->attributeName = $attributeName;
 		$thisDefault->value = $value;
 		$this->attributeDefaults[] = $thisDefault;
+		return $thisDefault;
 	}
 
 	public function addAttributeMapping($attributeName, $mapTo, $usesCData = false) {
@@ -80,6 +84,7 @@ class PBasicFeed {
 		$thisMapping->deleted = false;
 		$thisMapping->usesCData = $usesCData;
 		$this->attributeMappings[] = $thisMapping;
+		return $thisMapping;
 	}
 
 	public function addErrorMessage($id, $msg, $isWarning = false) {
@@ -147,6 +152,21 @@ class PBasicFeed {
 	function formatProduct($product) {
 		return '';
 	}
+
+	public function getErrorMessages() {
+
+		$error_messages = '';
+
+		foreach($this->errors as $index => $this_error) {
+			if ($this_error->isWarning)
+				$prefix = 'Warning: ';
+			else
+				$prefix = 'Error: ';
+			$error_messages .= '<br>' . $prefix . $this_error->msg . '(' . $this_error->occurrences . ') <a href="http://docs.shoppingcartproductfeed.com/error_doc.php?id=' . $index . '" target="_blank">more...</a>';
+		}
+
+		return $this->message . $error_messages;
+	}
   
 	function getFeedData_internal($remote_category) {
 
@@ -191,19 +211,19 @@ class PBasicFeed {
 					}
 				}
 			}
-			/***********************************************************
-			Category & Brand
-			***********************************************************/
+			//***********************************************************
+			//Category & Brand
+			//***********************************************************
 			if ($this->productTypeFromLocalCategory)
 				$this_product->attributes['product_type'] = $this_product->attributes['localCategory'];
 
-			//This form of handling brand is deprecated as of v3.0.3.0
+			//This form of handling brand (Attribute Mapping v2) is deprecated as of v3.0.3.0
 			if ((!isset($this_product->attributes['brand'])) && (strlen($this->default_brand) > 0))
 				$this_product->attributes['brand'] = $this->default_brand;
 
-			/***********************************************************
-			Price Discount
-			***********************************************************/
+			//***********************************************************
+			//Price Discount
+			//***********************************************************
 			if ($this->discount) {
 				//Basic sale_price is a function of price
 				if ($this->discount_amount > 0 || $this->discount_multiplier != 1) {
@@ -220,22 +240,22 @@ class PBasicFeed {
 					$this_product->attributes['sale_price'] = 0;
 			}
 
-			/***********************************************************
-			Shipping
-			***********************************************************/
+			//***********************************************************
+			//Shipping
+			//***********************************************************
 			$this_product->shipping_amount = 
 				$this->shipping_amount + 										//Base amount
 				$this_product->attributes['regular_price'] * $this->shipping_multiplier + 		//% of Price
 				($this_product->attributes['has_sale_price'] ? $this_product->attributes['sale_price'] * $this->shipping_sale_multiplier : 0);		//% of Sale Price
-			/***********************************************************
-			Other
-			***********************************************************/
+			//***********************************************************
+			//Other
+			//***********************************************************
 			if ($this->system_wide_tax  && (!isset($this_product->attributes['tax'])))
 				$this_product->attributes['tax'] = $this->system_wide_tax_rate;
 
-			/***********************************************************
-			Done Adjustments. Send to descendant feed-provider for formatting
-			***********************************************************/
+			//***********************************************************
+			//Done Adjustments. Send to descendant feed-provider for formatting
+			//***********************************************************
 
 			$output .= $this->formatProduct($this_product);
 
@@ -244,21 +264,6 @@ class PBasicFeed {
 
 		return $output;
 
-	}
-
-	public function getErrorMessages() {
-
-		$error_messages = '';
-
-		foreach($this->errors as $this_error) {
-			if ($this_error->isWarning)
-				$prefix = 'Warning: ';
-			else
-				$prefix = 'Error: ';
-			$error_messages .= '<br>' . $prefix . $this_error->msg . '(' . $this_error->occurrences . ')';
-		}
-
-		return $this->message . $error_messages;
 	}
 
 	function getFeedData($category, $remote_category, $file_name, $saved_feed = null) {
@@ -499,12 +504,16 @@ class PCSVFeedEx extends PBasicFeed {
 
 	function formatProduct($product) {
 
+		//********************************************************************
 		//Trigger Mapping 3.0 Before-Feed Event
+		//********************************************************************
 		foreach ($this->attributeDefaults as $thisDefault)
 			if ($thisDefault->stage == 2)
 				$product->attributes[$thisDefault->attributeName] = $thisDefault->getValue($product);
 
+		//********************************************************************
 		//Build output
+		//********************************************************************
 		$output = '';
 		foreach($this->attributeMappings as $thisAttributeMapping) {
 			if ($thisAttributeMapping->enabled && !$thisAttributeMapping->deleted && isset($product->attributes[$thisAttributeMapping->attributeName]) ) {
@@ -517,12 +526,16 @@ class PCSVFeedEx extends PBasicFeed {
 			$output .= $this->fieldDelimiter;
 		}
 
+		//********************************************************************
 		//Trigger Mapping 3.0 After-Feed Event
+		//********************************************************************
 		foreach ($this->attributeDefaults as $thisDefault)
 			if ($thisDefault->stage == 3)
 				$thisDefault->postProcess($product, $output);
 
-		//Trim trailing comma
+		//********************************************************************
+		//Trim trailing delimiter
+		//********************************************************************
 		return substr($output, 0, -1) . "\r\n";
 
 	}
@@ -541,6 +554,7 @@ class PCSVFeedEx extends PBasicFeed {
 
 	function initializeOverrides($saved_feed) {
 		parent::initializeOverrides($saved_feed);
+		//Converting Attribute mappings v2.0 to v3.0
 		foreach($this->feedOverrides->overrides as $key => $mapTo) {
 			$n = $this->getMappingByMapto($mapTo);
 			if ($n == null)

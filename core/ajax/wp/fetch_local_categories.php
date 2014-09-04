@@ -1,15 +1,21 @@
 <?php
 
-  /********************************************************************
-  Version 2.0
-    List of local categories
+	/********************************************************************
+	Version 2.0
+		List of local categories
 		Copyright 2014 Purple Turtle Productions. All rights reserved.
 		license	GNU General Public License version 3 or later; see GPLv3.txt
 	By: Keneto 2014-07-15
-  ********************************************************************/
+	********************************************************************/
+
+	define ('XMLRPC_REQUEST', true);
+	ob_start(null);
 
 	require_once dirname(__FILE__) . '/../../../../../../wp-load.php';
+	require_once dirname(__FILE__) . '/../../data/feedcore.php';
 	require_once dirname(__FILE__) . '/../../data/productcategories.php';
+
+	ob_clean();
 
 	$categoryList = new PProductCategories();
 	$result = new stdClass();

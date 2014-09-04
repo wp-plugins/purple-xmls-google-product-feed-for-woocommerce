@@ -1,25 +1,27 @@
-﻿=== WooCommerce Shopping Cart Export ===
+=== WooCommerce Shopping Cart Export ===
 Contributors: PurpleTurtlePro
 Tags: WooCommerce, Google, Merchant, Shopping, xml, product feed, Nextag, Google product feed, Amazon, eBay, google merchant, amazon seller, shopzilla, shopify, export csv, export xml, export tab
 Requires at least: 3.0.1
-Tested up to: 3.9.1
+Tested up to: 3.9.2
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-OneClick WooCommerce Export:Google Merchant Center|Amazon Seller|Shopzilla|eBay Merchant|NexTag|CSV/XML--OneTime & Scheduled
+OneClick WooCommerce Export:Google Merchant Center|Amazon Seller & Shopper|Shopzilla|eBay Merchant|CSV/XML--OneTime & Scheduled
 
 == Description ==
 
-The Shopping Cart Product Feed for WooCommerce creates output by of any product category (and its details) in your  WooCommerce installation It includes all required feed types for Google Merchant Center, Amazon Seller, Shopzilla, eBay Merchant, NexTag for variable & non-variable products.  Additionally - you can choose to export CSV/XML directly for integration to other platforms (billing systems, other vendor sites, sub-sales sites, etc).
+The Shopping Cart Product Feed for WooCommerce creates output by of any product category (and its details) in your  WooCommerce installation It includes all required feed types for Google Merchant Center, Amazon Seller, Amazon Shopper, Shopzilla, eBay Merchant, NexTag for variable & non-variable products.  Additionally - you can choose to export CSV/XML directly for integration to other platforms (billing systems, other vendor sites, sub-sales sites, etc).
 
-The Plugin creates a digestible XML feed for your targets (Google, eBay, Amazon, etc.)  to import WooCommerce Products into your Merchant Account. This Plugin feeds that are available for export (timed and ad hoc) for these merchant providers - as well as a full CSV/XML Export is available as well.
+The Plugin creates a digestible feed for SPECIFIC to each Merchant (Google, eBay, Amazon, Bing, etc.)  to import WooCommerce Products into your Merchant Account. This Plugin feeds that are available for export (timed and ad hoc) for these merchant providers - as well as a full CSV/XML Export is available as well.
 
-[**Free Version**](http://www.shoppingcartproductfeed.com/) --  Includes all functionality - limited to 10 items
-> [**Upgrade to Pro**](http://www.shoppingcartproductfeed.com/) -- The Pro version supports unlimited Attributes and Variations and sync schedule
+[**Which Merchants Are Supported?**](http://shoppingcartproductfeed.com/question/targets-plugin-support/) -- Which merchants/exports are supported?<P>
+
+>[**Free Version**](http://www.shoppingcartproductfeed.com/) --  Includes all functionality - limited to 10 items
+><BR>[**Upgrade to Pro**](http://www.shoppingcartproductfeed.com/) -- The Pro version supports unlimited Attributes and Variations and sync schedule
 ><BR> **AUTOMATIC** -- Exports are done on a timed basis - set it once only!
 ><BR> **SIMPLE** -- Configured in less than 2 minutes, one page - done!
-
+><P>[**Google Trusted Store!**](http://shoppingcartproductfeed.com/google-trusted-store/) Hooks into our other plugin (Google Trusted Store for WooCommerce) 
 
 The plugin includes some great options to create your own customized feed - for export to other platforms.  Join the over 2,000 other users of our plugin to push your WooCommerce product set (all details, sale prices, etc.) to many other sales platforms - enter once - sell everywhere!
 
@@ -85,16 +87,22 @@ This will not redirect to the feed URL you just created - ready for submission!
 5. Manage existing feeds that you have created
 
 == Changelog ==
-<h4>Version 3.0.3.24 2014-08-05</h4>
+<h4>Version 3.0.4.0 2014-09-04</h4>
 <ul>
-  <li><strong>Fix</strong>Introduces several fixes including error-reporting and cron updates</li>
+  <li><strong>New</strong> Shareasale Merchant Support</li>
+	<li><strong>New</strong> Added WP E-Commerce support</li>
+	<li><strong>New</strong> Support for Taxonomy Module (allows other languages to replace default taxonomies seamlessly</li>
+	<li><strong>New</strong> New Amazon Seller categories (Home & garden, Jewellery</li>
+	<li><strong>Change</strong> ProductList XML now supports Attribute Mapping v3</li>
+	<li><strong>Fix</strong> Correction to Stock-Quantity loading</li>
 </ul>
 <h4>Version 3.0.3.0 2014-08-05</h4>
 <ul>
-  <li><strong>New</strong>Multi-Category Selector</li>
-  <li><strong>New</strong>Custom Feed Output filtering</li>
-  <li><strong>New</strong>Rakuten Feed Provider Added</li>
-  <li><strong>Change</strong>Improved flexibility of Attribute Mapping</li>
+  <li><strong>New</strong></li>
+  <li><strong>New</strong> Multi-Category Selector</li>
+  <li><strong>New</strong> Custom Feed Output filtering</li>
+  <li><strong>New</strong> Rakuten Feed Provider Added</li>
+  <li><strong>Change</strong> Improved flexibility of Attribute Mapping</li>
   <li><strong>Fix</strong> Manage feeds page allows editing of feeds</li>
 </ul>
 <h4>Version 3.0.1.0 2014-05-24</h4>

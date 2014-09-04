@@ -52,15 +52,16 @@ class PFeedPageDialogs {
 				<option value="Bing">Bing Feed</option>
 				<option value="Nextag">Nextag Feed</option>
 			  <option value="PriceGrabber">PriceGrabber</option>
-				<option value="Rakuten">Rakuten Feed (Beta)</option>
+				<option value="Rakuten">Rakuten Feed</option>
 				<option value="ShareASale">ShareASale Merchant Data Feed</option>
 				<option value="Shopzilla">Shopzilla Feed</option>
+				<option value="AmmoSeek">AmmoSeek</option>
 				<option value="">------</option>
 				<option value="Productlistxml">Product List XML Export</option>
 				<option value="Productlistcsv">Product List CSV Export</option>
 			</select>
 		  </div>
-		  <div style="float:left; width: 200px;">
+		  <div style="float:left; width: 100px;">
 		    &nbsp;
 		  </div>' . $notice . '
 		  <div style="clear: left;">

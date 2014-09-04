@@ -11,6 +11,7 @@
   ********************************************************************/
 
 require_once 'core/classes/md5.php';
+require_once 'core/classes/cart-product-feed.php';
 require_once 'core/data/attributedefaults.php';
 require_once 'core/data/feedactivitylog.php';
 require_once 'core/data/feedcore.php';
@@ -19,5 +20,6 @@ require_once 'core/data/feedoverrides.php';
 require_once 'core/data/productlist.php';
 require_once 'core/data/shippingdata.php';
 require_once 'core/data/taxationdata.php';
+require_once 'core/registration.php';
 
 ?>

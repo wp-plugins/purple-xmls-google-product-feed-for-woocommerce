@@ -1,0 +1,8 @@
+ammunition
+magazines
+guns
+bullets
+brass
+primers
+powder
+reloading_misc

@@ -100,7 +100,7 @@ class PBaseFeedDialog {
 		else
 			return '
 				  <span class="label">' . $this->service_name . ' Category : </span>
-				  <span><input type="text" name="categoryDisplayText" class="text_big" id="categoryDisplayText"  onkeyup="doFetchCategory_timed(\'' . $this->service_name . '\',  this.value)" value="' . $initial_remote_category . '" autocomplete="off" /></span>
+				  <span><input type="text" name="categoryDisplayText" class="text_big" id="categoryDisplayText"  onkeyup="doFetchCategory_timed(\'' . $this->service_name . '\',  this.value)" value="' . $initial_remote_category . '" autocomplete="off" placeholder="Start typing for a category name"/></span>
 				  <div id="categoryList" class="categoryList"></div>
 				  <input type="hidden" id="remote_category" name="remote_category" value="' . $initial_remote_category . '">';
 	}

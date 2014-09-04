@@ -46,6 +46,15 @@ class FoundAttribute {
 	function fetchAttributesWe() {
 		//From WordPress / WP-ECommerce
 		$this->attributes = array();
+		global $wpdb;
+		$attr_table = $wpdb->prefix . 'woocommerce_attribute_taxonomies';
+		$this->attrOptionsTableName = $wpdb->prefix . 'options';
+		$sql = "
+			SELECT terms.name as attribute_name 
+			FROM $wpdb->term_taxonomy taxo 
+			LEFT JOIN $wpdb->terms terms ON taxo.term_id = terms.term_id
+			WHERE (taxo.parent = 0) AND (taxo.taxonomy = 'wpsc-variation')";
+		$this->attributes = $wpdb->get_results($sql);
 	}
 
   /*function fetchAttrOptions($attrVal) {

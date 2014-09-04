@@ -112,8 +112,8 @@ class PProductList {
 			$item->attributes['product_type'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
 			$item->attributes['localCategory'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $prod->category_name));
 			$item->attributes['localCategory'] = str_replace("|", ">", $item->attributes['localCategory']);
-			$item->attributes['link'] = $pfcore->siteHost . '/index.php?option=com_virtuemart&view=productdetails&virtuemart_product_id=' . $prod->product_id;
-			$item->feature_imgurl = $prod->file_url;
+			$item->attributes['link'] = $pfcore->siteHost . 'index.php?option=com_virtuemart&view=productdetails&virtuemart_product_id=' . $prod->product_id;
+			$item->feature_imgurl =  $pfcore->siteHost . $prod->file_url;
 			$item->attributes['condition'] = 'New';
 			$item->attributes['regular_price'] = $prod->product_price;
 			$item->attributes['has_sale_price'] = false;

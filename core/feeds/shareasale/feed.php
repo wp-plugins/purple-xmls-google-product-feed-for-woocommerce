@@ -64,8 +64,8 @@ class PShareASaleFeed extends PCSVFeedEx {
 		//Pre-flight
 		//********************************************************************
 		if (!isset($this->merchant_id)) {
-			$this->addErrorMessage(9000, 'MerchantID not configured. Need advanced command: $merchant-id = ....');
-			$this->addErrorMessage(9001, 'You can find your Merchant ID in the top left corner of the ShareASale web interface for advertisers/merchants (login required)');
+			$this->addErrorMessage(9000, 'MerchantID not configured. Need advanced command: $merchant-id = ....', true);
+			$this->addErrorMessage(9001, 'You can find your Merchant ID in the top left corner of the ShareASale web interface for advertisers/merchants (login required)', true);
 			$this->merchant_id = '';
 		}
 

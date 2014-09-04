@@ -6,107 +6,89 @@
 	  Copyright 2014 Purple Turtle Productions. All rights reserved.
 		license	GNU General Public License version 3 or later; see GPLv3.txt
 	By: Keneto 2014-06-04
-
+		2014-08 Moved to Attribute Mapping v3
   ********************************************************************/
 
 require_once dirname(__FILE__) . '/../basicfeed.php';
 
-class PBingFeed extends PBasicFeed{
+class PBingFeed extends PCSVFeedEx {
 
 	public $bingForceGoogleCategory = false;
 	public $bingForcePriceDiscount = false;
 
 	function __construct () {
+		parent::__construct();
 		$this->providerName = 'Bing';
 		$this->providerNameL = 'bing';
 		$this->fileformat = 'csv';
-		$this->fields = array('MPID', 'Title', 'Brand', 'ProductURL', 'Price', 'Description', 'ImageURL', 'SKU', 'Availability', 'Condition', 'ProductType', 'B_Category');
-		parent::__construct();
+		$this->fields = array();
+		$this->fieldDelimiter = "\t";
+		$this->descriptionStrict = true;
+		$this->stripHTML = true;	
+		//Create some attributes (Mapping 3.0)
+		$this->addAttributeMapping('id', 'MPID');
+		$this->addAttributeMapping('title', 'Title');
+		$this->addAttributeMapping('link', 'ProductURL');
+		$this->addAttributeMapping('regular_price', 'Price');
+		if ($this->bingForcePriceDiscount)
+			$this->addAttributeMapping('sale_price', 'PriceWithDiscount');
+		$this->addAttributeMapping('description', 'Description');
+		$this->addAttributeMapping('feature_imgurl', 'ImageURL');
+		//Note: Bing Specs require SKU != MPN. MPN currently not used
+		$this->addAttributeMapping('sku', 'SKU');
+		$this->addAttributeMapping('condition', 'Condition');
+		$this->addAttributeMapping('availability', 'Availability');
+		$this->addAttributeMapping('product_type', 'ProductType');
+		$this->addAttributeMapping('current_category', 'B_Category');
+		
 	}
 
   function formatProduct($product) {
 	
-		//Prepare input
-		$current_feed['MPID'] = $product->id;
-		//if ($product->isVariable)
-		//$current_feed['Item Group ID'] = $product->item_group_id;
+		//********************************************************************
+		//Prepare the Product Attributes
+		//********************************************************************
 
-		$current_feed['Title'] = $product->attributes['title'];
-		$current_feed['ProductURL'] = $product->attributes['link'];
+		//Cheat: These three fields aren't ready to be attributes yet, so adding manually:
+		$product->attributes['description'] = $product->description;
+		$product->attributes['current_category'] = $this->current_category;
+		$product->attributes['feature_imgurl'] = $product->feature_imgurl;
+
+		//if ($product->isVariable)
+		//'Item Group ID' => $product->item_group_id;
 
 		if (strlen($product->attributes['regular_price']) == 0)
-		$product->attributes['regular_price'] = '0.00';
+			$product->attributes['regular_price'] = '0.00';
 
-		$current_feed['Price'] = sprintf($this->currency_format, $product->attributes['regular_price']);
+		$product->attributes['regular_price'] = sprintf($this->currency_format, $product->attributes['regular_price']);
 		if ($product->attributes['has_sale_price'])
-			$current_feed['PriceWithDiscount'] = sprintf($this->currency_format, $product->attributes['sale_price']);
-
-		$current_feed['Description'] = $product->description;
-		$current_feed['ImageURL'] = $product->feature_imgurl;
-
-		$current_feed['SKU'] = $product->attributes['sku'];
-		//Note: Bing Specs require SKU != MPN. MPN currently not used
+			$product->attributes['sale_price'] = sprintf($this->currency_format, $product->attributes['sale_price']);
+		
 
 		//Note: Only In stock && New products will publish on Bing
-		$current_feed['Condition'] = $product->attributes['condition'];
-		if ($product->attributes['stock_status'] == 1) {
-		$current_feed['Availability'] = 'In Stock';
-		} else {
-		$current_feed['Availability'] = 'Out of Stock';
-		}
+		if ($product->attributes['stock_status'] == 1)
+			$product->attributes['availability'] = 'In Stock';
+		else
+			$product->attributes['availability'] = 'Out of Stock';
 
-
-		$current_feed['ProductType'] = $product->attributes['product_type'];
-		$current_feed['B_Category'] = $this->current_category;
 		//if ($this->bingForceGoogleCategory) {
 		//For this to work, we need to enable a Google taxonomy dialog box.
 		//}
 		//Need one day: Bingads_grouping, Bingads_label, Bingads_redirect
 
-		//Run overrides 
-		//Note: One day, when the feed can report errors, we need to report duplicate overrides when used_so_far makes a catch
-		$used_so_far = array();
-		foreach($product->attributes as $key => $a) {
-			if (isset($this->feedOverrides->overrides[$key]) && !in_array($this->feedOverrides->overrides[$key], $used_so_far)) {
-				$current_feed[$this->feedOverrides->overrides[$key]] = $a;
-				$used_so_far[] = $this->feedOverrides->overrides[$key]; 
-			}
-		}
+		//********************************************************************
+		//Validation checks & Error messages
+		//********************************************************************
+		/* 
+		title, brand, (MPN), Sku, b_category = 255
+		URL, ImageURL = 2000, UPC12 ISBN13
+		Description 5000
+		if (strlen($product->attributes['title']) > 255) {
+			$product->attributes['title'] = substr($product->attributes['title'], 0, 254);
+			$this->addErrorMessage(000, 'Title truncated for ' . $product->attributes['title'], true);
+		}*/
 
-		//Post-override cleanup
-		if (($this->system_wide_tax) && (!isset($current_feed['Tax']))){
-			//$current_feed['Tax'] = 
-		}
-	
-		if (($this->system_wide_shipping_type) && (!isset($current_feed['Tax']))){
-			//$current_feed['Tax'] = 
-			//$current_feed['ShippingWeight'] = $product->attributes['weight'];
-		}
-
-		//Build output in order of fields
-		$output = '';
-		foreach($this->fields as $field) {
-			if (isset($current_feed[$field]))
-				$output .= $current_feed[$field] . $this->fieldDelimiter;
-			else
-				$output .= $this->fieldDelimiter;
-		}
-
-		//Trim trailing comma
-		return substr($output, 0, -1) . "\r\n";
-	}
-
-	function getFeedHeader($file_name, $file_path) {
-		if ($this->bingForcePriceDiscount)
-		$this->insertField('PriceWithDiscount', 'Price');
-		$output = '';
-		foreach($this->fields as $field) {
-			if (isset($this->feedOverrides->overrides[$field]))
-				$field = $this->feedOverrides->overrides[$field];
-			$output .= $field . $this->fieldDelimiter;
-		}
-		//Trim trailing comma
-		return substr($output, 0, -1) .  "\r\n";
+		return parent::formatProduct($product);
 	}
 
 }

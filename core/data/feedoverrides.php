@@ -86,6 +86,17 @@ class PFeedOverride {
 					if ($parent->getMapping($params[1]) != null)
 						$parent->getMapping($params[1])->deleted = true;
 					break;
+				case 'limitoutput':
+					if ((strtolower($params[1]) == 'from') && isset($params[4])) {
+						$parent->has_product_range = true;
+						$parent->product_limit_low = $params[2];
+						$parent->product_limit_high = $params[4];
+					} elseif ((strtolower($params[1]) == 'to') && isset($params[2])) {
+						$parent->has_product_range = true;
+						$parent->product_limit_low = 0;
+						$parent->product_limit_high = $params[2];
+					}
+					break;
 				case 'mapattribute':
 					$parent->addAttributeMapping($params[1], $params[3]);
 					break;
@@ -208,6 +219,7 @@ class PFeedOverride {
 		if ($this_option == '$field_delimiter') {$parent->fieldDelimiter = $value;}
 		if ($this_option == '$ignore_duplicates') {$parent->ignoreDuplicates = true;}
 		if ($this_option == '$max_description_length') {$parent->max_description_length = $value;}
+		if ($this_option == '$max_custom_field') {$parent->max_custom_field = $value;}
 		if ($this_option == '$productTypeFromLocalCategory') {$parent->productTypeFromLocalCategory = true;}
 		if ($this_option == '$productTypeFromWooCommerceCategory') {$parent->productTypeFromLocalCategory = true;} //Deprecated
 		if ($this_option == '$strip_html_markup') {$parent->stripHTML = true;}
@@ -343,6 +355,10 @@ class PFeedOverride {
 			$parent->merchant_id = $value;
 		if ($this_option == '$merchant')
 			$parent->merchant = $value;
+
+		//AmmoSeek needs retailer_name
+		if ($this_option == '$retailer_name')
+			$parent->retailer_name = $value;
 
 	}
 

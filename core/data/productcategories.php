@@ -18,6 +18,20 @@ class PProductCategories {
 			$this->isolateCategories($restriction);
 	}
 
+	public function asCSV() {
+		$result = array();
+		foreach($this->categories as $this_category) {
+			$this->categoryToCSV($this_category, $result);
+		}
+		return implode(',', $result);
+	}
+
+	private function categoryToCSV($this_category, &$result) {
+		$result[] = $this_category->id;
+		foreach($this_category->children as $child_category)
+			$this->categoryToCSV($child_category, $result);
+	}
+
 	private function idToCategory_internal($categories, $category_id) {
 		$result = null;
 		if ($categories->id == $category_id) {

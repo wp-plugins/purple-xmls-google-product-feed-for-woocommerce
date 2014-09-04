@@ -8,11 +8,14 @@
 	By: Keneto 2014-05-18
 	********************************************************************/
 
+	define ('XMLRPC_REQUEST', true);
+
 	require_once dirname(__FILE__) . '/../../../../../../wp-load.php';
+	require_once dirname(__FILE__) . '/../../data/feedcore.php';
 
 	$data = '';
-	if (class_exists('PCategoryModule'))
-		$data = PCategoryModule::getCategoryList(strtolower($_POST['service_name']));
+	if (class_exists('CPF_Taxonomy'))
+		$data = CPF_Taxonomy::onLoadTaxonomy(strtolower($_POST['service_name']));
 
 	if (strlen($data) == 0)
 		$data = file_get_contents(dirname(__FILE__) . '/../../feeds/' . strtolower($_POST['service_name']) . '/categories.txt');

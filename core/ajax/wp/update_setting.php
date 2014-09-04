@@ -1,33 +1,34 @@
 <?php
 
 	/********************************************************************
-	Version 2.0
-		AJAX script updates a setting
+	Version 2.1
+	AJAX script updates a setting
 		Copyright 2014 Purple Turtle Productions. All rights reserved.
 		license	GNU General Public License version 3 or later; see GPLv3.txt
 	By: Keneto 2014-05-09
+		2014-08 Included code to support Google trusted stores
 
-  ********************************************************************/
+	********************************************************************/
 
 	if (!isset($_POST['setting']) || !isset($_POST['value'])) {
-    echo 'Error in setting';
+		echo 'Error in setting';
 		return;
-  }
+	}
 
-  $setting = $_POST['setting'];
+	$setting = $_POST['setting'];
 	if (isset($_POST['feedid']))
 		$feedid = $_POST['feedid'];
 	else
 		$feedid = '';
-  $value = $_POST['value'];
+	$value = $_POST['value'];
 
-  require_once dirname(__FILE__) . '/../../../../../../wp-load.php';
-  require_once dirname(__FILE__) . '/../../classes/cron.php';
+	require_once dirname(__FILE__) . '/../../../../../../wp-load.php';
+	require_once dirname(__FILE__) . '/../../classes/cron.php';
 
-  //Don't update here - security issue would allow any option to be updated
-  //Only update within an if()
+	//Don't update here - security issue would allow any option to be updated
+	//Only update within an if()
 
-  if ($setting == 'cp_feed_delay') {
+	if ($setting == 'cp_feed_delay') {
 
 		update_option($setting, $value);
 
@@ -36,7 +37,12 @@
 		if ($next_refresh )
 			wp_unschedule_event($next_refresh, 'update_cartfeeds_hook');
 		wp_schedule_event(time(), 'refresh_interval', 'update_cartfeeds_hook');
-  }
+	}
+
+	if ($setting == 'gts_licensekey')
+		update_option($setting, $value);
+	if ($setting == 'cp_licensekey')
+		update_option($setting, $value);
 
   //Some PHPs don't return the post correctly when it's long data
   if (strlen($setting) == 0) {
@@ -49,7 +55,7 @@
 		}
   }
 
-  if (strpos($setting, 'cp_advancedFeedSetting') !== false) {
+	if (strpos($setting, 'cp_advancedFeedSetting') !== false) {
   
 		//$value may get truncated on an & because $_POST can't parse
 		//so pull value manually
@@ -75,7 +81,7 @@
 				WHERE `id`=$feedid";
 			$wpdb->query($sql);
 		}
-  }
+	}
 
   echo 'Updated.';
 

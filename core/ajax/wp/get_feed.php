@@ -8,6 +8,10 @@
 	By: Keneto 2014-07-01
 	********************************************************************/
 
+	define ('XMLRPC_REQUEST', true);
+	//ob_start(null, 0, PHP_OUTPUT_HANDLER_FLUSHABLE | PHP_OUTPUT_HANDLER_CLEANABLE);
+  ob_start(null);
+
 	require_once dirname(__FILE__) . '/../../../../../../wp-load.php';
 
 	function safeGetPostData($index) {
@@ -15,6 +19,11 @@
 			return $_POST[$index];
 		else
 			return '';
+	}
+
+	function doOutput($output) {
+		ob_clean();
+		echo json_encode($output);
 	}
 
 	$requestCode = safeGetPostData('provider');
@@ -28,14 +37,14 @@
 	$output->url = '';
 
 	if (strlen($requestCode) * strlen($local_category) == 0) {
-		$output->errors = 'Error: error in AJAX request. Insufficient data';
-		echo json_encode($output);
+		$output->errors = 'Error: error in AJAX request. Insufficient data or categories supplied.';
+		doOutput($output);
 		return;
 	}
 
 	if (strlen($remote_category) == 0) {
 		$output->errors = 'Error: Insufficient data. Please fill in "' . $requestCode . ' category"';
-		echo json_encode($output);
+		doOutput($output);
 		return;
 	}
 	
@@ -45,7 +54,7 @@
 	$dir = PFeedFolder::uploadRoot();
 	if (!is_writable($dir)) {
 		$output->errors = "Error: $dir should be writeable";
-		echo json_encode($output);
+		doOutput($output);
 		return;
 	}
 	$dir = PFeedFolder::uploadFolder();
@@ -54,7 +63,7 @@
 	}
 	if (!is_writable($dir)) {
 		$output->errors = "Error: $dir should be writeable";
-		echo json_encode($output);
+		doOutput($output);
 		return;
 	}
 
@@ -62,7 +71,7 @@
 
 	if (!file_exists(dirname(__FILE__) . '/../../' . $providerFile)) {
 	  $output->errors = 'Error: Provider file not found.';
-		echo json_encode($output);
+		doOutput($output);
 	  return;
 	}
 
@@ -89,6 +98,6 @@
 		$output->url = PFeedFolder::uploadURL() . $x->providerName . '/' . $file_name . '.' . $x->fileformat;
 	$output->errors = $x->getErrorMessages();
 
-	echo json_encode($output);
+	doOutput($output);
 
 ?>

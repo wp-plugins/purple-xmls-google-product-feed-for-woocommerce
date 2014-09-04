@@ -9,6 +9,7 @@
 
   ********************************************************************/
  
+ //Retrieves user-defined shipping settings and saves into class-local variable
 class PShippingData {
 
 	function __construct($parentfeed) {

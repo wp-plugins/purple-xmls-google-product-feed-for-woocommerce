@@ -14,33 +14,29 @@
  *
  */
 require_once 'cart-product-setup.php';
-require_once 'core/classes/dialoglicensekey.php';
-include_once 'core/classes/dialogfeedpage.php';
 
 /**
  * Hooks for adding admin specific styles and scripts
  *
  */
-function register_cart_product_styles_and_scripts() {
+function register_cart_product_styles_and_scripts() 
+{
+	wp_register_style( 'cart-product-style', plugins_url( 'css/cart-product_v3.40.css', __FILE__ ) );
+	wp_enqueue_style( 'cart-product-style' );
 
-  wp_register_style( 'cart-product-style', plugins_url( 'css/cart-product.css', __FILE__ ) );
-  wp_enqueue_style( 'cart-product-style' );
+	wp_register_style( 'cart-product-colorstyle', plugins_url( 'css/colorbox.css', __FILE__ ) );
+	wp_enqueue_style( 'cart-product-colorstyle' );
 
-  wp_register_style( 'cart-product-colorstyle', plugins_url( 'css/colorbox.css', __FILE__ ) );
-  wp_enqueue_style( 'cart-product-colorstyle' );
+	wp_enqueue_script( 'jquery' );
 
-  wp_enqueue_script( 'jquery' );
-
-  wp_register_script( 'cart-product-script', plugins_url( 'js/cart-product.js', __FILE__ ), array( 'jquery' ) );
-  wp_enqueue_script( 'cart-product-script' );
+	wp_register_script( 'cart-product-script', plugins_url( 'js/cart-product.js', __FILE__ ), array( 'jquery' ) );
+	wp_enqueue_script( 'cart-product-script' );
 
 	wp_register_script( 'cart-product-colorbox', plugins_url( 'js/jquery.colorbox-min.js', __FILE__ ), array( 'jquery' ) );
-  wp_enqueue_script( 'cart-product-colorbox' );
+	wp_enqueue_script( 'cart-product-colorbox' );
 
 }
 add_action( 'admin_enqueue_scripts', 'register_cart_product_styles_and_scripts' );
-
-
 
 /**
  * Add menu items to the admin
@@ -83,16 +79,18 @@ add_action( 'admin_menu', 'cart_product_admin_menu' );
 //include_once('cart-product-version-check.php');
 /**
  * Create news feed page
- *
  */
-function cart_product_feed_admin_page() {
+function cart_product_feed_admin_page() 
+{
+	require_once 'cart-product-wpincludes.php';
+	require_once 'core/classes/dialoglicensekey.php';
+	include_once 'core/classes/dialogfeedpage.php';
 
-	$iconurl = plugins_url( '/', __FILE__ ) . '/images/cp_feed32.png';
-	echo "<div class='purplefeedspage wrap'>";
-	echo '<div id="icon-purple_feed" class="icon32" style="background: transparent url( ' . $iconurl . ' ) no-repeat"><br>
-				</div>
-				<h2>Shopping Cart Product Feed</h2>';
-	//prints right-hand info: links and version number/check
+	echo 	"<div class='purplefeedspage wrap'>";
+	echo 	"<div class='cpf-header'>";
+	echo 	'<h2>Shopping Cart Product Feed</h2>';
+	echo    '</div>';
+	//prints logo/links header info: also version number/check
 	CPF_print_info();
 	$action = '';
 	$source_feed_id = -1;
@@ -109,6 +107,7 @@ function cart_product_feed_admin_page() {
 	switch ($action) {
 		case 'update_license':
 			//I think this is AJAX only now -K
+			//No... it is still used (2014/08/25) -K
 			if ( isset( $_POST['license_key'] ) ) {
 				$licence_key = $_POST['license_key'];
 				if ( $licence_key != '' )
@@ -157,13 +156,17 @@ function cart_product_feed_admin_page() {
 	</script>';
 
 	//WordPress Header ( May contain a message )
+
 	global $message;
-	if (strlen($message) > 0 && strlen($reg->error_message) > 0)
-		$message .= '<br>';
+	if ( strlen($message) > 0 && strlen($reg->error_message) > 0 )
+		$message .= '<br>'; //insert break after local message (if present)
 	$message .= $reg->error_message;
-	if (strlen($message) > 0 ) {
+	if ( strlen($message) > 0 ) 
+	{
+		//echo '<div id="setting-error-settings_updated" class="error settings-error">'
 		echo '<div id="setting-error-settings_updated" class="updated settings-error">
-				<p><strong>' . $message . '</strong></p></div>';
+			  <p>' . $message . '</p>
+			  </div>';
 	}
 
 	if ($source_feed_id == -1) {
@@ -179,7 +182,6 @@ function cart_product_feed_admin_page() {
 	if ( !$reg->valid ) {
 	  //echo PLicenseKeyDialog::large_registration_dialog( '' );
 	}
-
 }
 
 /**
@@ -187,6 +189,10 @@ function cart_product_feed_admin_page() {
  *
  */
 function cart_product_feed_manage_page() {
+
+	require_once 'cart-product-wpincludes.php';
+	require_once 'core/classes/dialoglicensekey.php';
+	include_once 'core/classes/dialogfeedpage.php';
 
   $reg = new PLicense();
 
@@ -196,8 +202,4 @@ function cart_product_feed_manage_page() {
 	 //echo PLicenseKeyDialog::large_registration_dialog( '' );
   }
 
-}
-
-function cart_product_feed_edit_page() {
-	echo 'edit page';
 }

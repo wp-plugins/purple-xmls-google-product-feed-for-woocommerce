@@ -13,10 +13,12 @@ require_once 'core/data/savedfeed.php';
 
 ?>
     <div class="wrap">
-    <?php $iconurl = plugins_url( '/', __FILE__ ) . '/images/cp_feed32.png'; ?>
-    <div id="icon-purple_feed" class="icon32" style="background: transparent url( <?php echo( $iconurl ); ?> ) no-repeat">
+    <!-- <?php $iconurl = plugins_url( '/', __FILE__ ) . '/images/cp_feed32.png'; ?>
+    <div id="icon-purple_feed" class="icon32" style="background: transparent url( <?php echo( $iconurl ); ?> ) no-repeat"> 
         <br />
+
     </div>
+    -->
 
     <h2><?php _e( 'Manage Cart Product Feeds', 'cart-product-strings' ); ?></h2>
     <?php CPF_print_info(); ?>
@@ -35,21 +37,21 @@ require_once 'core/data/savedfeed.php';
     }
     if ( $message ) {
         echo '<div id="setting-error-settings_updated" class="updated settings-error">
-<p><strong>' . $message . '</strong></p></div>';
+               <p>' . $message . '</p></div>';
     }
     //"New Feed" button
     $url = site_url() . '/wp-admin/admin.php?page=cart-product-feed-admin';
-    echo '<input type="button" class="button-primary" onclick="document.location=\'' . $url . '\';" value="' . __( 'Generate New Feed', 'cart-product-strings' ) . '" />';
+    echo '<input style="margin-top:12px;" type="button" class="button-primary" onclick="document.location=\'' . $url . '\';" value="' . __( 'Generate New Feed', 'cart-product-strings' ) . '" />';
     ?>
 
     <br />
     <?php
 	echo '
-<script type="text/javascript">
-jQuery( document ).ready( function( $ ) {
-   ajaxhost = "' . plugins_url( '/', __FILE__ ) . '";
-} );
-</script>';
+        <script type="text/javascript">
+        jQuery( document ).ready( function( $ ) {
+           ajaxhost = "' . plugins_url( '/', __FILE__ ) . '";
+        } );
+        </script>';
 	echo PFeedSettingsDialogs::refreshTimeOutDialog();
     // The table of existing feeds
     feeds_main_table();
@@ -385,7 +387,7 @@ function feeds_main_table() {
         <?php
     } else {
         ?>
-        <p><?php _e( 'No feeds yet!.', 'cart-product-strings' ); ?></p>
+        <p><?php _e( 'No feeds yet!', 'cart-product-strings' ); ?></p>
         <?php
     }
 }

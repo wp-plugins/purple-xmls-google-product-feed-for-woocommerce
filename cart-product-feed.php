@@ -3,9 +3,9 @@
 /***********************************************************
   Plugin Name: Cart Product Feed
   Plugin URI: www.shoppingcartproductfeed.com
-  Description: WooCommerce Shopping Cart Export :: <a href="http://shoppingcartproductfeed.com/tos/">How-To Click Here</a>
+  Description: WooCommerce Shopping Cart Export :: <a target="_blank" href="http://shoppingcartproductfeed.com/tos/">How-To Click Here</a>
   Author: ShoppingCartProductFeed.com
-  Version: 3.0.3.24
+  Version: 3.0.4.0
   Author URI: www.shoppingcartproductfeed.com
   Authors: Haris, Keneto (May2014)
   Note: The "core" folder is shared to the Joomla component.
@@ -28,39 +28,10 @@ include_once ('cart-product-information.php');
 register_activation_hook( __FILE__, 'cart_product_activate_plugin' );
 register_deactivation_hook( __FILE__, 'cart_product_deactivate_plugin' );
 
-							//**********************Debug Code only: START
-							/*
-							global $wpdb;
-
-							$table_name = $wpdb->prefix . "cp_feeds";
-							$sql = "
-								CREATE TABLE $table_name (
-								id bigint(20) NOT NULL AUTO_INCREMENT,
-								category varchar(250) NOT NULL,
-								remote_category varchar(1000) NOT NULL,
-								filename varchar(250) NOT NULL,
-								url varchar(500) NOT NULL,
-								type varchar(50) NOT NULL,
-								own_overrides int(10),
-								feed_overrides text,
-								product_count int,
-								title varchar(250),
-								errors text,
-								PRIMARY KEY  (id)
-							)";
-
-							require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
-							dbDelta( $sql );
-
-							//**********************Debug Code only: END
-							*/
-
 global $cp_feed_order, $cp_feed_order_reverse;
 
-require_once 'cart-product-functions.php';
 require_once 'core/classes/cron.php';
 require_once 'core/data/feedfolders.php';
-require_once 'core/registration.php';
 
 if (get_option('cp_feed_order_reverse') == '')
     add_option('cp_feed_order_reverse', false);
@@ -80,6 +51,8 @@ if (get_option('cp_localkey') == '')
 //***********************************************************
 // Basic Initialization
 //***********************************************************
+
+/* Due to AJAX, this function can no longer be called
 
 add_action('init', 'init_cart_product_feed');
 
@@ -134,6 +107,7 @@ function init_cart_product_feed() {
 	if ($x->must_exit())
 	  exit();
 }
+*/
 
 //***********************************************************
 // cron schedules for Feed Updates
@@ -190,7 +164,7 @@ function update_all_cart_feeds($doRegCheck = true) {
 // Links From the Install Plugins Page (WordPress)
 //***********************************************************
 
-if (defined('WP_ADMIN')) {
+if (is_admin()) {
 
 	require_once 'cart-product-feed-admin.php';
 	$plugin = plugin_basename(__FILE__);
