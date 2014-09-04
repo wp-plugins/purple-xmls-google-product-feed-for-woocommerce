@@ -219,7 +219,7 @@ function submitLicenseKey(keyname) {
 	jQuery.ajax({
 		type: "post",
 		url: ajaxhost + cmdUpdateSetting,
-		data: "setting=" + keyname + "&value==" + jQuery("#edtLicenseKey").val(),
+		data: "setting=" + keyname + "&value=" + jQuery("#edtLicenseKey").val(),
 		success: function(res){parseLicenseKeyChange(res)}
 	});
 }
