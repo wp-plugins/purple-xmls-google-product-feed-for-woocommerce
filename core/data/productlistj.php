@@ -65,8 +65,6 @@ class PProductList {
 		if ($this->products == null)
 			$this->loadProducts($parent);
 
-		$master_product_list = array();
-
 		//********************************************************************
 		//Convert the WP_Product List into a Cart-Product Master List (ListItems)
 		//********************************************************************
@@ -123,6 +121,7 @@ class PProductList {
 			}
 			$item->attributes['sku'] = $prod->sku;
 			$item->attributes['weight'] = $prod->weight;
+			$item->attributes['brand'] = $prod->manufacturer;
 	  
 			//If this has a parent, use the parent's attributes if necessary
 			//one day we need to figure out how to know if attributes are blank
@@ -142,11 +141,10 @@ class PProductList {
 			//Variations
 			if ($prod->parent_id > 0) {
 				$item->item_group_id = $prod->parent_id;
-				$item->parent_title = $item->attributes['title']; //This is for eBay feed only, and could otherwise be deleted
 				$item->isVariable = true;
-				//Cheat!
+
 				$item->attributes['item_group_id'] = $prod->parent_id;
-				$item->attributes['parent_title'] = $item->attributes['title'];
+				$item->attributes['parent_title'] = $item->attributes['title']; //For eBay
 			}
 
 			//In-stock status
@@ -154,11 +152,10 @@ class PProductList {
 			$item->attributes['stock_quantity'] = $prod->stock_quantity;
 			if ($prod->stock_quantity == 0)
 				$item->attributes['stock_status'] = 0;
-	  
-			$master_product_list[] = $item;
+
+			$parent->handleProduct($item);
 		}
 
-		return $master_product_list;
   }
 
 }

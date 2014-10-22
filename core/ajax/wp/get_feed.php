@@ -42,11 +42,11 @@
 		return;
 	}
 
-	if (strlen($remote_category) == 0) {
-		$output->errors = 'Error: Insufficient data. Please fill in "' . $requestCode . ' category"';
-		doOutput($output);
-		return;
-	}
+	 if (strlen($remote_category) == 0) {
+	 	$output->errors = 'Error: Insufficient data. Please fill in "' . $requestCode . ' category"';
+	 	doOutput($output);
+	 	return;
+	 }
 	
 	require_once dirname(__FILE__) . '/../../../cart-product-wpincludes.php';
 

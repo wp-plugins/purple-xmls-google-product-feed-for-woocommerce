@@ -47,6 +47,12 @@ class PAmmoSeekFeed extends PBasicFeed{
 		$product->attributes['description'] = $product->description;
 		$product->attributes['current_category'] = $this->current_category;
 		$product->attributes['feature_imgurl'] = $product->feature_imgurl;
+		//Cheat: This should be a CustomModifier
+		if (isset($product->attributes['disable_vars'])) {
+			$ids = explode(',', $product->attributes['disable_vars']);
+			if (in_array($product->attributes['id'], $ids))
+				return '';
+		}
 
 		//Stock Status
 		if ($product->attributes['stock_status'] == 1)

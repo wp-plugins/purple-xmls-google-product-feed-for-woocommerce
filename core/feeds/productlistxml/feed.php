@@ -14,9 +14,10 @@ require_once dirname(__FILE__) . '/../basicfeed.php';
 class PProductlistxmlFeed extends PBasicFeed{
 
 	function __construct () {
+		parent::__construct();
+		$this->forceCData = true;
 		$this->providerName = 'Productlistxml';
 		$this->providerNameL = 'productlistxml';
-		parent::__construct();
 	}
   
 	function formatProduct($product) {
@@ -26,12 +27,29 @@ class PProductlistxmlFeed extends PBasicFeed{
 		$product->attributes['current_category'] = $this->current_category;
 		$product->attributes['feature_imgurl'] = $product->feature_imgurl;
 
+		//Price
+		if (strlen($product->attributes['regular_price']) == 0)
+			$product->attributes['regular_price'] = '0.00';
+		$product->attributes['regular_price'] = sprintf($this->currency_format, $product->attributes['regular_price']) . $this->currency;
+		$sale_price = $this->getMapping('sale_price');
+		if ($sale_price != null)
+			$sale_price->enabled = $product->attributes['has_sale_price'];
+		if ($product->attributes['has_sale_price'])
+			$product->attributes['sale_price'] = sprintf($this->currency_format, $product->attributes['sale_price']) . $this->currency;
+
+		//Images now soft-coded
+		foreach($product->imgurls as $image_count => $imgurl) {
+			$product->attributes['additional_image_link' . $image_count] = $imgurl;
+			if ($image_count > 9)
+				break;
+		}
+
 		//********************************************************************
 		//Make sure all the fields for this product are mapped
 		//********************************************************************
 		foreach($product->attributes as $key => $value)
 			if ($this->getMappingByMapto($key) == null)
-				$this->addAttributeMapping($key, $key);
+				$this->addAttributeMapping($key, $key, $this->forceCData);
 
 		//********************************************************************
 		//Mapping 3.0 Pre-processing
@@ -50,15 +68,6 @@ class PProductlistxmlFeed extends PBasicFeed{
 		foreach($this->attributeMappings as $thisAttributeMapping)
 			if ($thisAttributeMapping->enabled && !$thisAttributeMapping->deleted && isset($product->attributes[$thisAttributeMapping->attributeName]) )
 				$output .= $this->formatLine($thisAttributeMapping->mapTo, $product->attributes[$thisAttributeMapping->attributeName], $thisAttributeMapping->usesCData);
-
-		//Images hard-coded for now
-		$image_count = 0;
-		foreach($product->imgurls as $imgurl) {
-			$output .= $this->formatLine('additional_image_link', $imgurl, true);
-			$image_count++;
-			if ($image_count > 9)
-				break;
-		}
 
 		//********************************************************************
 		//Mapping 3.0 post processing

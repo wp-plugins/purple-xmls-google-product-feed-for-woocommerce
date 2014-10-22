@@ -1,61 +1,32 @@
 <?php
 
-  /********************************************************************
-  Version 2.0
-    FeedOverride is in charge of listing Attribute Mappings and similar activities
-	So <price>7.00</price> can be overridden to <g:sale_price>7.00</g:sale_price>
-	  Copyright 2014 Purple Turtle Productions. All rights reserved.
+	/********************************************************************
+	Version 2.0
+		FeedOverride is in charge of listing Attribute Mappings and similar activities
+		So <price>7.00</price> can be overridden to <g:sale_price>7.00</g:sale_price>
+		Copyright 2014 Purple Turtle Productions. All rights reserved.
 		license	GNU General Public License version 3 or later; see GPLv3.txt
 	By: Keneto 2014-05-15
-  Note: FeedOverrides is also a kind of "FeedDefaults" and a "FeedAdjustments" too
-    This name is getting a little overloaded and might be better organized as three
-	separate classes.
+		2014-09 stripped out CMS interface and moved it to ancestor class
+	********************************************************************/
 
-  ********************************************************************/
+require_once dirname(__FILE__) . '/feedoverridesbase.php';
 
-function ptokens($source) {
-
-	//Old: $items = explode(' ' , $source); (Couldn't account for quotes)
-	$items = array();
-	$index = 0;
-	$used_so_far = 0;
-	$this_token = '';
-	while ($used_so_far < strlen($source)) {
-		if ($source[$used_so_far] == ' ') {
-			$items[$index] = $this_token;
-			$this_token = '';
-			$index++;
-		} elseif ($source[$used_so_far] == '"') {
-			$used_so_far++;
-			while (($used_so_far < strlen($source)) && ($source[$used_so_far] != '"')) {
-				$this_token .= $source[$used_so_far];
-				$used_so_far++;
-			}
-		} else
-			$this_token .= $source[$used_so_far];
-		$used_so_far++;
-	}
-	$items[$index] = $this_token;
-
-	return $items;
-
-}
-
-class PFeedOverride {
-
-	public $overrides = array();
+class PFeedOverride extends PBaseFeedOverride {
 
 	function __construct($providerName, $parent, $saved_feed) {
 
-		if (($saved_feed == null) || ($saved_feed->own_overrides != 1) ) {
-			global $pfcore;
-			$loadOverrides = 'loadOverrides' . $pfcore->callSuffix;
-			$this->$loadOverrides($providerName);
-		} else {
-			$this->loadedOptions = explode("\n", $saved_feed->feed_overrides);
-		}
+		//Owner allows ancestor to communicate with parent
+		$this->owner = $parent;
+		$this->loadDropDownMappings($providerName);
+		if (($saved_feed == null) || ($saved_feed->own_overrides != 1) )
+			$this->loadAdvancedCommands($providerName);
+		else
+			$this->advancedCommands = explode("\n", $saved_feed->feed_overrides);
 
-		foreach($this->loadedOptions as $this_option) {
+		$recent_attribute = null; //Allows setParam to work
+
+		foreach($this->advancedCommands as $this_option) {
 
 			//$xyz 			means single setting true or = something
 			//x = y			means custom mapping (my field to given attribute)
@@ -73,7 +44,7 @@ class PFeedOverride {
 			if (substr($this_option, 0, 1) == '$')
 				$command = '$';
 			else {
-				$params = ptokens($this_option);
+				$params = $this->ptokens($this_option);
 				$command = strtolower($params[0]);
 			}
 
@@ -83,8 +54,16 @@ class PFeedOverride {
 					$this->interpretSingleSetting($this_option, $parent);
 					break;
 				case 'deleteattribute':
-					if ($parent->getMapping($params[1]) != null)
-						$parent->getMapping($params[1])->deleted = true;
+					//If the Attribute doesn't exist (yet), map it first.
+					//This allows variable-attribute feeds to have attributes deleted since their attribute mappings might not yet be complete
+					if ($parent->getMapping($params[1]) == null)
+						$parent->addAttributeMapping($params[1], $params[1]);
+					//Delete it
+					$parent->getMapping($params[1])->deleted = true;
+					break;
+				case 'deletelicensekeys':
+					$reg = new PLicense();
+					$reg->unregisterAll();
 					break;
 				case 'limitoutput':
 					if ((strtolower($params[1]) == 'from') && isset($params[4])) {
@@ -98,12 +77,30 @@ class PFeedOverride {
 					}
 					break;
 				case 'mapattribute':
-					$parent->addAttributeMapping($params[1], $params[3]);
+					$usesCData = false;
+					if (isset($params[4]) && (strtolower($params[4]) == 'true'))
+						$usesCData = true;
+					$recent_attribute = $parent->addAttributeMapping($params[1], $params[3], $usesCData);
+					break;
+				case 'set':
+					//Eg: set forceCData to off
+					if (count($params) > 2) {
+						if (strtolower($params[3]) == 'false') $params[3] = false;
+						if (strtolower($params[3]) == 'true') $params[3] = true;
+						if (strtolower($params[3]) == 'no') $params[3] = false;
+						if (strtolower($params[3]) == 'yes') $params[3] = true;
+						if (strtolower($params[3]) == 'off') $params[3] = false;
+						if (strtolower($params[3]) == 'on') $params[3] = true;
+						if ($this->validIdentifier($params[1]))
+							$parent->$params[1] = $params[3];
+					}
 					break;
 				case 'setattribute':
 					if (strtolower($params[2]) == 'mapto')
-						if ($parent->getMapping($params[1]) != null)
-							$parent->getMapping($params[1])->mapTo = $params[3];
+						if ($parent->getMapping($params[1]) != null) {
+							$recent_attribute = $parent->getMapping($params[1]);
+							$recent_attribute->mapTo = $params[3];
+						}
 					if (strtolower($params[2]) == 'default') {
 							if (isset($params[4]))
 								$defaultClass = $params[4];
@@ -119,6 +116,23 @@ class PFeedOverride {
 						$defaultClass = 'PAttributeDefault';
 					$parent->addAttributeDefault($params[1], $params[3], $defaultClass);
 					break;
+				case 'setattributeparam':
+					//For example, allows AmazonSC to set the localized name after mapAttribute [This equals setParam but allows you to specify which mapping]
+					//eg: setAttributeParam description usesCData true
+					$recent_attribute = $parent->getMapping($params[1]);
+					if ($recent_attribute != null)
+						$recent_attribute->$params[2] = $params[3];
+					break;
+				case 'setlicensekey':
+					$reg = new PLicense();
+					$reg->setLicenseKey($params[1]);
+					break;
+				case 'setparam':
+					//For example, allows AmazonSC to set the localized name after mapAttribute
+					//eg setParam localized_name "A local name"
+					if ($recent_attribute != null)
+						$recent_attribute->$params[1] = $params[2];
+					break;
 				default: //Mapping 2.0 override
 					$this->interpretOverride($this_option);
 			}
@@ -127,60 +141,7 @@ class PFeedOverride {
 
 	}
 
-	private function loadOverridesJ($providerName) {
-
-		$db = JFactory::getDBO();
-
-		//Attribute Mappings
-		$sql = "
-			SELECT name, value FROM #__cartproductfeed_options
-			WHERE name LIKE '" . $providerName . "_cp_%'";
-		$db->setQuery($sql);
-		$db->query();
-		$overrides_from_options = $db->loadObjectList();
-		foreach($overrides_from_options as $this_option) {
-			$key = substr($this_option->name, strlen($providerName . '_cp_'));
-			$this->overrides[$key] = $this_option->value;
-		}
-
-		//Advanced options
-		$sql = "
-			SELECT value FROM #__cartproductfeed_options
-			WHERE name = '" . $providerName . "-cart-product-settings'";
-		$db->setQuery($sql);
-		$db->query();
-		$loadedOptions = $db->loadResult();
-		if (strlen($loadedOptions) > 0)
-			$this->loadedOptions = explode("\n", $loadedOptions);
-		else
-			$this->loadedOptions = array();
-
-	}
-  
-	private function loadOverridesW($providerName) {
-
-		global $wpdb;
-
-		//Attribute Mappings
-		$sql = "
-			SELECT * FROM $wpdb->options
-			WHERE $wpdb->options.option_name LIKE '" . $providerName . "_cp_%'";
-		$overrides_from_options = $wpdb->get_results($sql);
-		foreach($overrides_from_options as $this_option) {
-			$key = substr($this_option->option_name, strlen($providerName . '_cp_'));
-			$this->overrides[$key] = $this_option->option_value;
-		}
-
-		//Advanced options
-		$this->loadedOptions = explode("\n", get_option($providerName . '-cart-product-settings'));
-
-	}
-
-	private function loadOverridesWe($providerName) {
-		$this->loadOverridesW($providerName);
-	}
-
-	//determine if value should be overridden. No! This caused ghost attributes
+	/*//determine if value should be overridden. No! This caused ghost attributes
 	public function exists($value) {
 		$result = false;
 		foreach($this->overrides as $a)
@@ -189,9 +150,11 @@ class PFeedOverride {
 				break;
 			}
 		return $result;
-	}
+	}*/
 
 	function interpretSingleSetting($this_option, $parent) {
+
+		global $pfcore;
 
 		$valueIndex = strpos($this_option, '=');
 		if ($valueIndex === false) {
@@ -217,6 +180,7 @@ class PFeedOverride {
 		if ($this_option == '$default_brand') {$parent->default_brand = $value;}
 		if ($this_option == '$exclude_variable_attributes') {$parent->productList->exclude_variable_attributes = true;}
 		if ($this_option == '$field_delimiter') {$parent->fieldDelimiter = $value;}
+		if ($this_option == '$hide_out_of_stock') {$pfcore->hide_outofstock = true;}
 		if ($this_option == '$ignore_duplicates') {$parent->ignoreDuplicates = true;}
 		if ($this_option == '$max_description_length') {$parent->max_description_length = $value;}
 		if ($this_option == '$max_custom_field') {$parent->max_custom_field = $value;}

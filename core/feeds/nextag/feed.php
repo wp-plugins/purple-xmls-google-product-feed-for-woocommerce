@@ -1,83 +1,68 @@
 <?php
 
-  /********************************************************************
-  Version 2.0
-    A Google Feed
-	  Copyright 2014 Purple Turtle Productions. All rights reserved.
+	/********************************************************************
+	Version 3.0
+	A Nextag Feed
+		Copyright 2014 Purple Turtle Productions. All rights reserved.
 		license	GNU General Public License version 3 or later; see GPLv3.txt
 	By: Keneto 2014-05-08
+		2014-09 Moved to Attribute mapping v3
 
-  ********************************************************************/
+	********************************************************************/
 
 require_once dirname(__FILE__) . '/../basicfeed.php';
 
-class PNextagFeed extends PBasicFeed{
+class PNextagFeed extends PCSVFeedEx{
 
-  function __construct () {
-	$this->providerName = 'Nextag';
-	$this->providerNameL = 'nextag';
-	$this->fileformat = 'csv';
-	$this->fields = array("UPC", "Product Name", "Description", "Price", "Click-out URL", "Category", "Image URL", "Stock Status", "List Price");
-	parent::__construct();
-  }
+	function __construct () {
 
-  function formatProduct($product) {
+		parent::__construct();
+		$this->providerName = 'Nextag';
+		$this->providerNameL = 'nextag';
+		$this->fileformat = 'csv';
+		$this->descriptionStrict = true;
+		$this->fields = array();
+		//$this->fields = array("UPC", "Product Name", "Description", "Price", "Click-out URL", "Category", "Image URL", "Stock Status", "List Price");
 
+		$this->addAttributeMapping('id', 'UPC');
+		$this->addAttributeMapping('title', 'Product Name');
+		$this->addAttributeMapping('description', 'Description', true);
+		$this->addAttributeMapping('regular_price', 'Price');
+		$this->addAttributeMapping('sale_price', 'List Price');
+		$this->addAttributeMapping('link', 'Click-out URL');
+		$this->addAttributeMapping('category', 'Category', true);
+		$this->addAttributeMapping('feature_imgurl', 'Image URL');
+		$this->addAttributeMapping('stock_status', 'Stock Status');
 
-	//Prepare input: Required
-	$current_feed['UPC'] = $product->id;
-    //if ($product->isVariable) {
-	  //$current_feed[????] = $product->item_group_id; // Nothing in Nextag specs about product variations
-	//}
-	$current_feed['Product Name'] = $product->attributes['title'];
-	if (strlen($product->description) > 500) {
-	  $product->description = substr($product->description, 0, 500);
-	}
-	$current_feed['Description'] = '"' . $product->description . '"';
-	if (strlen($product->attributes['regular_price']) == 0) {
-	  $product->attributes['regular_price'] = '0.00';
-	}
-	$current_feed['Price'] = $product->attributes['regular_price'] . ' ' . $this->currency;
-	$current_feed['Click-out URL'] = $product->attributes['link'];
-	$current_feed['Category'] = '"' . $this->current_category . '"';
-
-	//Input: Optional
-	$current_feed['Image URL'] = $product->feature_imgurl;
-	if ($product->attributes['stock_status'] == 1) {
-	  $current_feed['Stock Status'] = 'In Stock';
-	} else {
-	  $current_feed['Stock Status'] = 'Out Of Stock';
 	}
 
-	if ($product->attributes['has_sale_price']) {
-		$current_feed['List Price'] = $product->attributes['sale_price'];
-	}
+	function formatProduct($product) {
 
-	//Build output in order of fields
-	$output = '';
-	foreach($this->fields as $field) {
-	  if (isset($current_feed[$field])) {
-	    $output .= $current_feed[$field] . "\t";
-	  } else {
-	    $output .= "\t";
-	  }
-	}
+		//cheat: Remap these
+		$product->attributes['category'] = $this->current_category;
+		$product->attributes['description'] = $product->description;		
+		$product->attributes['feature_imgurl'] = $product->feature_imgurl;
 
-	//Trim trailing comma
-	return substr($output, 0, -1) . "\r\n";
-  }
+		//Prepare input:
+		if (strlen($product->attributes['description']) > 500)
+			$product->attributes['description'] = substr($product->attributes['description'], 0, 500);
 
-  function getFeedHeader($file_name, $file_path) {
-    $output = '';
-    foreach($this->fields as $field) {
-	  if (isset($this->feedOverrides->overrides[$field])) {
-	    $field = $this->feedOverrides->overrides[$field];
-	  }
-	  $output .= $field . "\t";
+		if (strlen($product->attributes['regular_price']) == 0)
+			$product->attributes['regular_price'] = '0.00';
+		if ($product->attributes['has_sale_price'])
+			$product->attributes['sale_price'] = $product->attributes['sale_price'];
+		else
+			$product->attributes['sale_price'] = $product->attributes['regular_price'];
+
+		if ($product->attributes['stock_status'] == 1)
+			$product->attributes['stock_status'] = 'In Stock';
+		else
+			$product->attributes['stock_status'] = 'Out Of Stock';
+
+		//Validity: Description > 500 = error
+
+		return parent::formatProduct($product);
 	}
-	//Trim trailing comma
-	return substr($output, 0, -1) .  "\r\n";
-  }
 
 }
 

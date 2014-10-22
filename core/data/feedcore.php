@@ -15,9 +15,11 @@ class PFeedCore {
 
 	public $callSuffix = ''; //So getList() can map into getListJ() and getListW() depending on the cms
 	public $form_method = 'GET';
+	public $hide_outofstock = false;
 	public $isJoomla = false;
 	public $isWordPress = false;
 	public $siteHost; //eg: www.mysite.com
+	public $shopID = 0; //Used by RapidCart Source
   
   function __construct() {
 
@@ -25,15 +27,27 @@ class PFeedCore {
 			/********************************************************************
 			Joomla init
 			********************************************************************/
-			$this->callSuffix = 'J';
-			$this->cmsName = 'Joomla!';
-			$this->cmsPluginName = 'Virtuemart';
-			$this->currency = '$'; //!Should not be hard-coded
-			$this->form_method = 'POST';
-			$this->isJoomla = true;
-			$this->siteHost = JURI::root(false);
-			$this->siteHostAdmin = $this->siteHost;
-			$this->weight_unit = 'kg'; //!Should not be hard-coded
+			if (file_exists(JPATH_ADMINISTRATOR . '/components/com_virtuemart')) {
+				$this->callSuffix = 'J';
+				$this->cmsName = 'Joomla!';
+				$this->cmsPluginName = 'Virtuemart';
+				$this->currency = '$'; //!Should not be hard-coded
+				$this->form_method = 'POST';
+				$this->isJoomla = true;
+				$this->siteHost = JURI::root(false);
+				$this->siteHostAdmin = $this->siteHost;
+				$this->weight_unit = 'kg'; //!Should not be hard-coded
+			} else {
+				$this->callSuffix = 'JS';
+				$this->cmsName = 'Joomla!';
+				$this->cmsPluginName = 'RapidCart';
+				$this->currency = '$';
+				$this->form_method = 'POST';
+				$this->isJoomla = true;
+				$this->siteHost = JURI::root(false);
+				$this->siteHostAdmin = $this->siteHost;
+				$this->weight_unit = 'kg';
+			}
 		} else {
 			/********************************************************************
 			Wordpress init
@@ -79,7 +93,54 @@ class PFeedCore {
 			}
 		}
 	}
+
+	public function listOfRapidCartShops() {
+		$user = JFactory::getUser();
+		$db = JFactory::getDBO();
+		$db->setQuery('
+			SELECT id, name
+			FROM #__rapidcart_shops
+			WHERE created_by = ' . $user->id);
+		return $db->loadObjectList();
+	}
+
+	function settingDelete($settingName) {
+		$getListCall = 'settingDelete' . $this->callSuffix;
+		return $this->$getListCall($settingName);
+	}
+
+	function settingDeleteJ($settingName) {
+		$db = JFactory::getDBO();
+		$query = '
+			DELETE
+			FROM #__cartproductfeed_options
+			WHERE name = ' . $db->quote($settingName);
+		$db->setQuery($query);
+		$db->query();
+
+		$result = $db->loadResult();
+		return $result;
+	}
+
+	function settingDeleteJS($settingName) {
+		global $pfcore;
+		$db = JFactory::getDBO();
+		$db->setQuery('
+			DELETE
+			FROM #__cartproductfeed_options
+			WHERE name = ' . $db->quote($settingName) . ' AND (shop_id = ' . $pfcore->shopID . ')');
+		$result = $db->loadResult();
+		return $result;
+	}
   
+	function settingDeleteW($settingName) {
+		return delete_option($settingName);
+	}
+
+	function settingDeleteWe($settingName) {
+		return delete_option($settingName);
+	}
+
 	function settingGet($settingName) {
 		$getListCall = 'settingGet' . $this->callSuffix;
 		return $this->$getListCall($settingName);
@@ -90,10 +151,21 @@ class PFeedCore {
 		$query = '
 			SELECT value
 			FROM #__cartproductfeed_options
-			WHERE name = ' . $db->quote( $db->escape($settingName), false);
+			WHERE name = ' . $db->quote($settingName);
 		$db->setQuery($query);
 		$db->query();
 
+		$result = $db->loadResult();
+		return $result;
+	}
+
+	function settingGetJS($settingName) {
+		global $pfcore;
+		$db = JFactory::getDBO();
+		$db->setQuery('
+			SELECT value
+			FROM #__cartproductfeed_options
+			WHERE name = ' . $db->quote($settingName) . ' AND (shop_id = ' . $pfcore->shopID . ')');
 		$result = $db->loadResult();
 		return $result;
 	}
@@ -124,11 +196,12 @@ class PFeedCore {
 
 		//Does this value already exist?
 		$query = '
-			SELECT id, name
+			SELECT id
 			FROM #__cartproductfeed_options
-			WHERE name = ' . $db->quote( $db->escape($settingName), false);
-		$result = $db->loadObject();
-		if ($result == null)
+			WHERE name = ' . $db->quote( $settingName);
+		$db->setQuery($query);
+		$result = $db->loadResult();
+		if (($result == null) || ($result == 0))
 			$isNew = true;
 		else
 			$isNew = false;
@@ -137,12 +210,12 @@ class PFeedCore {
 		$setting->name = $settingName;
 		$setting->value = $value;
 		if ($isNew) {
-			$setting->id = $result->id;
 			$setting->kind = 0;
 			//$setting->ordering int,
 			$setting->created = $date->toSql();
 			$setting->created_by = $user->get('id');
-		}
+		} else
+			$setting->id = $result;
 		//$setting->catid
 		$setting->modified = $date->toSql();
 		$setting->modified_by = $user->get('id');
@@ -152,6 +225,45 @@ class PFeedCore {
 		else
 			$db->updateObject('#__cartproductfeed_options', $setting, 'id');
 
+	}
+
+	function settingSetJS($settingName, $value) {
+
+		//Initialize
+		global $pfcore;
+		$date = JFactory::getDate();
+		$user = JFactory::getUser();
+		$db = JFactory::getDBO();
+
+		//Does this value already exist?
+		$query = '
+			SELECT id
+			FROM #__cartproductfeed_options
+			WHERE name = ' . $db->quote($settingName) . ' AND (shop_id = ' . $pfcore->shopID . ')';
+		$db->setQuery($query);
+		$result = $db->loadResult();
+		if (($result == null) || ($result == 0))
+			$isNew = true;
+		else
+			$isNew = false;
+
+		$setting = new stdClass();
+		$setting->name = $settingName;
+		$setting->value = $value;
+		if ($isNew) {
+			$setting->kind = 0;
+			$setting->created = $date->toSql();
+			$setting->created_by = $user->get('id');
+		} else
+			$setting->id = $result;
+		$setting->modified = $date->toSql();
+		$setting->modified_by = $user->get('id');
+		$setting->shop_id = $pfcore->shopID;
+
+		if ($isNew)
+			$db->insertObject('#__cartproductfeed_options', $setting, 'id');
+		else
+			$db->updateObject('#__cartproductfeed_options', $setting, 'id');
 	}
   
 	function settingSetW($settingName, $value) {

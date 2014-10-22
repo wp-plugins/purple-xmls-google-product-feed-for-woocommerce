@@ -36,13 +36,14 @@ class PBasicFeed {
 	public $fields; //For CSVs
 	public $feed_category;
 	public $feedOverrides;
+	public $forceCData = false; //Applies to ProductListXML only
 	public $force_currency = false;
 	public $gmc_enabled = false; //Allow Google merchant centre woothemes extension (WordPress)
 	public $gmc_attributes = array(); //If anything added in here, restrict GMC list to these
 	public $has_product_range = false;
-	public $ignoreDuplicates = false; //useful when products are assigned multiple categories and insufficient identifiers to distinguish them
+	public $ignoreDuplicates = true; //useful when products are assigned multiple categories and insufficient identifiers to distinguish them
 	public $max_description_length = 10000;
-	public $max_custom_field = 10000;
+	public $max_custom_field = 50000;
 	public $message = ''; //For Error detection
 	public $providerName = '';
 	public $providerNameL = '';
@@ -72,6 +73,7 @@ class PBasicFeed {
 		//$thisDefault = new PAttributeDefault();
 		$thisDefault->attributeName = $attributeName;
 		$thisDefault->value = $value;
+		$thisDefault->parent_feed = $this;
 		$this->attributeDefaults[] = $thisDefault;
 		return $thisDefault;
 	}
@@ -169,13 +171,16 @@ class PBasicFeed {
 	}
   
 	function getFeedData_internal($remote_category) {
+		//Old
+		//$products = $this->productList->getProductList($this, $remote_category);
+		//foreach($products as $this_product)
+			//$this->handleProduct($this_product);
+		//New
+		$this->productList->getProductList($this, $remote_category);
+	}
 
-		$output = null;
+	public function handleProduct($this_product) {
 
-		$products = $this->productList->getProductList($this, $remote_category);
-		foreach($products as $this_product) {
-			if ((!$this->feed_category->verifyProduct($this_product)) || (!$this_product->attributes['valid']))
-				continue;
 			//********************************************************************
 			//Adjust the product a little before sending it out to be Formatted
 			//********************************************************************
@@ -189,9 +194,9 @@ class PBasicFeed {
 				default:
 					//By default pick short... if no short, pick long (original behaviour)
 					if ( strlen ( $this_product->description_short ) == 0 ) 
-					$this_product->description = $this_product->description_long;
+						$this_product->description = $this_product->description_long;
 					else 
-					$this_product->description = $this_product->description_short;		  
+						$this_product->description = $this_product->description_short;		  
 					break;
 			}
 			//check if description is empty
@@ -257,12 +262,11 @@ class PBasicFeed {
 			//Done Adjustments. Send to descendant feed-provider for formatting
 			//***********************************************************
 
-			$output .= $this->formatProduct($this_product);
-
-			$this->productCount++;
-		}
-
-		return $output;
+			$product_text = $this->formatProduct($this_product);
+			if ($this->feed_category->verifyProduct($this_product) && $this_product->attributes['valid']) {
+				fwrite($this->fileHandle, $product_text);
+				$this->productCount++;
+			}
 
 	}
 
@@ -300,7 +304,7 @@ class PBasicFeed {
 		//Get the ProductList ready
 		if ($this->productList == null)
 			$this->productList = new PProductList();
-		
+
 		//Initialize some useful data 
 		//(must occur before overrides)
 		$this->current_category = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
@@ -317,21 +321,26 @@ class PBasicFeed {
 		if (strlen($this->currency_shipping) == 0)
 			$this->currency_shipping = $this->currency;
 
-		$this->logActivity('Creating feed data');
 		//Create the Feed
-		$output = 
-			$this->getFeedHeader($file_name, $file_path) .
-			$this->getFeedData_internal($remote_category) .
-			$this->getFeedFooter();
-
-		$this->logActivity('Writing feed to file');
-		//Save the Feed
-		$handle = fopen($file_url, "w");  
-		fwrite($handle, $output);
-		fclose($handle);
+		$this->logActivity('Creating feed data');
+		$this->filename = $file_url;
+		$this->fileHandle = fopen($file_url, "w");
+		fwrite($this->fileHandle, $this->getFeedHeader($file_name, $file_path));
+		$this->getFeedData_internal($remote_category);
+		fwrite($this->fileHandle, $this->getFeedFooter());
+		fclose($this->fileHandle);
 
 		$this->logActivity('Updating Feed List');
 		PFeedActivityLog::updateFeedList($category, $remote_category, $file_name, $file_path, $this->providerName, $this->productCount);
+
+		//Free the Attribute defaults
+		for($i = 0; $i < count($this->attributeDefaults); $i++)
+			unset($this->attributeDefaults[$i]);
+		//Free the Attribute Mapping Objects
+		for($i = 0; $i < count($this->attributeMappings); $i++)
+			unset($this->attributeMappings[$i]);
+		//De-allocate the overrides object to prevent chain dependency that made the core unload too early
+		unset($this->feedOverrides);
 
 		if ($this->productCount == 0) {
 			$this->message .= '<br>No products returned';
@@ -411,7 +420,7 @@ class PBasicFeed {
 		$this->currency = $pfcore->currency;
 	}
 
-}
+} //PBasicFeed
 
 //********************************************************************
 // PCSVFeed has functions a CSV Feed would need
@@ -437,6 +446,7 @@ class PCSVFeed extends PBasicFeed {
 
 	public function executeOverrides($product, &$current_feed) {
 
+		/*Mapping v2.0 Deprecated
 		//Run overrides
 		//Note: One day, when the feed can report errors, we need to report duplicate overrides when used_so_far makes a catch
 		$used_so_far = array();
@@ -445,6 +455,7 @@ class PCSVFeed extends PBasicFeed {
 				$current_feed[$this->feedOverrides->overrides[$key]] = $a;
 				$used_so_far[] = $this->feedOverrides->overrides[$key]; 
 			}
+		*/
 
 	}
 
@@ -516,14 +527,17 @@ class PCSVFeedEx extends PBasicFeed {
 		//********************************************************************
 		$output = '';
 		foreach($this->attributeMappings as $thisAttributeMapping) {
-			if ($thisAttributeMapping->enabled && !$thisAttributeMapping->deleted && isset($product->attributes[$thisAttributeMapping->attributeName]) ) {
+			if ($thisAttributeMapping->enabled && !$thisAttributeMapping->deleted && isset($product->attributes[$thisAttributeMapping->attributeName]) ) 
+			{
 				if ($thisAttributeMapping->usesCData)
 					$quotes = '"';
 				else
 					$quotes = '';
+				
 				$output .= $quotes . $product->attributes[$thisAttributeMapping->attributeName] . $quotes;
 			}
-			$output .= $this->fieldDelimiter;
+			if ($thisAttributeMapping->enabled && !$thisAttributeMapping->deleted)
+				$output .= $this->fieldDelimiter;
 		}
 
 		//********************************************************************
@@ -554,6 +568,8 @@ class PCSVFeedEx extends PBasicFeed {
 
 	function initializeOverrides($saved_feed) {
 		parent::initializeOverrides($saved_feed);
+
+		/*Deprecated
 		//Converting Attribute mappings v2.0 to v3.0
 		foreach($this->feedOverrides->overrides as $key => $mapTo) {
 			$n = $this->getMappingByMapto($mapTo);
@@ -561,7 +577,8 @@ class PCSVFeedEx extends PBasicFeed {
 				$this->addAttributeMapping($key, $mapTo, true);
 			else
 				$n->attributeName = $key;
-		}
+		}*/
+
 	}
 
 }

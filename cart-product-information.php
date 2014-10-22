@@ -33,15 +33,16 @@ function CPF_print_info()
 	 		<a target="_blank" href="http://www.shoppingcartproductfeed.com"><img class="cpf-logo-style" src=' . $iconurl . ' alt="shopping cart logo"></a>
 	 	</div>
 	 	<div class=\'version-style\'>
-	 		<a target="_blank" href="http://www.shoppingcartproductfeed.com">Product Site</a> | 
-	 		<a target="_blank" href="http://www.shoppingcartproductfeed.com/tos">How To\'s</a><br>
+	 		<a target="_blank" href="http://www.shoppingcartproductfeed.com/woocommerce-export/">Product Site</a> | 
+	 		<a target="_blank" href="http://www.shoppingcartproductfeed.com/faq/">FAQ/Help</a> |
+	 		<a target="_blank" href="http://www.shoppingcartproductfeed.com/search-2/">SEARCH</a> <br>
 	 		Version: ' . FEED_PLUGIN_VERSION . CPF_check_version() .'<br>
 	 	</div>
 	 	<div class="gts-link">
-	 		<a target="_blank" href="http://shoppingcartproductfeed.com/google-trusted-store-woocommerce/">Get the Google Trusted Store Plugin<br>Sell More - Be placed 1st!</a>
+	 		<a target="_blank" href="http://www.shoppingcartproductfeed.com/google-trusted-store-woocommerce/">Get the Google Trusted Store Plugin<br>Sell More - Be placed 1st!</a>
 	 	</div>
 	 	<div class="gts-logo-link" >
-	 		<a target="_blank" href="http://shoppingcartproductfeed.com/google-trusted-store-woocommerce/"><img class="cpf-logo-style" src=' . $gts_iconurl . ' alt="google trusted stores"></a>
+	 		<a target="_blank" href="http://www.shoppingcartproductfeed.com/google-trusted-store/"><img class="cpf-logo-style" src=' . $gts_iconurl . ' alt="google trusted stores"></a>
 	 	</div>
 	 </div>
 	 <div style="clear:both"></div>';	 

@@ -10,6 +10,7 @@
 
 class PLicense {
 
+	public $debugmode = false;
 	public $error_message = '';
 	public $results = array();
 	public $valid = false;
@@ -17,8 +18,10 @@ class PLicense {
 
 	private $strLicenseKey = 'cp_licensekey';
 	private $strLocalKey = 'cp_localkey';
+	private $strLicenseKeyOld = 'purplexml_licensekey';
+	private $strLocalKeyOld = 'purplexml_localkey';
 
-	function __construct() {
+	function __construct($debug = false) {
 
 		global $pfcore;
 
@@ -27,7 +30,7 @@ class PLicense {
 		if (strlen($licensekey) == 0) 
 		{
 			//Look for old version of key
-			$licensekey = $pfcore->settingGet('purplexml_licensekey');
+			$licensekey = $pfcore->settingGet($this->strLicenseKeyOld);
 			if (strlen($licensekey) > 0)
 				$pfcore->settingSet($this->strLicenseKey, $licensekey);   
 		}
@@ -36,9 +39,15 @@ class PLicense {
 		if (strlen($localkey) == 0) 
 		{
 			//Look for old version of key
-			$localkey = $pfcore->settingGet('purplexml_localkey');
+			$localkey = $pfcore->settingGet($this->strLocalKeyOld);
 			if (strlen($localkey) > 0)
 			$pfcore->settingSet($this->strLocalKey, $localkey);
+		}
+
+		$this->debugmode = $debug;
+		if ($this->debugmode) {
+			echo "License Key: $licensekey \r\n";
+			echo "Local Key: $localkey \r\n";
 		}
 
 		$this->results['status'] = 'Invalid';
@@ -75,6 +84,7 @@ class PLicense {
 		$Results = $this->validateLocalKey( $localkey, $localkeydays, $licensing_secret_key, $localexpiry );
 		if ( $Results ) 
 		{
+			if ($this->debugmode) echo "Return After validation. \r\n";
 			foreach( $Results as $k => $result )
 				$this->results[$k] = $result;
 			return;
@@ -90,6 +100,7 @@ class PLicense {
 
 		if ( function_exists('curl_exec') ) 
 		{
+			if ($this->debugmode) echo "curl_init(). \r\n";
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $whmcsurl . 'modules/servers/licensing/verify.php');
 			curl_setopt($ch, CURLOPT_POST, 1);
@@ -111,6 +122,7 @@ class PLicense {
 		}
 		else 
 		{
+			if ($this->debugmode) echo "fsockopen(). \r\n";
 			$fp = fsockopen($whmcsurl, 80, $errno, $errstr, 5);
 
 			if ( $fp ) 
@@ -142,6 +154,7 @@ class PLicense {
 
 		if (!$data) 
 		{
+			if ($this->debugmode) echo "Remote check failed. \r\n";
 			$this->error_message = 'Remote Check Failed. ';
 			return;
 		}
@@ -159,13 +172,14 @@ class PLicense {
 			if ( $inputdata['md5hash'] != md5($licensing_secret_key . $check_token) ) 
 			{
 				$this->error_message = 'MD5 Checksum Verification Failed. ';
+				if ($this->debugmode) echo "MD5 Checksum Verification Failed. \r\n";
 				return;
 			}
 		}
 
 		if ( $inputdata["status"] == "Active" ) 
 		{
-
+			if ($this->debugmode) echo "Status Active. \r\n";
 			$inputdata["checkdate"] = $checkdate;
 			$data_encoded = serialize($inputdata);
 			$data_encoded = base64_encode($data_encoded);
@@ -175,18 +189,40 @@ class PLicense {
 			$data_encoded = wordwrap($data_encoded, 80, "\n", true);
 			$inputdata["localkey"] = $data_encoded; 
 		} 
-		else
+		else {
 			$this->error_message .= $this->strErrorMsgMain;
+			if ($this->debugmode) echo "Inactive. \r\n";
+		}
 
 		$this->inputdata["remotecheck"] = true;
 		unset($postfields, $data, $matches, $whmcsurl, $licensing_secret_key, $checkdate, $usersip, $localkeydays, $allowcheckfaildays, $md5hash);
 	}
 
+	function setLicenseKey($licenseKey, $localKey) {
+		global $pfcore;
+		$pfcore->settingSet($this->strLicenseKey, $licenseKey);
+		$pfcore->settingSet($this->strLocalKey, $localKey);
+	}
+
 	function unregister() 
 	{
+		global $pfcore;
 		//This will remove the license key (which is likely an undesirable course of action)
 		$pfcore->settingSet($this->strLicenseKey, '');
 		$pfcore->settingSet($this->strLocalKey, '');
+	}
+
+	function unregisterAll() {
+		global $pfcore;
+		//Remove all stored license keys for all known products
+		$pfcore->settingDelete('cp_licensekey');
+		$pfcore->settingDelete('cp_localkey');
+		$pfcore->settingDelete('purplexml_licensekey');
+		$pfcore->settingDelete('purplexml_localkey');
+		$pfcore->settingDelete('gts_licensekey');
+		$pfcore->settingDelete('gts_localkey');
+		$pfcore->settingDelete('fv_licensekey');
+		$pfcore->settingDelete('fv_localkey');
 	}
 
 	function validateLocalKey( $localkey, $localkeydays, $licensing_secret_key, $localexpiry )
@@ -242,9 +278,9 @@ class PLicense {
 class PLicenseGTS extends PLicense {
 
 	function __construct() {
-		$strErrorMsgMain = '- Register for the pro version to get full functionality: <a target=\'_blank\' href = \'http://shoppingcartproductfeed.com/\'>shoppingcartproductfeed.com</a> ';
-		$strLicenseKey = 'gts_licensekey';
-		$strLocalKey = 'gts_localkey';
+		$this->strErrorMsgMain = '- Register for the pro version to get full functionality: <a target=\'_blank\' href = \'http://shoppingcartproductfeed.com/\'>shoppingcartproductfeed.com</a> ';
+		$this->strLicenseKey = 'gts_licensekey';
+		$this->strLocalKey = 'gts_localkey';
 		parent::__construct();
 	}
 }
@@ -252,9 +288,11 @@ class PLicenseGTS extends PLicense {
 class PLicenseFV extends PLicense {
 
 	function __construct() {
-		$strErrorMsgMain = '- Register for the pro version to get full functionality: <a target=\'_blank\' href = \'http://shoppingcartproductfeed.com/\'>shoppingcartproductfeed.com</a> ';
-		$strLicenseKey = 'fv_licensekey';
-		$strLocalKey = 'fv_localkey';
+		$this->strErrorMsgMain = '- Register for the pro version to get full functionality: <a target=\'_blank\' href = \'http://shoppingcartproductfeed.com/\'>shoppingcartproductfeed.com</a> ';
+		$this->strLicenseKey = 'fv_licensekey';
+		$this->strLocalKey = 'fv_localkey';
+		$this->strLocalKeyOld = '';
+		$this->strLocalKeyOld = '';
 		parent::__construct();
 	}
 }

@@ -18,8 +18,10 @@ class PFeedActivityLog {
 
 	function __destruct() {
 		global $pfcore;
-		$deleteLogData = 'deleteLogData' . $pfcore->callSuffix;
-		$this->$deleteLogData();
+		if (!empty($pfcore) && (strlen($pfcore->callSuffix) > 0)) {
+			$deleteLogData = 'deleteLogData' . $pfcore->callSuffix;
+			$this->$deleteLogData();
+		}
 	}
 
 	/********************************************************************
@@ -54,8 +56,41 @@ class PFeedActivityLog {
 		$newData->created = $date->toSql();
 		$newData->created_by = $user->get('id');
 		//$newData->catid int,
-		$newData->modified = $user->get('id');
-		$newData->modified_by = $date->toSql();
+		$newData->modified = $date->toSql();
+		$newData->modified_by = $user->get('id');
+		//$productCount
+		$db->insertObject('#__cartproductfeed_feeds', $newData, 'id');
+	}
+
+	private static function addNewFeedDataJS($category, $remote_category, $file_name, $file_path, $providerName, $productCount) {
+
+		global $pfcore;
+		$shopID = $pfcore->shopID;
+
+		$date	= JFactory::getDate();
+		$user	= JFactory::getUser();
+		$db = JFactory::getDBO();
+
+		$sql = 'SELECT COUNT(*) FROM #__cartproductfeed_feeds';
+		$db->setQuery($sql);
+		$db->query();
+		$ordering = $db->loadResult() + 1;
+
+		$newData = new stdClass();
+		$newData->title = $file_name;
+		$newData->category = $category;
+		$newData->remote_category = $remote_category;
+		$newData->filename = $file_name;
+		$newData->url = $file_path;
+		$newData->type = $providerName;
+		$newData->product_count = $productCount;
+		$newData->ordering = $ordering;
+		$newData->created = $date->toSql();
+		$newData->created_by = $user->get('id');
+		//$newData->catid int,
+		$newData->modified = $date->toSql();
+		$newData->modified_by = $user->get('id');
+		$newData->shop_id = $shopID;
 		//$productCount
 		$db->insertObject('#__cartproductfeed_feeds', $newData, 'id');
 	}
@@ -89,6 +124,24 @@ class PFeedActivityLog {
 			WHERE filename='$file_name' AND type='$providerName'";
 		$db->setQuery($query);
 		$db->query();
+		$result = $db->loadObject();
+		if (!$result)
+			return -1;
+
+		return $result->id;
+
+	}
+
+	private static function feedDataToIDJS($file_name, $providerName) {
+
+		global $pfcore;
+		$shopID = $pfcore->shopID;
+
+		$db = JFactory::getDBO();
+		$db->setQuery("
+			SELECT id
+			FROM #__cartproductfeed_feeds
+			WHERE (filename='$file_name') AND (type='$providerName') AND (shop_id = $shopID)");
 		$result = $db->loadObject();
 		if (!$result)
 			return -1;
@@ -136,6 +189,10 @@ class PFeedActivityLog {
 	}
 
 	private static function updateFeedDataJ($id, $category, $remote_category, $file_name, $file_path, $providerName, $productCount) {
+
+		global $pfcore;
+		$shopID = $pfcore->shopID;
+
 		$date	= JFactory::getDate();
 		$user	= JFactory::getUser();
 		$db = JFactory::getDBO();
@@ -149,10 +206,34 @@ class PFeedActivityLog {
 		$newData->url = $file_path;
 		$newData->type = $providerName;
 		$newData->product_count = $productCount;
-		$newData->modified = $user->get('id');
-		$newData->modified_by = $date->toSql();
+		$newData->modified = $date->toSql();
+		$newData->modified_by = $user->get('id');
+		$newData->shop_id = $shopID;
 		//$productCount
-		$db->insertObject('#__cartproductfeed_feeds', $newData, 'id');
+		$db->updateObject('#__cartproductfeed_feeds', $newData, 'id');
+	}
+
+	private static function updateFeedDataJS($id, $category, $remote_category, $file_name, $file_path, $providerName, $productCount) {
+
+		$date	= JFactory::getDate();
+		$user	= JFactory::getUser();
+		$db = JFactory::getDBO();
+
+		$newData = new stdClass();
+		$newData->id = $id;
+		$newData->title = $file_name;
+		$newData->category = $category;
+		$newData->remote_category = $remote_category;
+		$newData->filename = $file_name;
+		$newData->url = $file_path;
+		$newData->type = $providerName;
+		$newData->product_count = $productCount;
+		$newData->modified = $date->toSql();
+		$newData->modified_by = $user->get('id');
+		//$productCount
+
+		$db->updateObject('#__cartproductfeed_feeds', $newData, 'id');
+
 	}
 
 	private static function updateFeedDataW($id, $category, $remote_category, $file_name, $file_path, $providerName, $productCount) {
@@ -184,20 +265,15 @@ class PFeedActivityLog {
 		$pfcore->settingSet('cp_feedActivity_' . $this->feedIdentifier, $activity);
 	}
 
-	function logPhaseJ($activity) {
-
-		
-	}
-
-	function logPhaseW($activity) {
-		update_option('cp_feedActivity_' . $this->feedIdentifier, $activity);
-	}
-
 	/********************************************************************
 	Remove Log info
 	********************************************************************/
 
 	function deleteLogDataJ() {
+
+	}
+
+	function deleteLogDataJS() {
 
 	}
 

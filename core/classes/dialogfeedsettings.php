@@ -28,7 +28,8 @@ class PFeedSettingsDialogs {
 					  PFeedSettingsDialogs::formatIntervalOption(43200, '12 Hours', $current_delay) . "\r\n" .
 					  PFeedSettingsDialogs::formatIntervalOption(21600, '6 Hours', $current_delay) . "\r\n" .
 					  PFeedSettingsDialogs::formatIntervalOption(3600, '1 Hour', $current_delay) . "\r\n" .
-					  PFeedSettingsDialogs::formatIntervalOption(900, '15 Minutes', $current_delay) . "\r\n" . '
+					  PFeedSettingsDialogs::formatIntervalOption(900, '15 Minutes', $current_delay) . "\r\n" .
+						PFeedSettingsDialogs::formatIntervalOption(300, '5 Minutes', $current_delay) . "\r\n" . '
 					</select>';
   }
 

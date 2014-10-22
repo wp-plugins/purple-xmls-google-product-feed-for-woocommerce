@@ -53,7 +53,7 @@ class eBayDlg extends PBaseFeedDialog {
   }
 
   function convert_option($option) {
-    return str_replace(" ", "_", $option);
+    return str_replace(" ", "_", strtolower($option));
   }
 
 }

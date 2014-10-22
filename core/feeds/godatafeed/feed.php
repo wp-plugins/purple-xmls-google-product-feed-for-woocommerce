@@ -1,43 +1,44 @@
 <?php
 
 	/********************************************************************
-	Version 2.1
-		A Google Feed
+	Version 2.0
+		A GoDataFeed Feed
 	Copyright 2014 Purple Turtle Productions. All rights reserved.
 	license	GNU General Public License version 3 or later; see GPLv3.txt
-	By: Keneto 2014-05-08
-		2014-09 Retired Attribute Mapping v2.0 (Keneto)
+	By: Keneto 2014-09
+
 	********************************************************************/
 
 require_once dirname(__FILE__) . '/../basicfeed.php';
 
-class PGoogleFeed extends PBasicFeed
-{
-	function __construct () 
-	{
+class PGoDataFeedFeed extends PBasicFeed {
+
+	function __construct ()  {
+
 		parent::__construct();
-		$this->providerName = 'Google';
-		$this->providerNameL = 'google';
+
+		$this->providerName = 'GoDataFeed';
+		$this->providerNameL = 'godatafeed';
 		//Create some attributes (Mapping 3.0)
-		$this->addAttributeMapping('id', 'g:id');
-		$this->addAttributeMapping('item_group_id', 'g:item_group_id');
-		$this->addAttributeMapping('title', 'title', true);
-		$this->addAttributeMapping('link', 'link', true);
-		$this->addAttributeMapping('product_type', 'g:product_type', true);
-		$this->addAttributeMapping('description', 'description', true);
-		$this->addAttributeMapping('current_category', 'g:google_product_category', true);
-		$this->addAttributeMapping('condition', 'g:condition');
-		$this->addAttributeMapping('stock_status', 'g:availability');
-		$this->addAttributeMapping('sku', 'g:mpn');
-		$this->addAttributeMapping('regular_price', 'g:price');
-		$this->addAttributeMapping('sale_price', 'g:sale_price');
-		$this->addAttributeMapping('brand', 'g:brand');
-		$this->addAttributeMapping('weight', 'g:shipping_weight');
-		$this->addAttributeMapping('feature_imgurl', 'g:image_link', true);
+		$this->addAttributeMapping('id', 'UniqueID', true);
+		$this->addAttributeMapping('title', 'Name', true);
+		$this->addAttributeMapping('description', 'Description', true);
+		$this->addAttributeMapping('regular_price', 'Price', true);
+		$this->addAttributeMapping('localCategory', 'MerchantCategory', true);
+		$this->addAttributeMapping('link', 'URL', true);
+		$this->addAttributeMapping('feature_imgurl', 'ImageURL', true);
+		$this->addAttributeMapping('manufacturer', 'Manufacturer', true);
+		$this->addAttributeMapping('sku', 'ManufacturerPartNumber', true);
+		$this->addAttributeMapping('brand', 'Brand', true);
+		$this->addAttributeMapping('stock_status', 'StockStatus', true);
+		$this->addAttributeMapping('stock_quantity', 'Quantity', true);
+		$this->addAttributeMapping('weight', 'Weight', true);
+		$this->addAttributeMapping('condition', 'Condition', true);
+		$this->addAttributeMapping('sale_price', 'SalePrice', true);
 	}
   
-  function formatProduct($product) 
-  {
+  function formatProduct($product) {
+
 		//********************************************************************
 		//Prepare the Product Attributes
 		//********************************************************************
@@ -46,11 +47,6 @@ class PGoogleFeed extends PBasicFeed
 		$product->attributes['description'] = $product->description;
 		$product->attributes['current_category'] = $this->current_category;
 		$product->attributes['feature_imgurl'] = $product->feature_imgurl;
-		$product->attributes['tax_country'] = 'US';
-
-		//Upper case the first character of each word in the title:
-		//Google doesn't like block letters
-		$product->attributes['title'] = ucwords(strtolower( $product->attributes['title'] ));
 
 		//Stock Status
 		if ($product->attributes['stock_status'] == 1)
@@ -73,12 +69,16 @@ class PGoogleFeed extends PBasicFeed
 		} else
 			$this->getMapping('weight')->enabled = false;
 
+		//********************************************************************
+		//Mapping 3.0 pre processing
+		//********************************************************************
+
 		foreach ($this->attributeDefaults as $thisDefault)
 			if ($thisDefault->stage == 2)
 				$product->attributes[$thisDefault->attributeName] = $thisDefault->getValue($product);
 
 		$output = '
-      <item>';
+    <Product>';
 
 		//********************************************************************
 		//Add attributes (Mapping 3.0)
@@ -87,49 +87,12 @@ class PGoogleFeed extends PBasicFeed
 		foreach($this->attributeMappings as $thisAttributeMapping)
 			if ($thisAttributeMapping->enabled && !$thisAttributeMapping->deleted && isset($product->attributes[$thisAttributeMapping->attributeName]) )
 				$output .= $this->formatLine($thisAttributeMapping->mapTo, $product->attributes[$thisAttributeMapping->attributeName], $thisAttributeMapping->usesCData);
-							
-		if ($this->allow_additional_images) {
-			$image_count = 0;
-			foreach($product->imgurls as $imgurl) {
-				$output .= $this->formatLine('g:additional_image_link', $imgurl, true);
-				$image_count++;
-				if ($image_count > 9)
-					break;
-			}
-		}
 
-		//********************************************************************
-		//Shipping & Tax = Special Attributes
-		//********************************************************************
-
-		if ( $this->system_wide_shipping ) 
-		{
-			/*Deprecated / Legacy
-			if (strpos($this->system_wide_shipping_rate, '%') === false)
-				$product->shipping_amount = $this->system_wide_shipping_rate;
-			else
-				$product->shipping_amount = sprintf("%1.2f", substr($this->system_wide_shipping_rate, 1) * $product->attributes['regular_price']);
-			*/
-			$output.= '
-        <g:shipping>' .
-			$this->formatLine('g:service', $this->system_wide_shipping_type, false, '  ') .
-			$this->formatLine('g:price', sprintf($this->currency_format, $product->shipping_amount) . $this->currency_shipping, false, '  ') . '
-        </g:shipping>';
-		}
-
-		if ( isset($product->attributes['tax']) ) 
-		{
-			$output .= '
-        <g:tax>' .
-			$this->formatLine('g:country', $product->attributes['tax_country'], false, '  ') .
-			$this->formatLine('g:rate', $product->attributes['tax'], false, '  ') . '
-        </g:tax>';	
-		}
-
+		/*
 		//********************************************************************
 		//This is mapping 2.0 > Deprecated > Gone
 		//********************************************************************
-		/*
+
 		$used_so_far = array();
 		foreach($product->attributes as $key => $a) {
 			//Only use the override if it's set and hasn't been used_so_far in this product
@@ -137,8 +100,7 @@ class PGoogleFeed extends PBasicFeed
 				$output .= $this->formatLine($key, $a);
 				$used_so_far[] = $this->feedOverrides->overrides[$key];
 			}
-		}
-		*/
+		}*/
 
 		//********************************************************************
 		//Mapping 3.0 post processing
@@ -152,33 +114,36 @@ class PGoogleFeed extends PBasicFeed
 		//Validation checks & Error messages
 		//********************************************************************
 
-		if (!isset($product->attributes['brand']) || (strlen($product->attributes['brand']) == 0))
-			if (($this->getMappingByMapto('g:identifier_exists') == null) && ($this->getMappingByMapto('g:gtin') == null) && ($this->getMappingByMapto('g:brand') == null))
-				$this->addErrorMessage(2000, 'Missing brand for ' . $product->attributes['title']);
+		//if (!isset($product->attributes['brand']) || (strlen($product->attributes['brand']) == 0))
+			//$this->addErrorMessage(2000, 'Missing brand for ' . $product->attributes['title']);
 
     $output .= '
-      </item>';
+    </Product>';
 
 		return $output;
 
 	}
 
-	function getFeedFooter( ) 
-	{   
+	function getFeedFooter( ) {   
     	$output = '
-  </channel>
-</rss>';
+  </Products>
+</GoDataFeed>';
 		return $output;
 	}
 
-	function getFeedHeader( $file_name, $file_path ) 
-	{
+	function getFeedHeader( $file_name, $file_path ) {
 		$output = '<?xml version="1.0" encoding="UTF-8" ?>
-<rss version="2.0" xmlns:g="http://base.google.com/ns/1.0" xmlns:c="http://base.google.com/cns/1.0">
-  <channel>
-    <title>' . $file_name . '</title>
-    <link><![CDATA[' . $file_path . ']]></link>
-    <description>' . $file_name . '</description>';
+<GoDataFeed>
+  <Fields>';
+
+		foreach($this->attributeMappings as $thisAttributeMapping)
+			if ($thisAttributeMapping->enabled && !$thisAttributeMapping->deleted)
+				$output .= '
+    <Field name="' . $thisAttributeMapping->mapTo . '" />';
+
+		$output .= '
+  </Fields>
+  <Products>';
 		return $output;
   }
 

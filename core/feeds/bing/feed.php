@@ -1,22 +1,24 @@
 <?php
 
-  /********************************************************************
-  Version 2.0
-    A Bing Feed
-	  Copyright 2014 Purple Turtle Productions. All rights reserved.
+	/********************************************************************
+	Version 2.0
+		A Bing Feed
+		Copyright 2014 Purple Turtle Productions. All rights reserved.
 		license	GNU General Public License version 3 or later; see GPLv3.txt
 	By: Keneto 2014-06-04
 		2014-08 Moved to Attribute Mapping v3
-  ********************************************************************/
+	********************************************************************/
 
 require_once dirname(__FILE__) . '/../basicfeed.php';
 
-class PBingFeed extends PCSVFeedEx {
+class PBingFeed extends PCSVFeedEx 
+{
 
 	public $bingForceGoogleCategory = false;
 	public $bingForcePriceDiscount = false;
 
-	function __construct () {
+	function __construct () 
+	{
 		parent::__construct();
 		$this->providerName = 'Bing';
 		$this->providerNameL = 'bing';

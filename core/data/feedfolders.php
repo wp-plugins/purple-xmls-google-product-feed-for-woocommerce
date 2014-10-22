@@ -28,6 +28,11 @@ class PFeedFolder {
 		return $pfcore->siteHost . '/administrator/index.php?option=com_cartproductfeed&view=instantiatefeed';
 	}
 
+	private static function feedURLJS() {
+		global $pfcore;
+		return $pfcore->siteHost . '/administrator/index.php?option=com_cartproductfeed&view=instantiatefeed';
+	}
+
 	private static function feedURLW() {
 		global $pfcore;
 		return $pfcore->siteHost;
@@ -48,6 +53,10 @@ class PFeedFolder {
 	}
 
 	private static function uploadFolderJ() {
+		return JPATH_SITE . '/media/cart_product_feeds/';
+	}
+
+	private static function uploadFolderJS() {
 		return JPATH_SITE . '/media/cart_product_feeds/';
 	}
 
@@ -76,6 +85,10 @@ class PFeedFolder {
 		return  JPATH_SITE . '/media/';
 	}
 
+	private static function uploadRootJS() {
+		return  JPATH_SITE . '/media/';
+	}
+
 	private static function uploadRootW() {
 		$upload_dir = wp_upload_dir();
 		return $upload_dir['basedir'];
@@ -97,6 +110,10 @@ class PFeedFolder {
 	}
 
 	private static function uploadURLJ() {
+		return JURI::root(true) . '/media/cart_product_feeds/';
+	}
+
+	private static function uploadURLJS() {
 		return JURI::root(true) . '/media/cart_product_feeds/';
 	}
 

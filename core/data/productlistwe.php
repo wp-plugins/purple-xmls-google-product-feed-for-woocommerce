@@ -218,7 +218,7 @@ class PProductList {
 				}
 				$item->attributes['stock_quantity'] = $prod->stock_var;
 				$item->item_group_id = $prod->id;
-				$item->parent_title = ''; //This is for eBay feed only, and could otherwise be deleted //! Need to go find this
+				$item->attributes['parent_title'] = '';
 			}
 
 			$item->attributes['title'] = $prod->post_title;

@@ -15,7 +15,30 @@ class AmazonSCDlg extends PBaseFeedDialog {
 		parent::__construct();
 		$this->service_name = 'Amazonsc';
 		$this->service_name_long = 'Amazon Seller Central';
-		$this->options = explode(',', 'item_sku,item_name,brand_name,manufacturer,part_number,item_type,external_product_id,list_price,standard_price,item_package_quantity,model');
+		$this->options = explode
+		(
+			',', 
+			'
+			brand_name,
+			color_name,
+			department_name,
+			external_product_id,
+			feed_product_type,
+			item_name,
+			item_package_quantity,
+			item_type,
+			item_sku,
+			list_price,
+			manufacturer,
+			part_number,
+			model,
+			part_number,
+			product_type,
+			size_name,
+			standard_price,
+			update_delete
+			'
+		);
 	}
 
 	function categoryList($initial_remote_category) {

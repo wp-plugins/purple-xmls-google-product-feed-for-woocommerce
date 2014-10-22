@@ -32,6 +32,7 @@ function parseFetchLocalCategories(res) {
 }
 
 function parseGetFeedResults(res) {
+
 	//Stop the intermediate status interval
 	window.clearInterval(feedFetchTimer);
 	feedFetchTimer = null;
@@ -54,6 +55,7 @@ function parseGetFeedStatus(res) {
 }
 
 function parseLicenseKeyChange(res) {
+	console.log('license key message: ' + res);
 	jQuery("#tblLicenseKey").remove();
 }
 
@@ -104,19 +106,29 @@ function doFetchLocalCategories() {
 
 function doGetFeed(provider) {
 	jQuery('#feed-error-display').html("Generating feed...");
-	thisDate = new Date();
+	var thisDate = new Date();
 	feedIdentifier = thisDate.getTime();
-	if (feed_id != 0)
+	/*if (feed_id != 0)
 		strFeedID = "&feed_id=" + feed_id;
 	else
-		strFeedID = "";
-
+		strFeedID = "&feed_id=0";*/
+	var shopID = jQuery("#edtRapidCart").val();
+	if (shopID == null)
+		shopID = "";
+	/*	data: "provider=" + provider + "&local_category=" + jQuery('#local_category').val() + 
+				"&remote_category=" + jQuery('#remote_category').val() + "&file_name=" + jQuery('#feed_filename').val() +
+				"&feed_identifier=" + feedIdentifier + strFeedID + "&shop_id=" + shopID,*/
 	jQuery.ajax({
 		type: "post",
 		url: ajaxhost + cmdGetFeed,
-		data: "provider=" + provider + "&local_category=" + jQuery('#local_category').val() + 
-				"&remote_category=" + jQuery('#remote_category').val() + "&file_name=" + jQuery('#feed_filename').val() +
-				"&feed_identifier=" + feedIdentifier + strFeedID,
+		data: {
+			provider: provider, 
+			local_category: jQuery('#local_category').val(), 
+			remote_category: jQuery('#remote_category').val(),
+			file_name: jQuery('#feed_filename').val(), 
+			feed_identifier: feedIdentifier, 
+			feed_id: feed_id, 
+			shop_id: shopID},
 		success: function(res){parseGetFeedResults(res)}
 	});
 	feedFetchTimer = window.setInterval(function(){updateGetFeedStatus()}, 500);
@@ -167,6 +179,8 @@ function doSelectFeed() {
 
 function doUpdateAllFeeds() {
 	jQuery('#update-message').html("Updating feeds...");
+	var shopID = jQuery("#edtRapidCart").val();
+	//{shop_id: shopID}
 	jQuery.ajax({
 		type: "post",
 		url: ajaxhost + cmdUpdateAllFeeds,
@@ -176,14 +190,17 @@ function doUpdateAllFeeds() {
 }
 
 function doUpdateSetting(source, settingName) {
+	//Note: Value must always come last... 
+	//and &amp after value will be absorbed into value
 	if (jQuery("#cbUniqueOverride").attr('checked') == 'checked')
 		unique_setting = '&feedid=' + feed_id;
 	else
 		unique_setting = '';
+	var shopID = jQuery("#edtRapidCart").val();
 	jQuery.ajax({
 		type: "post",
 		url: ajaxhost + cmdUpdateSetting,
-		data: "setting=" + settingName + unique_setting + "&value=" + jQuery("#" + source).val(),
+		data: "setting=" + settingName + unique_setting + "&shop_id=" + shopID + "&value=" + jQuery("#" + source).val(),
 		success: function(res){parseUpdateSetting(res)}
 	});
 }
@@ -219,7 +236,7 @@ function submitLicenseKey(keyname) {
 	jQuery.ajax({
 		type: "post",
 		url: ajaxhost + cmdUpdateSetting,
-		data: "setting=" + keyname + "&value=" + jQuery("#edtLicenseKey").val(),
+		data: {setting: keyname, value: jQuery("#edtLicenseKey").val()},
 		success: function(res){parseLicenseKeyChange(res)}
 	});
 }

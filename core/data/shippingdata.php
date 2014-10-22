@@ -21,7 +21,12 @@ class PShippingData {
 	function loadShippingDataJ($parentfeed) {
 	}
 
-	function loadShippingDataW($parentfeed) {
+	function loadShippingDataJS($parentfeed) {
+	}
+
+	function loadShippingDataW( $parentfeed ) 
+	{
+		
 
 	}
 

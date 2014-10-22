@@ -67,7 +67,7 @@ class PBaseFeedDialog {
 			<div class="feed-advanced" id="feed-advanced">
 				<textarea class="feed-advanced-text" id="feed-advanced-text">' . $advancedSettings . '</textarea>
 				' . $cbUnique . '
-				<input class="navy_blue_button" type="submit" value="Update" id="submit" name="submit" onclick="doUpdateSetting(\'feed-advanced-text\', \'cp_advancedFeedSetting-' . $this->service_name . '\')">
+				<button class="navy_blue_button" id="bUpdateSetting" name="bUpdateSetting" onclick="doUpdateSetting(\'feed-advanced-text\', \'cp_advancedFeedSetting-' . $this->service_name . '\'); return false;" >Update</button>
 				<div id="updateSettingMessage">&nbsp;</div>
 			</div>';
 		return $output;
@@ -80,6 +80,7 @@ class PBaseFeedDialog {
 		$FoundAttributes = new FoundAttribute();
 		$output = '
 				<p>This Export Feed will map your ' . $pfcore->cmsPluginName . ' attributes to ' .$this->service_name.'\'s required attributes.</p>
+				<p><a target=\'_blank\' href=\'http://www.shoppingcartproductfeed.com/tos/\' >View Step-by-step Guide</a></p>
 			  <h2>Attribute Mapping</h2>
 			  <table>
 			  <tr>
@@ -96,13 +97,29 @@ class PBaseFeedDialog {
 
 	function categoryList($initial_remote_category) {
 		if ($this->blockCategoryList)
-			return '';
+			return '<input type="hidden" id="remote_category" name="remote_category" value="undefined">';
 		else
 			return '
 				  <span class="label">' . $this->service_name . ' Category : </span>
 				  <span><input type="text" name="categoryDisplayText" class="text_big" id="categoryDisplayText"  onkeyup="doFetchCategory_timed(\'' . $this->service_name . '\',  this.value)" value="' . $initial_remote_category . '" autocomplete="off" placeholder="Start typing for a category name"/></span>
 				  <div id="categoryList" class="categoryList"></div>
 				  <input type="hidden" id="remote_category" name="remote_category" value="' . $initial_remote_category . '">';
+	}
+
+	function line2() {
+		global $pfcore;
+		if ($pfcore->cmsPluginName != 'RapidCart')
+			return '';
+		$listOfShops = $pfcore->listOfRapidCartShops();
+		$output = '<select class="text_big" id="edtRapidCart">';
+		foreach($listOfShops as $shop)
+			$output .= '<option value="' . $shop->id . '">' . $shop->name . '</option>';
+		$output .= '</select>';
+		return '
+				<div class="feed-right-row">
+				  <span class="label">Shop : </span>
+				  ' . $output . '
+				</div>';
 	}
 
   function mainDialog($source_feed = null) {
@@ -133,6 +150,8 @@ class PBaseFeedDialog {
 			<input type="text" name="local_category_display" class="text_big" id="local_category_display"  onclick="showLocalCategories(\'' . $this->service_name . '\')" value="' . $initial_local_category . '" autocomplete="off" readonly="true" />
 			<input type="hidden" name="local_category" id="local_category" value="' . $initial_local_category_id .'" />';
 
+		//2014-09: (K): Starting to break this up in the hopes of one day organizing it. 
+		//  There is a missing tag-pair or HTML element somewhere that is giving Joomla a hard time
     $output .= '
 	  <div class="attributes-mapping">
         <div id="poststuff">
@@ -141,36 +160,46 @@ class PBaseFeedDialog {
 			<div class="inside export-target">
 			<div class="feed-left">
 			' . $this->attributeMappings() . '
-			</div>
+			</div>';
+
+		$output .= '
 			<div class="feed-right">
-				<form action="' . $folders->feedURL() . '" name="' . $servName . '" id="cat-feeds-xml-' . $servName . '-form" method="' . $pfcore->form_method . '" target="_blank">
+				<form1 action="' . $folders->feedURL() . '" name="' . $servName . '" id="cat-feeds-xml-' . $servName . '-form" method="' . $pfcore->form_method . '" target="_blank">
 				<div class="feed-right-row">
 				  <span class="label">' . $pfcore->cmsPluginName . ' Category : </span>
 				  ' . $localCategoryList . '
-				</div>
+				</div>' . $this->line2() . '
 				<div class="feed-right-row">' .
 					$this->categoryList($initial_remote_category) . '
-				</div>
+				</div>';
+
+		$output .= '
 				<div class="feed-right-row">
 				  <span class="label">File name for feed : </span>
 				  <span ><input type="text" name="feed_filename" id="feed_filename" class="text_big" value="' . $initial_filename . '" /></span>
 				</div>
 				<div class="feed-right-row">
 				  <label>* If you use an existing file name, the file will be overwritten.</label>
-				</div>
+				</div>';
+
+		$output .= '
 				<div class="feed-right-row">
 				  <input type="hidden" name="RequestCode" value="' . $this->service_name . '" />
 					<input class="cupid-green" type="button" onclick="doGetFeed(\'' . $servName . '\')" value="Get Feed" \>
 					<div id="feed-error-display">&nbsp;</div>
 					<div id="feed-status-display">&nbsp;</div>
 				</div>
-				</form>
+				</form1>
 			</div>
-		  <div style="clear: both;">&nbsp;</div>
+		  <div style="clear: both;">&nbsp;</div>';
+
+		$output .= '
 		  <div>
 		    <label class="un_collapse_label" title="Advanced" id="toggleAdvancedSettingsButton" onclick="toggleAdvancedDialog()">[ Open Advanced Commands ]</label>
-			<label class="un_collapse_label" title="Erase existing mappings" id="erase_mappings" onclick="doEraseMappings(\'' . $this->service_name . '\')">[ Reset Attribute Mappings ]</label>
-		  </div>
+				<label class="un_collapse_label" title="Erase existing mappings" id="erase_mappings" onclick="doEraseMappings(\'' . $this->service_name . '\')">[ Reset Attribute Mappings ]</label>
+		  </div>';
+
+		$output .= '
 		  ' . $this->advancedTab($source_feed) . '
 		</div>
 	  </div>';

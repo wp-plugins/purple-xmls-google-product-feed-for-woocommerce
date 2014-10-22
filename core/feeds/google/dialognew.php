@@ -17,7 +17,7 @@ class GoogleDlg extends PBaseFeedDialog {
 		$this->service_name_long = 'Google Products XML Export';
 		$this->options = array(
 			'g:brand', 
-			'g:GTIN', 
+			'g:gtin', 
 			'g:identifier exists', 
 			'g:gender', 'g:age_group', 
 			'g:color', 'g:size', 'g:material', 'g:pattern',

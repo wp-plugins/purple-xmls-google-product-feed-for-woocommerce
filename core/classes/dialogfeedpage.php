@@ -43,15 +43,18 @@ class PFeedPageDialogs {
 		  <div style="float:left;">
 			<h4>Select Merchant Type</h4>
 			<select id="selectFeedType" onchange="doSelectFeed()">
-			  <option></option>
-			  <option value="Google">Google Merchant Feed</option>
-			  <option value="Amazon">Amazon Product Ads Feed</option>
+				<option></option>
+				<option value="Google">Google Merchant Feed</option>
+				<option value="Amazon">Amazon Product Ads Feed</option>
 				<option value="AmazonSC">Amazon Seller Central</option>
-			  <option value="eBay">eBay Feed</option>
+				<option value="eBay">eBay Feed</option>
+				<option value="eBaySeller">eBay Seller</option>
 				<option value="">------</option>
+				<option value="Beslist">Beslist Feed</option>
 				<option value="Bing">Bing Feed</option>
+				<option value="GoDataFeed">GoDataFeed</option>
 				<option value="Nextag">Nextag Feed</option>
-			  <option value="PriceGrabber">PriceGrabber</option>
+				<option value="PriceGrabber">PriceGrabber</option>
 				<option value="Rakuten">Rakuten Feed</option>
 				<option value="ShareASale">ShareASale Merchant Data Feed</option>
 				<option value="Shopzilla">Shopzilla Feed</option>

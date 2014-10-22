@@ -138,6 +138,11 @@ function cart_product_feed_admin_page()
 			phpinfo(INFO_GENERAL + INFO_CONFIGURATION + INFO_MODULES);
 			return;
 		}
+		if ($debug == 'reg') {
+			echo "<pre>\r\n";
+			new PLicense(true);
+			echo "</pre>\r\n";
+		}
 	}
 
   # Get Variables from storage ( retrieve from wherever it's stored - DB, file, etc... )

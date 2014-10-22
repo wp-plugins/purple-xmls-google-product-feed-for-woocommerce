@@ -1,14 +1,14 @@
 <?php
 
-  /********************************************************************
-  Version 2.0
-    Attribute defaults
-		Can by value or expression
-	  Copyright 2014 Purple Turtle Productions. All rights reserved.
-		license	GNU General Public License version 3 or later; see GPLv3.txt
+	/********************************************************************
+	Version 2.0
+		Attribute defaults
+	Can by value or expression
+	Copyright 2014 Purple Turtle Productions. All rights reserved.
+	license	GNU General Public License version 3 or later; see GPLv3.txt
 	By: Keneto 2014-05-08
 
-  ********************************************************************/
+	********************************************************************/
 
 //The base class occurs before item loads from database
 //These values will be overwritten by db-values if found
@@ -17,8 +17,13 @@ class PAttributeDefault {
 
 		public $attributeName;
 		public $enabled = true;
+		public $parent_feed = null; //points to feed provider that owns this mapping
 		public $stage = 0;
 		public $value;
+
+	function __destruct() {
+		unset($this->parent_feed);
+	}
 
 	public function getValue($item) {
 		return $this->value;
@@ -58,6 +63,10 @@ class PActionAfterFeed extends PAttributeDefault {
 	}
 
 }
+
+//********************************************************************
+//Built-in Feed Modifiers
+//********************************************************************
 
 class PConvertSpecialCharacters extends PActionAfterFeed {
 
@@ -122,4 +131,23 @@ class PSalePriceIfDefined extends PActionBeforeFeed {
 
 }
 
+class PCategoryTree extends PActionBeforeFeed {
+
+	public function getValue($item) {
+		$category = $this->parent_feed->categories->idToCategory($item->attributes['category_id']);
+		$output = '';
+		while ($category != null) {
+			if (strlen($output) == 0)
+				$output = $category->title;
+			else
+				$output = $category->title . ' > ' . $output;
+			if (isset($category->parent_category))
+				$category = $category->parent_category;
+			else
+				break;
+		}
+		return $output;
+	}
+
+}
 ?>

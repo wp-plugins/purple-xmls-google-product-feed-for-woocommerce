@@ -527,9 +527,10 @@ a.multi-line-button.orange:active, a.multi-line-button.orange.depressed {
     margin:25px 0 0 14px;
 }
 .version-style-j {
-	float:left;
-    color:#777;
 	font-size:50%;
+	padding-left:250px;
+	text-align:right;
+	clear:both;
 }
 /* Header Logos + Links */
 .cpf-logo-header {
@@ -552,4 +553,8 @@ a.multi-line-button.orange:active, a.multi-line-button.orange.depressed {
 .gts-logo-link {
     float:right;
     margin:14px 0;
+}
+/* Joomla 3 Icon */
+.icon-cpficon{
+  background: url('../images/cpf-48.png') 0 0 no-repeat;
 }

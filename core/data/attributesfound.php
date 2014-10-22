@@ -34,6 +34,10 @@ class FoundAttribute {
 		$this->attributes = $db->loadObjectList();
 	}
 
+	function fetchAttributesJS() {
+		$this->attributes = array();
+	}
+
 	function fetchAttributesW() {
 		//From WordPress / Woocommerce
 		global $wpdb;
@@ -84,6 +88,22 @@ class FoundOptions {
 			WHERE (a.state = 1) AND (a.name='$option_name')";
 		$db->setQuery($query);
 		$db->query();
+		$this->option_value = $db->loadResult();
+	}
+
+	function internalFetchJS($service_name, $attribute) {
+
+		global $pfcore;
+
+		$shopID = $pfcore->shopID;
+
+		$option_name = $service_name . '_cp_' . $attribute;
+		$db = JFactory::getDBO();
+		$db->setQuery("
+			SELECT a.value
+			FROM #__cartproductfeed_options a
+			WHERE (a.state = 1) AND (a.name='$option_name') AND (shop_id = $shopID)"
+			);
 		$this->option_value = $db->loadResult();
 	}
 

@@ -1,32 +1,60 @@
 === WooCommerce Shopping Cart Export ===
 Contributors: PurpleTurtlePro
-Tags: WooCommerce, Google, Merchant, Shopping, xml, product feed, Nextag, Google product feed, Amazon, eBay, google merchant, amazon seller, shopzilla, shopify, export csv, export xml, export tab
+Tags: WooCommerce export, getshopped export, wp-e-commerce export, amazon product Ads, amazon product ads export, Google Merchant, Google Merchant Export, Shopping.com export, xml export, Nextag, Google product feed export, Amazon export, amazon seller, amazon seller export, Ammoseek, ammoseek export, Bing! Export, eBay export, eBay Merchant, Google Adwords, Houzz export,  google merchant product feed, amazon seller export, shopzilla export, shopify export, houzz export, beslist export, export csv, export xml, export tab, woocommerce variations, variations export, product variations, godatafeed, shareasale, thefind.com, sell.com, newegg.com, sears.com, rakuten, pricefalls, pricegrabber
 Requires at least: 3.0.1
-Tested up to: 3.9.2
+Tested up to: 4.0
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-OneClick WooCommerce Export:Google Merchant Center|Amazon Seller & Shopper|Shopzilla|eBay Merchant|CSV/XML--OneTime & Scheduled
+WooCommerce Product Export & Variations: Google Merchant|Amazon Seller|BesList|Houzz|Bing!|eBay|CSV/XML
 
 == Description ==
+*“The plugin enabled us to very quickly get our products listed in the Google Merchant stores system, no fuss.  We took advantage of their 'Full Monty' program to get things done even quicker! With over a decade in our market - and very high end products - we can't afford to have any mixups, missing products or data that is wrong...”*  
+**Kevin P.** - Webmaster - http://www.electriccyclery.com
 
-The Shopping Cart Product Feed for WooCommerce creates output by of any product category (and its details) in your  WooCommerce installation It includes all required feed types for Google Merchant Center, Amazon Seller, Amazon Shopper, Shopzilla, eBay Merchant, NexTag for variable & non-variable products.  Additionally - you can choose to export CSV/XML directly for integration to other platforms (billing systems, other vendor sites, sub-sales sites, etc).
+The Shopping Cart Product Feed for WooCommerce & WP-ECommerce (Getshopped) creates the native output required by each merchant (over 40 now!) of any product category (and all product details) for native import. It includes all required feed types for Google Merchant Center, Amazon Seller, Amazon Shopper, Shopzilla, eBay Merchant, NexTag for variable & non-variable products.  
 
-The Plugin creates a digestible feed for SPECIFIC to each Merchant (Google, eBay, Amazon, Bing, etc.)  to import WooCommerce Products into your Merchant Account. This Plugin feeds that are available for export (timed and ad hoc) for these merchant providers - as well as a full CSV/XML Export is available as well.
+[youtube http://www.youtube.com/watch?v=fgUmHoO6lqM /]
 
-[**Which Merchants Are Supported?**](http://shoppingcartproductfeed.com/question/targets-plugin-support/) -- Which merchants/exports are supported?<P>
+The created feeds are available for export (timed and on demand) for these merchant providers - and ALWAYS up to date.  The feeds pull from your current product catalogues as you update them - so your merchants are [**never out of date**].
 
->[**Free Version**](http://www.shoppingcartproductfeed.com/) --  Includes all functionality - limited to 10 items
-><BR>[**Upgrade to Pro**](http://www.shoppingcartproductfeed.com/) -- The Pro version supports unlimited Attributes and Variations and sync schedule
-><BR> **AUTOMATIC** -- Exports are done on a timed basis - set it once only!
-><BR> **SIMPLE** -- Configured in less than 2 minutes, one page - done!
-><P>[**Google Trusted Store!**](http://shoppingcartproductfeed.com/google-trusted-store/) Hooks into our other plugin (Google Trusted Store for WooCommerce) 
+[**Over 40 different Merchants Are Supported! - Full Listing Here**](http://shoppingcartproductfeed.com/question/targets-plugin-support/) 
+* Google Merchant & Google Trusted Store & Google Adwords
+* Amazon Seller, Amazon Product Ads
+* AmmoSeek
+* Bing!
+* eBay Merchant
+* NextTag
+* PriceGrabber
+* Shopping.com
+* ShopZilla
+* Houzz
+* Beslist
+* GoDataFeed
+* Shareasale
+* XML & CSV & Excel Export
+<P>
 
-The plugin includes some great options to create your own customized feed - for export to other platforms.  Join the over 2,000 other users of our plugin to push your WooCommerce product set (all details, sale prices, etc.) to many other sales platforms - enter once - sell everywhere!
+>[**Free Version**] --  Includes all functionality - limited to 10 items - Download here
+><BR>[**FREE TRIAL**](https://www.purpleturtle.pro/cart.php?a=add&pid=88) -- 5 DAY UNLIMITED FREE TRIAL
+><BR>[**PRO**](https://www.purpleturtle.pro/cart.php?a=add&pid=61) -- PRO VERSION - UNLIMITED FEEDS & MERCHANTS
+<P>
+><BR>[**READ OUR FAQ**](http://www.shoppingcartproductfeed.com/faq/) -- Or Click on the LiveChat link!
+><P>See our other products, including the only: <BR>[**Google Trusted Store!**](http://www.shoppingcartproductfeed.com/google-trusted-store/) The only two click installation for Google Trusted Stores
 
+The plugin includes some great options to create your own customized feed - for export to other platforms.  
+
+All professional versions come with livechat support, email support, and some of our programs offer full installation, configuration and management offerings.
+
+See our Site for other offerings such as: [**Joomla VirtueMart Export**](http://www.shoppingcartproductfeed.com/joomla-virtuemart-export/), [**Shopify Product Export**](http://www.shoppingcartproductfeed.com/shopify-sync-export-amazon-bing-google-yahoo-csv-xml/), [**OpenCart Export**](http://www.shoppingcartproductfeed.com/open-cart-export)
+* All products utilize the same core engine, for best performance, scale and more coverage!
 
 == Installation ==
+
+>[**HOW TO GUIDE**] (http://www.shoppingcartproductfeed.com/tos)
+>[** ALL FAQS **](http://www.shoppingcartproductfeed.com/faq/)
+<P>
 A few quick steps - easy as pie :)  <P>
 1) Upload to your WordPress website, and activate 'Cart Product Feed'.<BR>
 2) Select ‘CartProductFeed' from admin menu, Click 'Create Feed'<BR>
@@ -43,40 +71,37 @@ This will not redirect to the feed URL you just created - ready for submission!
 
 
 == Frequently Asked Questions ==
-<p><strong>What is Shopping Cart Product Feed plugin?</strong></p>
-<p>The Shopping Cart Product Feed (Formerly known as Purple XMLs) for WooCommerce creates output of any category in the WooCommerce installation. It includes all required feed types for Google Merchant Center, Amazon Seller, eBay Merchant, Shopzilla, NexTag for non-variable products.
-    The Plugin creates a digestible  feed for Google/Amazon/eBay/Shopzilla/NexTag to import WooCommerce Products into a  Merchant Account. This Plugin creates an  output of entire Categories that adheres to the Feed Specifications of your target.</p>
-<p><strong>Is there any trial version available?</strong></p>
-<p>Yes, You can try the free version before going to pro version.  Free version is restricted to 10 items per feed.  We offer a free trial (which is unlimited for 5 days), and a professional version that is available for unlimited exports of all product types to all targets</p>
-<p><strong>How can I Install the plugin?</strong></p>
-<p>Upload the plugin to the plugins directory of your WordPress install and activate the plugin. Navigate to the settings and select your category, then the Google category, and finally enter the brand name in the text area. Generate the feed by clicking the button .</p>
-<p><strong>How can I update the plugin to pro version?</strong></p>
-<p>You can update by using automatic plugin updates notification on plugins page. </p>
-<p><strong>Why my feed has some errors?</strong></p>
-<p>Make sure all of your titles and descriptions contain proper markup.
-    Titles and descriptions cannot contain just & .. needs to be fully qualified HTML ie. "&" </p>
-
-<p><strong>How do I contact support?</strong></p>
-<p>We are providing 24/7 support for our products. You can contact us through live chat and ticket https://www.shoppingcartfeed.com/</p>
-<p><strong>After uploading my  product xml feeds generated by the plugin I bought to my Google Merchant account, most of the products where rejected in Google Merchant.</strong></p>
-<p>Each product should have at least 2 unique identifiers
-    Unique product identifiers are product codes or other identifying values associated with an individual product:
-    Global Trade Item Numbers (GTINs) submitted through the ‘gtin’ attribute. GTINs include UPC, EAN (in Europe), JAN (in Japan), and ISBN;
-    Manufacturer Part Number (MPN) submitted through the 'mpn' attribute; and
-    The manufacturer's brand name in the 'brand' attribute.
-
-    Apparel categories: 'brand' is required. Additionally, for the categories listed below, you must submit at least 1 out of 'gtin' or 'mpn’:
-    'Apparel & Accessories > Shoes'
-    'Apparel & Accessories > Clothing Accessories > Sunglasses'
-    'Apparel & Accessories > Handbags, Wallets & Cases > Handbags'
-    'Apparel & Accessories > Jewellery > Watches'
-    Media and software categories: 'gtin' is required
-    All other categories: at least 2 of the following 3 identifiers are required: ‘brand’, ‘gtin’, and ‘mpn’.
-    Exception: in categories where unique product identifiers are required but no such identifier exists for an item (e.g. custom goods), submit 'identifier exists' with a value of FALSE.
-    If you don't provide the required unique product identifiers, your items may be removed from Google Shopping. For all of your items, we recommend submitting all three attributes (‘brand’, ‘mpn’, and ‘gtin’) where available.</p>
-<p><strong>If I have 50 categories in my shop do I need to create 50 different feeds? Or can I map categories to Google categories and export as one big feed?</strong></p>
-<p>If you have any number of categories no matter , you can map all categories and product to a single category by selecting "All category" Option and select Google Category as parent one that match with all your product, if you are products are entirely different or Each category contain very huge number of products, then it is better to create as different feeds. Because if you have huge number of product in system, it will take a very long time to generate a single feed with all these product, may chance break operation due maximum execution time exceeding. if you are product are entirety different in each category so separate feed will help you to map each category to most matching category in google.</p>
-
+[**What Targets does the plugin Support? **](http://www.shoppingcartproductfeed.com/faq/#targets-plugin-support)
+[**Does the WooCommerce Cart Plugin include product variations? **](http://www.shoppingcartproductfeed.com/faq/#woocommerce-cart-plugin-include-product-variations)
+[**Why Aren’t My Variations Showing? **](http://www.shoppingcartproductfeed.com/faq/#arent-variations-showing)
+[**How do I speed up exports/Why am I getting timeouts/Exports freezing at xx% always **](http://www.shoppingcartproductfeed.com/faq/#speed-exportswhy-getting-timeoutsexports-freezing-xx-always)
+[**Does the plugin integrate with WooThemes Google Product Feed? **](http://www.shoppingcartproductfeed.com/faq/#plugin-integrate-woothemes-google-product-feed)
+[**What’s the difference between the Free Version, 5 Day Trial and Commercial? **](http://www.shoppingcartproductfeed.com/faq/#whats-difference-free-version-5-day-trial-commercial)
+[**How do I exclude products from the feed?**](http://www.shoppingcartproductfeed.com/faq/#exclude-products-feed)
+[**What Templates for Amazon Seller are supported?**](http://www.shoppingcartproductfeed.com/faq/#templates-amazon-seller-supported) 
+[**How do I set shipping information for google?**](http://www.shoppingcartproductfeed.com/faq/#set-shipping-information-google) 
+[**My categories aren’t listed, what gives? **](http://www.shoppingcartproductfeed.com/faq/#categories-arent-listed-gives)
+[**Is there a limit to feed size? **](http://www.shoppingcartproductfeed.com/faq/#limit-feed-size)
+[**Is there a limit to how many products can be exported? **](http://www.shoppingcartproductfeed.com/faq/#limit-many-products-can-exported)
+[**How do I remove duplicates from my product feed? **](http://www.shoppingcartproductfeed.com/faq/#remove-duplicates-product-feed)
+[**How does the Shopping Cart Product Export work? **](http://www.shoppingcartproductfeed.com/faq/#shopping-cart-product-export-work)
+[**Is My Country’s Currency Supported? **](http://www.shoppingcartproductfeed.com/faq/#countrys-currency-supported)
+[**How do I remove the licence key for the trial or commercial version? **](http://www.shoppingcartproductfeed.com/faq/#remove-licence-key-trial-version)
+[**Why is my License Key Invalid? Do I need a License? **](http://www.shoppingcartproductfeed.com/faq/#license-key-invalid)
+[**How Do I Activate My License Key? **](http://www.shoppingcartproductfeed.com/faq/#activate-license-key)
+[**Why Doesn’t My License Key Work? **](http://www.shoppingcartproductfeed.com/faq/#doesnt-license-key-work)
+[**How do I create a default brand in my feed? **](http://www.shoppingcartproductfeed.com/faq/#create-default-brand-feed)
+[**How do I manipulate pricing per feed? **](http://www.shoppingcartproductfeed.com/faq/#manipulate-pricing-per-feed)
+[**How do I upgrade to PRO? **](http://www.shoppingcartproductfeed.com/faq/#upgrade-pro)
+[**Why is my Attribute List empty? **](http://www.shoppingcartproductfeed.com/faq/#attribute-list-empty)
+[**Are the Data Feeds updated automatically? **](http://www.shoppingcartproductfeed.com/faq/#data-feeds-updated-automatically)
+[**Nothing happens after I select a Merchant Type **](http://www.shoppingcartproductfeed.com/faq/#nothing-happens-select-merchant-type-upgrading)
+[**Why Aren’t My Data Feeds Updating? **](http://www.shoppingcartproductfeed.com/faq/#arent-data-feeds-updating)
+[**Can I use “post_content” as the description? **](http://www.shoppingcartproductfeed.com/faq/#can-use-post_content-description)
+[**Does the Google Product Feed only support Google USA (or .com) ? **](http://www.shoppingcartproductfeed.com/faq/#google-product-feed-support-com)
+[**What are the requirements for a Google Merchant Account? **](http://www.shoppingcartproductfeed.com/faq/#requirements-google-merchant-account)
+[**Why do I only have one item in my feed? **](http://www.shoppingcartproductfeed.com/faq/#one-item-feed)
+[**How do I find a Google Category?**](http://www.shoppingcartproductfeed.com/faq/#google-category)
 
 
 == Screenshots ==
@@ -87,6 +112,14 @@ This will not redirect to the feed URL you just created - ready for submission!
 5. Manage existing feeds that you have created
 
 == Changelog ==
+<h4>Version 3.0.6.10 2014-10-21</h4>
+<ul>
+  <li><strong>New</strong>Massive update of Amazon templates - over 25 added</li>
+	<li><strong>New</strong>GoDataFeed.com added as a target</li>
+	<li><strong>New</strong>Integration with WooThemes Google Product Feed</li>
+	<li><strong>Change</strong>Licensing bug fixes</li>
+	<li><strong>Change</strong>Major performance enhancements</li>
+</ul>
 <h4>Version 3.0.4.0 2014-09-04</h4>
 <ul>
   <li><strong>New</strong> Shareasale Merchant Support</li>

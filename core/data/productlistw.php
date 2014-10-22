@@ -9,58 +9,7 @@
   ********************************************************************/
 
 class PAProductW extends PAProduct {
-  
-	/*function fetch_attributes(){
-  
-    global $wpdb;
-	
-		//For non-variant products, get the attributes
-		$sql = "
-			SELECT $wpdb->posts.ID, $wpdb->posts.post_title, $wpdb->posts.post_content, $wpdb->posts.post_name, $wpdb->term_taxonomy.taxonomy, $wpdb->terms.name as Attributes
-			FROM $wpdb->posts
-			LEFT JOIN $wpdb->term_relationships ON ($wpdb->posts.ID = $wpdb->term_relationships.object_id)
-			LEFT JOIN $wpdb->term_taxonomy ON ($wpdb->term_relationships.term_taxonomy_id = $wpdb->term_taxonomy.term_taxonomy_id)
-			LEFT JOIN $wpdb->terms on ($wpdb->term_taxonomy.term_id = $wpdb->terms.term_id)
-			WHERE $wpdb->posts.post_status = 'publish'
-			AND $wpdb->posts.ID = " . $this->id . "
-			AND $wpdb->term_taxonomy.taxonomy LIKE 'pa\_%' ";
-		$childlist = $wpdb->get_results($sql);
-		
-		foreach($childlist as $a)
-			$this->attributes[substr($a->taxonomy, 3)] = $a->Attributes;
 
-	}*/
-  
-	/*function fetch_meta_attributes(){
-  
-		global $wpdb;
-	
-		//********************************************************************
-		//wp_post_meta provides some attributes in the form of custom fields
-		//********************************************************************
-		$sql = "SELECT meta_key, meta_value FROM $wpdb->postmeta WHERE post_id=" . $this->id;
-		$meta = $wpdb->get_results($sql);
-		foreach($meta as $this_meta) {
-			if ((strlen($this_meta->meta_key) > 0) && (substr($this_meta->meta_key, 0, 1) != '_')) {
-				switch (strtolower($this_meta->meta_key)) {
-					case 'tax':
-						$this->attributes['tax'] = $this_meta->meta_value;
-						break;
-					case 'vat':
-						$this->attributes['vat'] = $this_meta->meta_value;
-						break;
-					case 'gst':
-						$this->attributes['gst'] = $this_meta->meta_value;
-						break;
-					case 'total_sales':
-						break;
-					default:
-						$this->attributes[$this_meta->meta_key] = $this_meta->meta_value;
-				}
-			}
-		}
-  }*/
-	
 }
 
 class PProductList {
@@ -74,43 +23,6 @@ class PProductList {
 		$this->AttributeCategory = array();
 	}
 
-  /*function CreateAttributeCategories($list) {
-    //iterate the list and build categories
-	foreach($list as $listitem) {
-	  //Try to find existing ProductAttribute
-	  $x = $this->FindAttributeCategory($listitem);
-	  if ($x == null) {
-
-	    //Not found... make a new one
-	    $x = new PProductEntry();
-	    $x->taxonomyName = $listitem->taxonomy;
-		$x->ProductID = $listitem->ID;
-		$this->AttributeCategory[] = $x;
-	  }
-	  
-	  //Save the Attribute
-	  $x->Attributes[] = $listitem->Attributes;
-	  
-	}
-  }*/
-
-  /*function CreateNewProductList($list, $childlist) {
-
-    //iterate the list of products
-	foreach($list as $listitem) {
-	  if ($this->ExistsInChildList($listitem, $childlist)) {
-	    $this->InsertAttributes($listitem, 0, '');
-	  }
-
-	}
-	//Clean up the trailing comma from the attributes
-	foreach($this->resultlist as $listitem) {
-	  $listitem->Attributes = substr($listitem->Attributes, 0, -2);
-  
-	}
-
-  }*/
-
   function ExistsInChildList($needle, $haystack) {
     $result = false;
 	foreach($haystack as $x) {
@@ -121,20 +33,6 @@ class PProductList {
 	}
 	return $result;
   }
-
-  /*function FindAttributeCategory($SearchTerm) {
-    $result = null;
-	if ($this->exclude_variable_attributes) {
-	  return $result; //patch for huisenthuis
-	}
-    foreach($this->AttributeCategory as $ThisAttribute) {
-	  if (($ThisAttribute->taxonomyName == $SearchTerm->taxonomy) && ($ThisAttribute->ProductID == $SearchTerm->ID)) {
-	    $result = $ThisAttribute;
-		break;
-	  }
-	}
-	return $result;
-  }*/
   
 	public function get_customfields($parent) {
 		global $wpdb;
@@ -346,23 +244,16 @@ class PProductList {
 				continue;
 
 			//Duplicate check
-			if ( $parent->ignoreDuplicates ) 
-			{
-				$skip_this_item = false;
-				foreach($master_product_list as $this_item)
-					if ($this_item->id == $prod->ID) 
-					{
-						$skip_this_item = true;
-						break;
-					}
+			if ( $parent->ignoreDuplicates ) {
+				$skip_this_item = isset($master_product_list[$prod->ID]);
+				$master_product_list[$prod->ID] = 1;
 				if ($skip_this_item)
 					continue;
 			}
 
 			//Prepare the item
 			$item = new PAProductW(); //extends PAProduct (basicfeed.php)
-			$product = get_product($prod->ID);
-			$item->product = $product; //Save for meta-data iteration (ex. stock)
+			$product = get_product($prod->ID); //WooCommerce - get product by id
 
 			//Basics
 			$item->id = $prod->ID;
@@ -401,6 +292,7 @@ class PProductList {
 			$item->attributes['product_type'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
 			$item->attributes['localCategory'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $prod->category_name));
 			$item->attributes['localCategory'] = str_replace("|", ">", $item->attributes['localCategory']);
+			$item->attributes['category_id'] = $prod->category_id;
 			$item->attributes['link'] = get_permalink($prod->ID);
 			$thumb_ID = get_post_thumbnail_id($prod->ID);
 			$thumb = wp_get_attachment_image_src($thumb_ID, 'small-feature');
@@ -434,7 +326,8 @@ class PProductList {
 			$item->attributes['stock_quantity'] = 1;
 			//$item->stock_status_explicitly_set = false;
 			//$item->attributes['vendor'] = $product->vendor; Suggested new attribute not found on local dev setup
-			//$item->fetch_attributes(); //Old
+			$item->attributes['product_is_in_stock'] = $product->is_in_stock(); //already checks for global manage stock and product inventory stock_status
+			$item->attributes['product_stock_qty'] = $product->get_stock_quantity();
 			
 			//get attributes
 			//attempt using WC_Products and/or WC_Variable_Product			
@@ -462,7 +355,7 @@ class PProductList {
 			foreach($item->attribute_details as $this_attribute){
 				$this_attribute = explode('=', $this_attribute);
 				if (count($this_attribute) > 1)
-				$item->attributes[substr($this_attribute[0], 3)] = $this_attribute[1];
+					$item->attributes[substr($this_attribute[0], 3)] = $this_attribute[1];
 			}
 
 			$item->variation_ids = $prod->variation_ids;
@@ -503,23 +396,24 @@ class PProductList {
 						}
 				}
 			}
-			$master_product_list[] = $item;
-		} //foreach ($this->products as $index => $prod)
+
+			$this->expandProduct($item, $parent);
+		}
+
+		$parent->logActivity('ProductList successfully generated.');
+
+	}
+
+	function expandProduct($listitem, $parent) {
+
+		global $wpdb;
+		global $pfcore;
 
 		$resultlist = array();
-
-		//********************************************************************
-		//Iterate the master_product_list
-		//If Variations exist, make sure multiple clones of the product exist
-		//********************************************************************
-		foreach($master_product_list as $index => $listitem) 
-		{
-			if ($index % 100 == 0)
-				$parent->logActivity('Applying variations...' . round($index / count($master_product_list) * 100) . '% -(' . $index . ') ' . $listitem->attributes['title'] );
 		
 			//Check for simple variation
 			if ($listitem->isVariable)
-				$variable_attribute_count = $this->populateVariableAttributes($listitem, $resultlist, $index, $parent);
+				$variable_attribute_count = $this->populateVariableAttributes($listitem, $resultlist, $parent);
 			else
 				$variable_attribute_count = 0;
 
@@ -530,38 +424,42 @@ class PProductList {
 				$listitem->parent_manage_stock = 'no';
 			}
 			$resultlist[] = $listitem;
-		}
 
 		//********************************************************************
 		//Meta-data iteration
 		//a) Now that variations are known, we can tell if it's in-stock or out-of-stock
 		//********************************************************************
-		
-		$parent->logActivity('Meta-data iteration');
 
 		foreach($resultlist as $index => $item) {
-
-			if ($index % 100 == 0)
-				$parent->logActivity('Meta-data iteration...' . round($index / count($resultlist) * 100) . '%' );
 
 			//Strange bug: Woocommerce says parent_manage_stock = yes even if item has no parent
 			if (($item->parent_manage_stock == 'yes') && ($item->parent_item == null))
 				$item->parent_manage_stock = 'no';
 
-			//$sql2 = "SELECT post_id, meta_key, meta_value from $wpdb->postmeta WHERE post_id=" . $item->id;
-			//$metadata = $wpdb->get_results($sql2);
-			$product = $item->product;
-			$product_is_in_stock = $product->is_in_stock(); //already checks for global manage stock and product inventory stock_status
-			$product_stock_qty = $product->get_stock_quantity();
 			//$product_availability = $product->get_availability();	
 
-			if ( $product_is_in_stock && $product_stock_qty > 0 )
+			//attempting to pull flat  shipping cost
+			//Note: extra call to new WC_product means an extra trip to the database which will increase timeouts (-K)
+			/*
+			$slug = $product->get_shipping_class();		
+			$slug_object = get_term_by('slug', $slug, 'product_shipping_class'); 
+			$slug_object->name;
+			error_log(var_export($slug_object, true));
+
+			$product = new WC_product($product->id);
+ 			echo $product->get_price_html();
+
+			$item->attributes['condition'] = '.'.$slug_object->id;
+			*/
+
+			//STOCK CODE
+			if ( $item->attributes['product_is_in_stock'] && $item->attributes['product_stock_qty'] > 0 )
 				$item->attributes['stock_status'] = 1;
-			else if ($product_stock_qty == '') 
-				$item->attributes['stock_status'] = $product_is_in_stock; //use parent's stock status if qty is blank
+			else if ($item->attributes['product_stock_qty'] == '') 
+				$item->attributes['stock_status'] = $item->attributes['product_is_in_stock']; //use parent's stock status if qty is blank
 			else
 				$item->attributes['stock_status'] = 0;
-			$item->attributes['stock_quantity'] = $product_stock_qty;
+			$item->attributes['stock_quantity'] = $item->attributes['product_stock_qty'];
 		
 			/*
 			foreach ($metadata as $m) {
@@ -593,6 +491,7 @@ class PProductList {
 				}
 			} //foreach $metadata
 			*/
+
 		}
 
 		/*
@@ -631,12 +530,18 @@ class PProductList {
 					$item->attributes[$thisDefault->attributeName] = $thisDefault->getValue($item);
 		}
 
-		$parent->logActivity('ProductList successfully generated.');
+		foreach($resultlist as $item)
+			$parent->handleProduct($item);
+
+		foreach($resultlist as &$item) {
+			foreach($item->attributes as &$x)
+				unset($x);
+			unset($item);
+		}
 		
-		return $resultlist;
-  }//getProductList
+  }
   
-  function populateVariableAttributes($listitem, &$resultlist, $index, $parent) {
+  function populateVariableAttributes($listitem, &$resultlist, $parent) {
   
 		//********************************************************************
 		//Variable attributes occur when the user has fully defined the variations and attributes.
@@ -656,7 +561,7 @@ class PProductList {
 			$resultlist[] = $item;
 			$count++;
 
-			$item->parent_title = $item->attributes['title']; //This is for eBay feed only, and could otherwise be deleted
+			$item->attributes['parent_title'] = $item->attributes['title']; //This is for eBay feed only, and could otherwise be deleted
 			$item->parent_item = $listitem;
 
 			//Special Variations settings
@@ -678,6 +583,8 @@ class PProductList {
 			}
 			$item->attributes['sku'] = $product->sku;
 			$item->attributes['weight'] = $product->get_weight();
+			$item->attributes['product_is_in_stock'] = $product->is_in_stock();
+			$item->attributes['product_stock_qty'] = $product->get_stock_quantity();
 
 			//Go find the Variations' Attributes
 			$sql = "SELECT meta_key, meta_value FROM $wpdb->postmeta
@@ -686,6 +593,7 @@ class PProductList {
 			$attributes = $wpdb->get_results($sql);
 
 			//Add the variation attributes
+			//meta_value takes the slug from wp_terms instead of the name
 			foreach($attributes as $this_attribute) {
 				if (strpos($this_attribute->meta_key, 'attribute_pa') == 0)
 					$this_attribute->meta_key = substr($this_attribute->meta_key, 13);

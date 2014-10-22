@@ -21,6 +21,10 @@ class PTaxationData {
 		//Joomla version
 	}
 
+	function loadTaxationDataJS($parentfeed) {
+		//Joomla/Shopify version
+	}
+
 	function loadTaxationDataW($parentfeed) {
 		//This function needs to load the WordPress Taxation information and store it here
 		//thus later:

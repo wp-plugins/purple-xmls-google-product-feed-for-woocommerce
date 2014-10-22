@@ -82,6 +82,7 @@ class PProductCategories {
 			//find a parent id using links
 			$parent_id = -1;
 			foreach($links as $this_link) {
+				if ($this_link->parent_category != $this_link->child_category)
 				if ($this_category->id == $this_link->child_category) {
 					$parent_id = $this_link->parent_category;
 					break;
@@ -129,10 +130,12 @@ class PProductCategories {
   
 		//Load the categories: id, title, tally-of-products
 		$db = JFactory::getDBO();
+		$lang = JComponentHelper::getParams('com_languages')->get('site');
+		$lang = strtolower(str_replace('-', '_', $lang));
 		$query = '
 			SELECT a.virtuemart_category_id as id, b.category_name as title, count(c.virtuemart_category_id) as tally
 			FROM #__virtuemart_categories a
-			LEFT JOIN #__virtuemart_categories_en_gb b ON a.virtuemart_category_id = b.virtuemart_category_id
+			LEFT JOIN #__virtuemart_categories_' . $lang . ' b ON a.virtuemart_category_id = b.virtuemart_category_id
 			LEFT JOIN #__virtuemart_product_categories c ON a.virtuemart_category_id = c.virtuemart_category_id
 			GROUP BY a.virtuemart_category_id';
 		$db->setQuery($query);
@@ -149,6 +152,15 @@ class PProductCategories {
 
 		$this->interpretCategories($links);
 
+	}
+
+	public function getListJS() {
+		$nullCategory = new stdClass();
+		$nullCategory->id = 1;
+		$nullCategory->title = 'All Categories';
+		$nullCategory->tally = 0;
+		$nullCategory->children = array();
+		$this->categories = array($nullCategory);
 	}
 
 	public function getListW() {

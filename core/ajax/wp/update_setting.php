@@ -15,6 +15,9 @@
 		return;
 	}
 
+	require_once dirname(__FILE__) . '/../../../../../../wp-load.php';
+	require_once dirname(__FILE__) . '/../../classes/cron.php';
+
 	$setting = $_POST['setting'];
 	if (isset($_POST['feedid']))
 		$feedid = $_POST['feedid'];
@@ -22,12 +25,8 @@
 		$feedid = '';
 	$value = $_POST['value'];
 
-	require_once dirname(__FILE__) . '/../../../../../../wp-load.php';
-	require_once dirname(__FILE__) . '/../../classes/cron.php';
-
 	//Don't update here - security issue would allow any option to be updated
 	//Only update within an if()
-
 	if ($setting == 'cp_feed_delay') {
 
 		update_option($setting, $value);

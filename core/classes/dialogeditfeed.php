@@ -14,6 +14,9 @@ class PEditFeedDialog {
 		require_once dirname(__FILE__) . '/../data/savedfeed.php';
 		require_once 'dialogbasefeed.php';
 
+		if ($feed_id == 0)
+			return;
+
 		$feed = new PSavedFeed($feed_id);
 
 		//Figure out the dialog for the provider
