@@ -15,7 +15,7 @@ WooCommerce Product Export & Variations: Google Merchant|Amazon Seller|BesList|H
 
 The Shopping Cart Product Feed for WooCommerce & WP-ECommerce (Getshopped) creates the native output required by each merchant (over 40 now!) of any product category (and all product details) for native import. It includes all required feed types for Google Merchant Center, Amazon Seller, Amazon Shopper, Shopzilla, eBay Merchant, NexTag for variable & non-variable products.  
 
-[** WooCommerce Variations are FULLY Supported! **]
+** ---- WooCommerce Variations are FULLY Supported! ---- **
 
 [youtube http://www.youtube.com/watch?v=fgUmHoO6lqM /]
 
@@ -74,37 +74,38 @@ This will not redirect to the feed URL you just created - ready for submission!
 
 
 == Frequently Asked Questions ==
-[**What Targets does the plugin Support? **](http://www.shoppingcartproductfeed.com/faq/#targets-plugin-support) <BR>
-[**Does the WooCommerce Cart Plugin include product variations?  <BR>**](http://www.shoppingcartproductfeed.com/faq/#woocommerce-cart-plugin-include-product-variations)
-[**Why Aren’t My Variations Showing? **](http://www.shoppingcartproductfeed.com/faq/#arent-variations-showing) <BR>
-[**How do I speed up exports/Why am I getting timeouts/Exports freezing at xx% always **](http://www.shoppingcartproductfeed.com/faq/#speed-exportswhy-getting-timeoutsexports-freezing-xx-always) <BR>
-[**Does the plugin integrate with WooThemes Google Product Feed? **](http://www.shoppingcartproductfeed.com/faq/#plugin-integrate-woothemes-google-product-feed) <BR>
-[**What’s the difference between the Free Version, 5 Day Trial and Commercial? **](http://www.shoppingcartproductfeed.com/faq/#whats-difference-free-version-5-day-trial-commercial) <BR>
-[**How do I exclude products from the feed?**](http://www.shoppingcartproductfeed.com/faq/#exclude-products-feed) <BR>
-[**What Templates for Amazon Seller are supported?**](http://www.shoppingcartproductfeed.com/faq/#templates-amazon-seller-supported)  <BR>
-[**How do I set shipping information for google?**](http://www.shoppingcartproductfeed.com/faq/#set-shipping-information-google)  <BR>
-[**My categories aren’t listed, what gives? **](http://www.shoppingcartproductfeed.com/faq/#categories-arent-listed-gives) <BR>
-[**Is there a limit to feed size? **](http://www.shoppingcartproductfeed.com/faq/#limit-feed-size) <BR>
-[**Is there a limit to how many products can be exported? **](http://www.shoppingcartproductfeed.com/faq/#limit-many-products-can-exported) <BR>
-[**How do I remove duplicates from my product feed? **](http://www.shoppingcartproductfeed.com/faq/#remove-duplicates-product-feed) <BR>
-[**How does the Shopping Cart Product Export work? **](http://www.shoppingcartproductfeed.com/faq/#shopping-cart-product-export-work) <BR>
-[**Is My Country’s Currency Supported? **](http://www.shoppingcartproductfeed.com/faq/#countrys-currency-supported) <BR>
-[**How do I remove the licence key for the trial or commercial version? **](http://www.shoppingcartproductfeed.com/faq/#remove-licence-key-trial-version) <BR>
-[**Why is my License Key Invalid? Do I need a License? **](http://www.shoppingcartproductfeed.com/faq/#license-key-invalid) <BR>
-[**How Do I Activate My License Key? **](http://www.shoppingcartproductfeed.com/faq/#activate-license-key) <BR>
-[**Why Doesn’t My License Key Work? **](http://www.shoppingcartproductfeed.com/faq/#doesnt-license-key-work) <BR>
-[**How do I create a default brand in my feed? **](http://www.shoppingcartproductfeed.com/faq/#create-default-brand-feed) <BR>
-[**How do I manipulate pricing per feed? **](http://www.shoppingcartproductfeed.com/faq/#manipulate-pricing-per-feed) <BR>
-[**How do I upgrade to PRO? **](http://www.shoppingcartproductfeed.com/faq/#upgrade-pro) <BR>
-[**Why is my Attribute List empty? **](http://www.shoppingcartproductfeed.com/faq/#attribute-list-empty) <BR>
-[**Are the Data Feeds updated automatically? **](http://www.shoppingcartproductfeed.com/faq/#data-feeds-updated-automatically) <BR>
-[**Nothing happens after I select a Merchant Type **](http://www.shoppingcartproductfeed.com/faq/#nothing-happens-select-merchant-type-upgrading) <BR>
-[**Why Aren’t My Data Feeds Updating? **](http://www.shoppingcartproductfeed.com/faq/#arent-data-feeds-updating) <BR>
-[**Can I use “post_content” as the description? **](http://www.shoppingcartproductfeed.com/faq/#can-use-post_content-description) <BR>
-[**Does the Google Product Feed only support Google USA (or .com) ? **](http://www.shoppingcartproductfeed.com/faq/#google-product-feed-support-com) <BR>
-[**What are the requirements for a Google Merchant Account? **](http://www.shoppingcartproductfeed.com/faq/#requirements-google-merchant-account) <BR>
-[**Why do I only have one item in my feed? **](http://www.shoppingcartproductfeed.com/faq/#one-item-feed) <BR>
-[**How do I find a Google Category?**](http://www.shoppingcartproductfeed.com/faq/#google-category) <BR>
+[What Targets does the plugin Support?](http://www.shoppingcartproductfeed.com/faq/#targets-plugin-support) <BR>
+[Does the WooCommerce Cart Plugin include product variations?  <BR>**](http://www.shoppingcartproductfeed.com/faq/#woocommerce-cart-plugin-include-product-variations)
+[Why Aren’t My Variations Showing?](http://www.shoppingcartproductfeed.com/faq/#arent-variations-showing) <BR>
+[How do I speed up exports/Why am I getting timeouts/Exports freezing at xx% always](http://www.shoppingcartproductfeed.com/faq/#speed-exportswhy-getting-timeoutsexports-freezing-xx-always) <BR>
+[Does the plugin integrate with WooThemes Google Product Feed?](http://www.shoppingcartproductfeed.com/faq/#plugin-integrate-woothemes-google-product-feed) <BR>
+[What’s the difference between the Free Version, 5 Day Trial and Commercial?](http://www.shoppingcartproductfeed.com/faq/#whats-difference-free-version-5-day-trial-commercial) <BR>
+[How do I exclude products from the feed?**](http://www.shoppingcartproductfeed.com/faq/#exclude-products-feed) <BR>
+[What Templates for Amazon Seller are supported?**](http://www.shoppingcartproductfeed.com/faq/#templates-amazon-seller-supported)  <BR>
+[How do I set shipping information for google?**](http://www.shoppingcartproductfeed.com/faq/#set-shipping-information-google)  <BR>
+[My categories aren’t listed, what gives?](http://www.shoppingcartproductfeed.com/faq/#categories-arent-listed-gives) <BR>
+[Is there a limit to feed size?](http://www.shoppingcartproductfeed.com/faq/#limit-feed-size) <BR>
+[Is there a limit to how many products can be exported?](http://www.shoppingcartproductfeed.com/faq/#limit-many-products-can-exported) <BR>
+[How do I remove duplicates from my product feed?](http://www.shoppingcartproductfeed.com/faq/#remove-duplicates-product-feed) <BR>
+[How does the Shopping Cart Product Export work?](http://www.shoppingcartproductfeed.com/faq/#shopping-cart-product-export-work) <BR>
+[Is My Country’s Currency Supported?](http://www.shoppingcartproductfeed.com/faq/#countrys-currency-supported) <BR>
+[How do I remove the licence key for the trial or commercial version?](http://www.shoppingcartproductfeed.com/faq/#remove-licence-key-trial-version) <BR>
+[Why is my License Key Invalid? Do I need a License?](http://www.shoppingcartproductfeed.com/faq/#license-key-invalid) <BR>
+[How Do I Activate My License Key?](http://www.shoppingcartproductfeed.com/faq/#activate-license-key) <BR>
+[Why Doesn’t My License Key Work?](http://www.shoppingcartproductfeed.com/faq/#doesnt-license-key-work) <BR>
+[How do I create a default brand in my feed?](http://www.shoppingcartproductfeed.com/faq/#create-default-brand-feed) <BR>
+[How do I manipulate pricing per feed?](http://www.shoppingcartproductfeed.com/faq/#manipulate-pricing-per-feed) <BR>
+[How do I upgrade to PRO?](http://www.shoppingcartproductfeed.com/faq/#upgrade-pro) <BR>
+[Why is my Attribute List empty?](http://www.shoppingcartproductfeed.com/faq/#attribute-list-empty) <BR>
+[Are the Data Feeds updated automatically?](http://www.shoppingcartproductfeed.com/faq/#data-feeds-updated-automatically) <BR>
+[Nothing happens after I select a Merchant Type](http://www.shoppingcartproductfeed.com/faq/#nothing-happens-select-merchant-type-upgrading) <BR>
+[Why Aren’t My Data Feeds Updating?](http://www.shoppingcartproductfeed.com/faq/#arent-data-feeds-updating) <BR>
+[Can I use “post_content” as the description?](http://www.shoppingcartproductfeed.com/faq/#can-use-post_content-description) <BR>
+[Does the Google Product Feed only support Google USA (or .com) ?](http://www.shoppingcartproductfeed.com/faq/#google-product-feed-support-com) <BR>
+[What are the requirements for a Google Merchant Account?](http://www.shoppingcartproductfeed.com/faq/#requirements-google-merchant-account) <BR>
+[Why do I only have one item in my feed?](http://www.shoppingcartproductfeed.com/faq/#one-item-feed) <BR>
+[How do I find a Google Category?**](http://www.shoppingcartproductfeed.com/faq/#google-category) <BR>
+<BR>
 
 
 == Screenshots ==
