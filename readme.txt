@@ -1,5 +1,5 @@
 === WooCommerce Shopping Cart Export ===
-Contributors: PurpleTurtlePro
+Contributors: PurpleTurtlePro, KH_PDev
 Tags: WooCommerce export, getshopped export, wp-e-commerce export, amazon product Ads, amazon product ads export, Google Merchant, Google Merchant Export, Shopping.com export, xml export, Nextag, Google product feed export, Amazon export, amazon seller, amazon seller export, Ammoseek, ammoseek export, Bing! Export, eBay export, eBay Merchant, Google Adwords, Houzz export,  google merchant product feed, amazon seller export, shopzilla export, shopify export, houzz export, beslist export, export csv, export xml, export tab, woocommerce variations, variations export, product variations, godatafeed, shareasale, thefind.com, sell.com, newegg.com, sears.com, rakuten, pricefalls, pricegrabber
 Requires at least: 3.0.1
 Tested up to: 4.0
@@ -10,7 +10,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 WooCommerce Product Export & Variations: Google Merchant|Amazon Seller|BesList|Houzz|Bing!|eBay|CSV/XML
 
 == Description ==
-*“The plugin enabled us to very quickly get our products listed in the Google Merchant stores system, no fuss.  We took advantage of their 'Full Monty' program to get things done even quicker! With over a decade in our market - and very high end products - we can't afford to have any mixups, missing products or data that is wrong...”*  
+*“The plugin enabled us to very quickly get our products listed in the Google Merchant stores system, no fuss.  We took advantage of their 'Full Monty' program to get things done even quicker! With over a decade in our market - and very high end products - we do not tolerate any outages, missing products or data that is wrong...”*  
 **Kevin P.** - Webmaster - http://www.electriccyclery.com
 
 The Shopping Cart Product Feed for WooCommerce & WP-ECommerce (Getshopped) creates the native output required by each merchant (over 40 now!) of any product category (and all product details) for native import. It includes all required feed types for Google Merchant Center, Amazon Seller, Amazon Shopper, Shopzilla, eBay Merchant, NexTag for variable & non-variable products.  
@@ -75,7 +75,7 @@ This will not redirect to the feed URL you just created - ready for submission!
 
 == Frequently Asked Questions ==
 [What Targets does the plugin Support?](http://www.shoppingcartproductfeed.com/faq/#targets-plugin-support) <BR>
-[Does the WooCommerce Cart Plugin include product variations?  <BR>**](http://www.shoppingcartproductfeed.com/faq/#woocommerce-cart-plugin-include-product-variations)
+[Does the WooCommerce Cart Plugin include product variations?  <BR>](http://www.shoppingcartproductfeed.com/faq/#woocommerce-cart-plugin-include-product-variations)
 [Why Aren’t My Variations Showing?](http://www.shoppingcartproductfeed.com/faq/#arent-variations-showing) <BR>
 [How do I speed up exports/Why am I getting timeouts/Exports freezing at xx% always](http://www.shoppingcartproductfeed.com/faq/#speed-exportswhy-getting-timeoutsexports-freezing-xx-always) <BR>
 [Does the plugin integrate with WooThemes Google Product Feed?](http://www.shoppingcartproductfeed.com/faq/#plugin-integrate-woothemes-google-product-feed) <BR>
