@@ -5,7 +5,7 @@
   Plugin URI: www.shoppingcartproductfeed.com
   Description: WooCommerce Shopping Cart Export :: <a target="_blank" href="http://shoppingcartproductfeed.com/tos/">How-To Click Here</a>
   Author: ShoppingCartProductFeed.com
-  Version: 3.0.6.10
+  Version: 3.0.6.12
   Author URI: www.shoppingcartproductfeed.com
   Authors: Haris, Keneto (May2014)
   Note: The "core" folder is shared to the Joomla component.

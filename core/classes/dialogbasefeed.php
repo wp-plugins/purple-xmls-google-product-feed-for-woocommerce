@@ -78,6 +78,20 @@ class PBaseFeedDialog {
 			return;
 		global $pfcore;
 		$FoundAttributes = new FoundAttribute();
+		//patch: for google feed, ram the brand in
+		if ($this->service_name == 'Google') {
+			$has_brand = false;
+			foreach($FoundAttributes->attributes as $attr)
+				if (strtolower($attr->attribute_name) == 'brand') {
+					$has_brand = true;
+					break;
+				}
+			if (!$has_brand) {
+				$thisAttribute = new stdClass();
+				$thisAttribute->attribute_name = 'brand';
+				$FoundAttributes->attributes[] = $thisAttribute;
+			}
+		}
 		$output = '
 				<p>This Export Feed will map your ' . $pfcore->cmsPluginName . ' attributes to ' .$this->service_name.'\'s required attributes.</p>
 				<p><a target=\'_blank\' href=\'http://www.shoppingcartproductfeed.com/tos/\' >View Step-by-step Guide</a></p>

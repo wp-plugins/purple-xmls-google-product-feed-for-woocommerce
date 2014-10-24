@@ -31,7 +31,7 @@ class PGoogleFeed extends PBasicFeed
 		$this->addAttributeMapping('sku', 'g:mpn');
 		$this->addAttributeMapping('regular_price', 'g:price');
 		$this->addAttributeMapping('sale_price', 'g:sale_price');
-		$this->addAttributeMapping('brand', 'g:brand');
+		//$this->addAttributeMapping('brand', 'g:brand'); //This new auto-mapping of brand has been suspended
 		$this->addAttributeMapping('weight', 'g:shipping_weight');
 		$this->addAttributeMapping('feature_imgurl', 'g:image_link', true);
 	}
