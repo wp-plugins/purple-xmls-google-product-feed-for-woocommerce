@@ -38,9 +38,10 @@ The created feeds are available for export (timed and on demand) for these merch
 * XML & CSV & Excel Export
 <P>
 
->[**Free Version**](https://downloads.wordpress.org/plugin/purple-xmls-google-product-feed-for-woocommerce.zip) --  Includes all functionality - limited to 10 items 
-><BR>[**FREE TRIAL**](https://www.purpleturtle.pro/cart.php?a=add&pid=88) -- 5 DAY UNLIMITED FREE TRIAL
-><BR>[**PRO**](https://www.purpleturtle.pro/cart.php?a=add&pid=61) -- PRO VERSION - UNLIMITED FEEDS & MERCHANTS
+
+>[**Free Version**](https://downloads.wordpress.org/plugin/purple-xmls-google-product-feed-for-woocommerce.zip) --  Includes all functionality - limited to 3 feeds & 10 items each 
+><BR>[**FREE TRIAL (Pro Version)**](https://www.purpleturtle.pro/cart.php?a=add&pid=88) -- 5 day unlimited free Feeds & Merchants
+><BR>[**PRO VERSION**](https://www.purpleturtle.pro/cart.php?a=add&pid=61) -- PRO VERSION - UNLIMITED FEEDS & MERCHANTS
 <P>
 ><BR>[**READ OUR FAQ**](http://www.shoppingcartproductfeed.com/faq/) -- Or Click on the LiveChat link!
 ><P>See our other products, including the only: <BR>[**Google Trusted Store!**](http://www.shoppingcartproductfeed.com/google-trusted-store/) The only two click installation for Google Trusted Stores
