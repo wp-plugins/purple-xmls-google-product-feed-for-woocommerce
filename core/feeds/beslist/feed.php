@@ -19,39 +19,45 @@ class PBeslistFeed extends PBasicFeed
 		$this->providerName = 'Beslist';
 		$this->providerNameL = 'beslist';		
 		//Create some default attributes (Mapping 3.0)
-		$this->addAttributeMapping('title', 'title', true);
-		$this->addAttributeMapping('regular_price', 'regular_price'); //inc. VAT and in Euros
-		$this->addAttributeMapping('sale_price', 'sale_price');
-		$this->addAttributeMapping('link', 'product_url', true);
-		$this->addAttributeMapping('url_image', 'url_image', true);		
-
-		$this->addAttributeMapping('model_code', 'model_code'); //item group id
-		$this->addAttributeMapping('category', 'category', true);
-		$this->addAttributeMapping('delivery_period', 'delivery_period', true);
-		$this->addAttributeMapping('mpn', 'mpn');
-		$this->addAttributeMapping('EAN', 'ean', true);
-		$this->addAttributeMapping('brand', 'brand', true);
-		$this->addAttributeMapping('mpn_color', 'mpn_color', true);
+		//Required
+		$this->addAttributeMapping('title', 'title', true,true);
+		$this->addAttributeMapping('regular_price', 'price',false,true); //inc. VAT and in Euros
+		$this->addAttributeMapping('link', 'product_url', true,true);
+		$this->addAttributeMapping('url_image', 'url_image', true,true);	
+		$this->addAttributeMapping('unique_code', 'unique_code', true,true);
+		$this->addAttributeMapping('category', 'category', true,true);
+		$this->addAttributeMapping('delivery_costs', 'delivery_costs', true,true);
+		$this->addAttributeMapping('delivery_period', 'delivery_period', true,true);
+		$this->addAttributeMapping('', 'ean', true,true);
+		$this->addAttributeMapping('', 'brand', true,true);
 		//optional
+		$this->addAttributeMapping('sale_price', 'sale_price');
+		$this->addAttributeMapping('model_code', 'model_code'); //item group id
+		$this->addAttributeMapping('', 'original');		
+		$this->addAttributeMapping('', 'mpn');
+		$this->addAttributeMapping('', 'mpn_color', true);
+		
 		$this->addAttributeMapping('description', 'description', true);
-		$this->addAttributeMapping('colour', 'colour');
-		$this->addAttributeMapping('size', 'size');
+		$this->addAttributeMapping('', 'colour');
+		$this->addAttributeMapping('', 'size', true);
 		//combo codes
-		$this->addAttributeMapping('unique_code', 'unique_code');
-		$this->addAttributeMapping('variant_code', 'variant_code');
+		
+		$this->addAttributeMapping('variant_code', 'variant_code', true);
 	}
   
 	function formatProduct( $product ) 
 	{
-		//Cheat: These three fields aren't ready to be attributes yet, so adding manually:
-		$product->attributes['description'] = $product->description;
-		$product->attributes['category'] = $this->current_category;
-		$product->attributes['url_image'] = $product->feature_imgurl;
+
 		//kleur
-		$product->attributes['colour'] = $product->attributes['kleur'];	
-		$product->attributes['mpn'] = $product->attributes['sku'];		
+		if ( isset($product->attributes['kleur']) )
+			$product->attributes['colour'] = $product->attributes['kleur'];	
+		if ( isset($product->attributes['sku']) )
+			$product->attributes['mpn'] = $product->attributes['sku'];		
 		//model_code is the item_group_id
-		$cpf_attribute_itemgid = $product->attributes['item_group_id'];
+		if (isset($product->attributes['item_group_id']))
+			$cpf_attribute_itemgid = $product->attributes['item_group_id'];
+		else
+			$cpf_attribute_itemgid = '';
 		if  ( $cpf_attribute_itemgid == '' )		
 			$product->attributes['model_code'] = $product->attributes['id'];
 		else
@@ -71,23 +77,25 @@ class PBeslistFeed extends PBasicFeed
 		
 		//Beslist combo codes: variant_code and unique_code. Eventually softcode to allow atribute combinations
 		foreach( $this->attributeMappings as $thisAttributeMapping )
-			if ( $thisAttributeMapping->enabled && !$thisAttributeMapping->deleted ) {
-				if ( $thisAttributeMapping->mapTo == 'size' )
-					$product->attributes['size1'] = $product->attributes[$thisAttributeMapping->attributeName];
+			if ( $thisAttributeMapping->enabled && !$thisAttributeMapping->deleted && !empty($product->attributes[$thisAttributeMapping->attributeName]) ) {
 				if ( $thisAttributeMapping->mapTo == 'colour' || $thisAttributeMapping->mapTo == 'color' )
-					$product->attributes['color1'] = $product->attributes[$thisAttributeMapping->attributeName];
+						$cpf_attribute_color = $product->attributes[$thisAttributeMapping->attributeName];
+				if ( $thisAttributeMapping->mapTo == 'size' )
+					//if ( !empty($product->attributes[$thisAttributeMapping->attributeName]) )
+						$cpf_attribute_size = $product->attributes[$thisAttributeMapping->attributeName];
+				
 			}
 
 		$beslist_variant_code = $product->attributes['model_code'];
 		$beslist_unique_code = $product->attributes['model_code'];
-		if ( !empty($product->attributes['color1']) ) 
+		if ( !empty($cpf_attribute_color) ) 
 		{
-			$beslist_variant_code .= '-'.$product->attributes['color1'];
-			$beslist_unique_code .= '-'.$product->attributes['color1'];
+			$beslist_variant_code .= '-'.$cpf_attribute_color;
+			$beslist_unique_code .= '-'.$cpf_attribute_color;
 		}
-		if ( !empty($product->attributes['size1']) ) 
+		if ( !empty($cpf_attribute_size) ) 
 		{
-			$beslist_unique_code .= '-'.$product->attributes['size1'];
+			$beslist_unique_code .= '-'.$cpf_attribute_size;
 		}
 		$product->attributes['variant_code'] = $beslist_variant_code;
 		$product->attributes['unique_code'] = $beslist_unique_code;

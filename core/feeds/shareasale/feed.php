@@ -25,37 +25,59 @@ class PShareASaleFeed extends PCSVFeedEx {
 			"Custom 4", "Custom 5","Manufacturer","PartNumber","MerchantCategory",
 			"MerchantSubcategory","ShortDescription","ISBN","UPC");
 		$this->fieldDelimiter = ',';
-		$this->descriptionStrict = true;
 		$this->stripHTML = true;
 
-		//Create some attributes (Mapping 3.0)
-		$this->addAttributeMapping('sku', 'SKU');
-		$this->addAttributeMapping('title', 'Name', true);
-		$this->addAttributeMapping('link', 'URL to product', true);
-		$this->addAttributeMapping('regular_price', 'Price');
-		$this->addAttributeMapping('retail_price', 'Retail Price');
-		$this->addAttributeMapping('feature_imgurl', 'URL to image');
-		$this->addAttributeMapping('other_image_url_0', 'URL to thumbnail image');
+		//Create some attributes (Mapping 3.0). All columns must be represented in the datafeed & in the specified orders
+		$this->addAttributeMapping('sku', 'SKU',true,true); //1
+		$this->addAttributeMapping('title', 'Name', true,false);
+		$this->addAttributeMapping('link', 'URL', true,true);
+		$this->addAttributeMapping('regular_price', 'Price',true,true);
+		$this->addAttributeMapping('retail_price', 'Retail Price',false,false); //5
+		$this->addAttributeMapping('feature_imgurl', 'Full Image');
+		$this->addAttributeMapping('other_image_url_0', 'Thumbnail Image');
 		$this->addAttributeMapping('commission', 'Commission');
-		$this->addAttributeMapping('category', 'Category');
-		$this->addAttributeMapping('subcategory', 'SubCategory');
+		$this->addAttributeMapping('category', 'Category',true,true);
+		$this->addAttributeMapping('subcategory', 'SubCategory',true,true); //10
 		$this->addAttributeMapping('description', 'Description', true);
 		$this->addAttributeMapping('searchterms', 'SearchTerms', true);
 		$this->addAttributeMapping('status', 'Status');
-		$this->addAttributeMapping('merchant_id', 'Your MerchantID');
-		$this->addAttributeMapping('custom1', 'Custom 1');
+		$this->addAttributeMapping('merchant_id', 'Your MerchantID',true,true); 
+		$this->addAttributeMapping('custom1', 'Custom 1'); //15
 		$this->addAttributeMapping('custom2', 'Custom 2');
 		$this->addAttributeMapping('custom3', 'Custom 3');
 		$this->addAttributeMapping('custom4', 'Custom 4');
 		$this->addAttributeMapping('custom5', 'Custom 5');
-		$this->addAttributeMapping('brand', 'Manufacturer');
+		$this->addAttributeMapping('brand', 'Manufacturer'); //20
 		$this->addAttributeMapping('partnumber', 'PartNumber');
 		$this->addAttributeMapping('localCategory', 'MerchantCategory');
 		$this->addAttributeMapping('localsubcategory', 'MerchantSubcategory');
 		$this->addAttributeMapping('description_short', 'ShortDescription');
 		$this->addAttributeMapping('isbn', 'ISBN');
 		$this->addAttributeMapping('upc', 'UPC');
-		
+		$this->addAttributeMapping('', 'CrossSell');
+		$this->addAttributeMapping('', 'MerchantGroup');
+		$this->addAttributeMapping('', 'MerchantSubgroup');
+		$this->addAttributeMapping('', 'CompatibleWith');
+		$this->addAttributeMapping('', 'CompareTo');
+		$this->addAttributeMapping('', 'QuantityDiscount');
+		$this->addAttributeMapping('', 'Bestseller');
+		$this->addAttributeMapping('', 'AddToCartURL');
+		$this->addAttributeMapping('', 'ReviewsRSSURL');
+		$this->addAttributeMapping('', 'Option1');
+		$this->addAttributeMapping('', 'Option2');
+		$this->addAttributeMapping('', 'Option3');
+		$this->addAttributeMapping('', 'Option4');
+		$this->addAttributeMapping('', 'Option5');
+		$this->addAttributeMapping('', 'customCommissions');
+		$this->addAttributeMapping('', 'customCommissionIsFlatRate');
+		$this->addAttributeMapping('', 'customCommissionNewCustomerMultiplier');
+		$this->addAttributeMapping('', 'mobileURL');
+		$this->addAttributeMapping('', 'mobileImage');
+		$this->addAttributeMapping('', 'mobileThumbnail');
+		$this->addAttributeMapping('', 'ReservedForFutureUse');
+		$this->addAttributeMapping('', 'ReservedForFutureUse');
+		$this->addAttributeMapping('', 'ReservedForFutureUse');
+		$this->addAttributeMapping('', 'ReservedForFutureUse');		
 	}
 
 	function formatProduct($product) {
@@ -80,15 +102,15 @@ class PShareASaleFeed extends PCSVFeedEx {
 			$product->attributes['retail_price'] = $product->attributes['sale_price'];
 
 		if ($product->attributes['stock_status'] == 1)
-			$product->attributes['stock_status'] = 'instock';
+			$product->attributes['status'] = 'instock';
 		else
-			$product->attributes['stock_status'] = 'soldout';
+			$product->attributes['status'] = 'soldout';
 
-		$cat = explode(':', $product->attributes['category']);
+		$cat = explode(':', $this->current_category);
 		if (count($cat) < 2)
 			$product->attributes['category'] = '';
 		else
-			$product->attributes['category'] = (int) $cat[0];
+			$product->attributes['category'] = (int)$cat[0];
 
 		return parent::formatProduct($product);
 		

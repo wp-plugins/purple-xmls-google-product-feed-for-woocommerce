@@ -13,12 +13,14 @@
 	require_once dirname(__FILE__) . '/../../../../../../wp-load.php';
 	require_once dirname(__FILE__) . '/../../data/feedcore.php';
 
+	$service_name = $_POST['service_name'];
+
 	$data = '';
 	if (class_exists('CPF_Taxonomy'))
 		$data = CPF_Taxonomy::onLoadTaxonomy(strtolower($_POST['service_name']));
 
 	if (strlen($data) == 0)
-		$data = file_get_contents(dirname(__FILE__) . '/../../feeds/' . strtolower($_POST['service_name']) . '/categories.txt');
+		$data = file_get_contents(dirname(__FILE__) . '/../../feeds/' . strtolower($service_name) . '/categories.txt');
 
 	$data = explode("\n", $data);
 	$searchTerm = strtolower($_POST['partial_data']);
@@ -38,7 +40,7 @@
 			$text = htmlentities(trim($this_item));
 
 			if ($canDisplay)
-				echo '<div class="categoryItem" onclick="doSelectCategory(this, \'' . $option . '\')">' . $text . '</div>';
+				echo '<div class="categoryItem" onclick="doSelectCategory(this, \'' . $option . '\', \'' . $service_name . '\')">' . $text . '</div>';
 			$count++;
 			if ((strlen($searchTerm) < 3) && ($count > 15))
 				$canDisplay = false;

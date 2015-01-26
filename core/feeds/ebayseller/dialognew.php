@@ -25,6 +25,8 @@ class eBaySellerDlg extends PBaseFeedDialog
 			'picURL',
 			'Quantity',
 			'Format',
+			'Duration',
+			'Location',
 			'StartPrice',
 			'BuyItNowPrice',
 			'Location',

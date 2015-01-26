@@ -94,24 +94,25 @@ class PProductList {
 			$item->id = $prod->product_id;
 			$item->attributes['title'] = $prod->product_name;
 			$item->taxonomy = '';
-			$item->isVariable = false;
+			$item->attributes['isVariable'] = false;
+			$item->attributes['isVariation'] = false;
 			$item->description_short = substr(strip_tags($prod->excerpt), 0, 1000); //!Need strip_shortcodes
 			$item->description_long = substr(strip_tags($prod->description), 0, 1000); //!Need strip_shortcodes
 			$item->attributes['valid'] = true;
 
-			//Cheat! (temp)
 			$item->attributes['id'] = $prod->product_id;
 
-			//Fetch any default attributes (Mapping 3.0)
+			//Fetch any default attributes Stage 0 (Mapping 3.0)
 			foreach ($parent->attributeDefaults as $thisDefault)
-				$item->attributes[$thisDefault->attributeName] = $thisDefault->value;
+				if ($thisDefault->stage == 0 && !$thisDefault->isRuled && !isset($item->attributes[$thisDefault->attributeName]))
+					$item->attributes[$thisDefault->attributeName] = $thisDefault->getValue($item);
 
 			$item->attributes['category'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
 			$item->attributes['product_type'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
 			$item->attributes['localCategory'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $prod->category_name));
 			$item->attributes['localCategory'] = str_replace("|", ">", $item->attributes['localCategory']);
 			$item->attributes['link'] = $pfcore->siteHost . 'index.php?option=com_virtuemart&view=productdetails&virtuemart_product_id=' . $prod->product_id;
-			$item->feature_imgurl =  $pfcore->siteHost . $prod->file_url;
+			$item->attributes['feature_imgurl'] =  $pfcore->siteHost . $prod->file_url;
 			$item->attributes['condition'] = 'New';
 			$item->attributes['regular_price'] = $prod->product_price;
 			$item->attributes['has_sale_price'] = false;
@@ -141,7 +142,7 @@ class PProductList {
 			//Variations
 			if ($prod->parent_id > 0) {
 				$item->item_group_id = $prod->parent_id;
-				$item->isVariable = true;
+				$item->attributes['isVariation'] = true;
 
 				$item->attributes['item_group_id'] = $prod->parent_id;
 				$item->attributes['parent_title'] = $item->attributes['title']; //For eBay
@@ -152,6 +153,11 @@ class PProductList {
 			$item->attributes['stock_quantity'] = $prod->stock_quantity;
 			if ($prod->stock_quantity == 0)
 				$item->attributes['stock_status'] = 0;
+
+			//Fetch any default attributes (Mapping 3.0)
+			foreach ($parent->attributeDefaults as $thisDefault)
+				if ($thisDefault->stage == 1 && !$thisDefault->isRuled)
+					$item->attributes[$thisDefault->attributeName] = $thisDefault->getValue($item);
 
 			$parent->handleProduct($item);
 		}

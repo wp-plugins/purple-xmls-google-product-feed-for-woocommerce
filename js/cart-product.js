@@ -3,13 +3,20 @@ var category_lookup_timer;
 //the commands are WordPress defaults, declared as variables so Joomla can replace them
 var cmdFetchCategory = "core/ajax/wp/fetch_category.php";
 var cmdFetchLocalCategories = "core/ajax/wp/fetch_local_categories.php";
+var cmdFetchTemplateDetails = "core/ajax/wp/fetch_template_details.php";
 var cmdGetFeed = "core/ajax/wp/get_feed.php";
 var cmdGetFeedStatus = "core/ajax/wp/get_feed_status.php";
 var cmdMappingsErase = "core/ajax/wp/attribute_mappings_erase.php";
+var cmdRemember = "core/ajax/wp/update_remember.php";
+var cmdSearsPostByRestAPI = "core/ajax/wp/sears_post.php";
+var cmdSaveAggregateFeedSetting = "core/ajax/wp/save_aggregate_feed_setting.php";
 var cmdSelectFeed = "core/ajax/wp/select_feed.php";
 var cmdSetAttributeOption = "core/ajax/wp/attribute_mappings_update.php";
+var cmdSetAttributeUserMap = "core/ajax/wp/attribute_user_map.php";
 var cmdUpdateAllFeeds = "core/ajax/wp/update_all_feeds.php"
 var cmdUpdateSetting = "core/ajax/wp/update_setting.php";
+var cmdUploadFeed = "core/ajax/wp/upload_feed.php";
+var cmdUploadFeedStatus = "core/ajax/wp/upload_feed_status.php";
 var feedIdentifier = 0; //A value we create and inform the server of that allows us to track errors during feed generation
 var feed_id = 0; //A value the server gives us if we're in a feed that exists already. Will be needed when we want to set overrides specific to this feed
 var feedFetchTimer = null;
@@ -33,20 +40,107 @@ function parseFetchLocalCategories(res) {
 
 function parseGetFeedResults(res) {
 
-	//Stop the intermediate status interval
-	window.clearInterval(feedFetchTimer);
-	feedFetchTimer = null;
-	jQuery('#feed-status-display').html("");
+    //Stop the intermediate status interval
+    window.clearInterval(feedFetchTimer);
+    feedFetchTimer = null;
+    jQuery('#feed-status-display').html("");
 
-	results = jQuery.parseJSON(res);
+    results = jQuery.parseJSON(res);
 
-	//Show results
-	if (results.url.length > 0) {
-		jQuery('#feed-error-display').html("&nbsp;");
-		window.open(results.url);
-	}
-	if (results.errors.length > 0)
-		jQuery('#feed-error-display').html(results.errors);
+    //Show results
+    if (results.url.length > 0) {
+        jQuery('#feed-error-display').html("&nbsp;");
+        window.open(results.url);
+    }
+    if (results.errors.length > 0)
+        jQuery('#feed-error-display').html(results.errors);
+}
+
+function parseUploadFeedResults(res, provider) {
+
+    //Stop the intermediate status interval
+    window.clearInterval(feedFetchTimer);
+    feedFetchTimer = null;
+    jQuery('#feed-error-display2').html("");
+    jQuery('#feed-status-display2').html("Uploading feed...");
+
+    var results = jQuery.parseJSON(res);
+
+    //Show results
+    if (results.url.length > 0) {
+        jQuery('#feed-error-display2').html("&nbsp;");
+        //window.open(results.url);
+        var data = {content: results.url, provider: provider};
+        jQuery('.remember-field').each(function () {
+            data[this.name] = this.value;
+        });
+
+        /** DO INVENTORY UPLOAD HERE **/
+        if (provider == 'amazonsc') {
+            jQuery.ajax({
+                type: 'post',
+                url: ajaxhost + cmdUploadFeed,
+                data: data,
+                success: function(result) {
+                    console.log('success');
+                    console.log(result);
+                    parseUploadFeedResultStatus(data, result);
+                },
+                error: function(result) {
+                    console.log('error');
+                    console.log(result);
+                }
+            });
+        } else if (provider == 'ebayupload') {
+            jQuery.ajax({
+                type: 'post',
+                url: ajaxhost + cmdUploadFeed,
+                data: data,
+                success: function(result) {
+                    console.log('success');
+                    console.log(result);
+                    parseUploadFeedResultStatus(data, result);
+                },
+                error: function(result) {
+                    console.log('error');
+                    console.log(result);
+                }
+            });
+        } else console.log(provider);
+    }
+    if (results.errors.length > 0) {
+        jQuery('#feed-error-display2').html(results.errors);
+        jQuery('#feed-status-display2').html("");
+    }
+}
+
+function parseUploadFeedResultStatus(data, id) {
+
+    if (data.provider == 'amazonsc') {
+        if (isNaN(result)) {
+            var errors = JSON.parse(result);
+            jQuery('#feed-status-display2').html("");
+            jQuery('#feed-error-display2').html("ERROR: " + errors['Caught Exception']);
+        } else {
+            data['feedid'] = result;
+            jQuery.ajax({
+                type: 'post',
+                url: ajaxhost + cmdUploadFeedStatus,
+                data: data,
+                success: function(result) {
+                    console.log('success');
+                    console.log(result);
+                    jQuery('#feed-status-display2').html(result);
+                },
+                error: function(result) {
+                    console.log('error');
+                    console.log(result);
+                }
+            });
+        }
+    } else if (data.provider == 'ebayupload') {
+        console.log(result);
+    }
 }
 
 function parseGetFeedStatus(res) {
@@ -54,13 +148,18 @@ function parseGetFeedStatus(res) {
 		jQuery('#feed-status-display').html(res);
 }
 
+function parseUploadFeedStatus(res) {
+    if (feedFetchTimer != null)
+        jQuery('#feed-status-display2').html(res);
+}
+
 function parseLicenseKeyChange(res) {
-	console.log('license key message: ' + res);
 	jQuery("#tblLicenseKey").remove();
 }
 
 function parseSelectFeedChange(res) {
   jQuery('#feedPageBody').html(res);
+	doFetchLocalCategories();
 }
 
 function parseUpdateSetting(res) {
@@ -76,14 +175,19 @@ function doEraseMappings(service_name) {
 			data: "service_name=" + service_name,
 			success: function(res){showEraseConfirmation(res)}
 		});
+		//window.location.reload();
 	}
 }
 
 function doFetchCategory(service_name, partial_data) {
+	var shopID = jQuery("#edtRapidCartShop").val();
+	if (shopID == null)
+		shopID = "";
+
 	jQuery.ajax({
 		type: "post",
 		url: ajaxhost + cmdFetchCategory,
-		data: "service_name=" + service_name + "&partial_data=" + partial_data,
+		data: {service_name: service_name, partial_data: partial_data, shop_id: shopID},
 		success: function(res){parseFetchCategoryResult(res)}
 	});
 }
@@ -97,27 +201,70 @@ function doFetchCategory_timed(service_name, partial_data) {
 }
 
 function doFetchLocalCategories() {
+	var shopID = jQuery("#edtRapidCartShop").val();
+	if (shopID == null)
+		shopID = "";
+
 	jQuery.ajax({
 		type: "post",
 		url: ajaxhost + cmdFetchLocalCategories,
+		data: {shop_id: shopID},
 		success: function(res){parseFetchLocalCategories(res)}
 	});
+}
+
+function doUploadFeed(provider, service, userid) {
+
+    jQuery('#feed-error-display2').html("Uploading feed...");
+    var thisDate = new Date();
+    feedIdentifier = thisDate.getTime();
+
+    var shopID = jQuery("#edtRapidCartShop").val();
+    if (shopID == null)
+        shopID = "";
+
+    var data = {userid: userid, remember: jQuery("#remember").is(":checked"), provider: service};
+
+    jQuery('.remember-field').each(function () {
+        data[this.name] = this.value;
+    });
+
+    jQuery.ajax({
+        type: "post",
+        url: ajaxhost + cmdRemember,
+        data: data,
+        success: function() {
+
+        }
+    });
+
+    jQuery.ajax({
+        type: "post",
+        url: ajaxhost + cmdGetFeed,
+        data: {
+            provider: provider,
+            local_category: jQuery('#local_category').val(),
+            remote_category: jQuery('#remote_category').val(),
+            file_name: jQuery('#feed_filename').val(),
+            feed_identifier: feedIdentifier,
+            feed_id: feed_id,
+            shop_id: shopID},
+        success: function(res){
+            parseUploadFeedResults(res, provider)
+        }
+    });
+    feedFetchTimer = window.setInterval(function(){updateUploadFeedStatus()}, 500);
 }
 
 function doGetFeed(provider) {
 	jQuery('#feed-error-display').html("Generating feed...");
 	var thisDate = new Date();
 	feedIdentifier = thisDate.getTime();
-	/*if (feed_id != 0)
-		strFeedID = "&feed_id=" + feed_id;
-	else
-		strFeedID = "&feed_id=0";*/
-	var shopID = jQuery("#edtRapidCart").val();
+
+	var shopID = jQuery("#edtRapidCartShop").val();
 	if (shopID == null)
 		shopID = "";
-	/*	data: "provider=" + provider + "&local_category=" + jQuery('#local_category').val() + 
-				"&remote_category=" + jQuery('#remote_category').val() + "&file_name=" + jQuery('#feed_filename').val() +
-				"&feed_identifier=" + feedIdentifier + strFeedID + "&shop_id=" + shopID,*/
+
 	jQuery.ajax({
 		type: "post",
 		url: ajaxhost + cmdGetFeed,
@@ -134,12 +281,59 @@ function doGetFeed(provider) {
 	feedFetchTimer = window.setInterval(function(){updateGetFeedStatus()}, 500);
 }
 
-function doSelectCategory(category, option) {
+function doGetAlternateFeed(provider) {
+
+	jQuery('#feed-error-display').html("Generating feed...");
+	var thisDate = new Date();
+	feedIdentifier = thisDate.getTime();
+
+	var feeds = new Array;
+	jQuery(".feedSetting:checked").each(function() {
+		feeds.push(jQuery(this).val());
+	});
+
+	var shopID = jQuery("#edtRapidCartShop").val();
+	if (shopID == null)
+		shopID = "";
+
+	jQuery.ajax({
+		type: "post",
+		url: ajaxhost + cmdGetFeed,
+		data: {
+			provider: provider, 
+			local_category: "0", 
+			remote_category: "0",
+			file_name: jQuery('#feed_filename').val(), 
+			feed_identifier: feedIdentifier, 
+			feed_id: feed_id, 
+			shop_id: shopID,
+			feed_ids: feeds},
+		success: function(res){parseGetFeedResults(res)}
+	});
+	feedFetchTimer = window.setInterval(function(){updateGetFeedStatus()}, 500);
+}
+
+function doSelectCategory(category, option, service_name) {
+	var shopID = jQuery("#edtRapidCartShop").val();
+	if (shopID == null)
+		shopID = "";
 	document.getElementById("categoryDisplayText").value = category.innerHTML;
 	document.getElementById("remote_category").value = option;
-	//document.getElementById("categoryList").innerHTML = "";
 	document.getElementById("categoryList").style.display="none";
 	document.getElementById("categoryList").style.border = "0px";
+
+	if (service_name == "Amazonsc" || service_name == "kelkoo") {
+		//The user has just selected a template.
+		//Therefore, we must reload the Optional / Required Mappings
+		jQuery.ajax({
+			type: "post",
+			url: ajaxhost + cmdFetchTemplateDetails,
+			data: {shop_id: shopID, template: option, provider: service_name},
+			success: function(res){
+				jQuery("#attributeMappings").html(res);
+			}
+		});
+	}
 }
 
 function doSelectLocalCategory(id) {
@@ -179,13 +373,17 @@ function doSelectFeed() {
 
 function doUpdateAllFeeds() {
 	jQuery('#update-message').html("Updating feeds...");
-	var shopID = jQuery("#edtRapidCart").val();
-	//{shop_id: shopID}
+	//in Joomla, this message is hidden, so unhide
+	jQuery('#update-message').css({
+		"display": "block"
+		});
 	jQuery.ajax({
 		type: "post",
 		url: ajaxhost + cmdUpdateAllFeeds,
 		data: "",
-		success: function(res){jQuery('#update-message').html(res);}
+		success: function(res){
+				jQuery('#update-message').html(res);
+			}
 	});
 }
 
@@ -196,7 +394,7 @@ function doUpdateSetting(source, settingName) {
 		unique_setting = '&feedid=' + feed_id;
 	else
 		unique_setting = '';
-	var shopID = jQuery("#edtRapidCart").val();
+	var shopID = jQuery("#edtRapidCartShop").val();
 	jQuery.ajax({
 		type: "post",
 		url: ajaxhost + cmdUpdateSetting,
@@ -224,6 +422,19 @@ function getLocalCategoryList(chosen_categories) {
 	return getLocalCategoryBranch(localCategories.children, 0, chosen_categories);
 }
 
+function searsPostByRestAPI() {
+	jQuery.ajax({
+		type: "post",
+		url: ajaxhost + cmdSearsPostByRestAPI,
+		data: {username: jQuery("#edtUsername").val(), password: jQuery("#edtPassword").val()},
+		success: function(res){searsPostByRestAPIResults(res)}
+	});
+}
+
+function searsPostByRestAPIResults(res) {
+
+}
+
 function setAttributeOption(service_name, attribute, select_index) {
 	jQuery.ajax({
 		type: "post",
@@ -232,13 +443,29 @@ function setAttributeOption(service_name, attribute, select_index) {
 	});
 }
 
+function setAttributeOptionV2(sender) {
+	var service_name = jQuery(sender).attr('service_name');
+	var attribute_name = jQuery(sender).val();
+	var mapto = jQuery(sender).attr('mapto');
+	var shopID = jQuery("#edtRapidCartShop").val();
+	if (shopID == null)
+		shopID = "";
+	jQuery.ajax({
+		type: "post",
+		url: ajaxhost + cmdSetAttributeUserMap,
+		data: {service_name: service_name, attribute: attribute_name, mapto: mapto, shop_id: shopID}
+	});
+}
+
 function submitLicenseKey(keyname) {
+	var r = alert("License field will disappear if key is successful. Please reload the page.");
 	jQuery.ajax({
 		type: "post",
 		url: ajaxhost + cmdUpdateSetting,
 		data: {setting: keyname, value: jQuery("#edtLicenseKey").val()},
 		success: function(res){parseLicenseKeyChange(res)}
 	});
+	//window.location.reload(1);
 }
 
 function showEraseConfirmation(res) {
@@ -260,17 +487,40 @@ function toggleAdvancedDialog() {
 
   if (toggleButton.innerHTML.indexOf("O") > 0) {
     //Open the dialog
-	//toggleButton.innerHTML = "[ - ] ";
 	toggleButton.innerHTML = "[ Close Advanced Commands ] ";
 	document.getElementById("feed-advanced").style.display = "inline";
   } else {
     //Close the dialog
-	//toggleButton.innerHTML = "[ + ] ";
 	toggleButton.innerHTML = "[ Open Advanced Commands ] ";
 	document.getElementById("feed-advanced").style.display = "none";
   }
 }
 
+function toggleOptionalAttributes() {
+  toggleButton = document.getElementById("toggleOptionalAttributes");
+
+  if ( toggleButton.innerHTML.indexOf("h") > 0 ) {
+    //Open the dialog
+	toggleButton.innerHTML = "[Hide] Additional Attributes";
+	document.getElementById("optional-attributes").style.display = "inline";
+  } else {
+    //Close the dialog
+	toggleButton.innerHTML = "[Show] Additional Attributes";
+	document.getElementById("optional-attributes").style.display = "none";
+  }
+}//toggleOptionalAttributes
+
+function toggleRequiredAttributes() {
+  toggleButton = document.getElementById("required-attributes");
+
+  if ( toggleButton.style.display == "none" ) {
+    //Open the dialog
+	document.getElementById("required-attributes").style.display = "inline";
+  } else {
+    //Close the dialog
+	document.getElementById("required-attributes").style.display = "none";
+  }
+}//toggleRequiredAttributes
 function updateGetFeedStatus() {
 	jQuery.ajax({
 		type: "post",

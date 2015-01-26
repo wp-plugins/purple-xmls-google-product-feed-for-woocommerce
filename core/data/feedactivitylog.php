@@ -77,7 +77,7 @@ class PFeedActivityLog {
 		$ordering = $db->loadResult() + 1;
 
 		$newData = new stdClass();
-		$newData->title = $file_name;
+		$newData->title = substr($file_name, 3);
 		$newData->category = $category;
 		$newData->remote_category = $remote_category;
 		$newData->filename = $file_name;
@@ -110,7 +110,7 @@ class PFeedActivityLog {
 	Search the DB for a feed matching filename / providerName
 	********************************************************************/
 
-	private static function feedDataToID($file_name, $providerName) {
+	public static function feedDataToID($file_name, $providerName) {
 		global $pfcore;
 		$feedDataToID = 'feedDataToID' . $pfcore->callSuffix;
 		return PFeedActivityLog::$feedDataToID($file_name, $providerName);
@@ -138,10 +138,10 @@ class PFeedActivityLog {
 		$shopID = $pfcore->shopID;
 
 		$db = JFactory::getDBO();
-		$db->setQuery("
+		$db->setQuery('
 			SELECT id
 			FROM #__cartproductfeed_feeds
-			WHERE (filename='$file_name') AND (type='$providerName') AND (shop_id = $shopID)");
+			WHERE (filename=' . $db->quote($file_name) . ') AND (type=' . $db->quote($providerName) . ') AND (shop_id = ' . (int) $shopID . ')');
 		$result = $db->loadObject();
 		if (!$result)
 			return -1;
@@ -199,7 +199,6 @@ class PFeedActivityLog {
 
 		$newData = new stdClass();
 		$newData->id = $id;
-		$newData->title = $file_name;
 		$newData->category = $category;
 		$newData->remote_category = $remote_category;
 		$newData->filename = $file_name;
@@ -221,7 +220,6 @@ class PFeedActivityLog {
 
 		$newData = new stdClass();
 		$newData->id = $id;
-		$newData->title = $file_name;
 		$newData->category = $category;
 		$newData->remote_category = $remote_category;
 		$newData->filename = $file_name;

@@ -1,18 +1,18 @@
 <?php
 
-  /********************************************************************
-  Version 2.1
-    PFeedCore points to site url
-	  Copyright 2014 Purple Turtle Productions. All rights reserved.
+	/********************************************************************
+	Version 2.1
+		PFeedCore points to site url
+		Copyright 2014 Purple Turtle Productions. All rights reserved.
 		license	GNU General Public License version 3 or later; see GPLv3.txt
 	By: Keneto 2014-06-06
 		2014-08 Added getVersion because in the future, GTS Trusted Stores 
-			will need to know what services are available.
-
-  ********************************************************************/
+		will need to know what services are available.
+	********************************************************************/
 
 class PFeedCore {
 
+	public $banner = true; //In Createfeed page
 	public $callSuffix = ''; //So getList() can map into getListJ() and getListW() depending on the cms
 	public $form_method = 'GET';
 	public $hide_outofstock = false;
@@ -37,10 +37,20 @@ class PFeedCore {
 				$this->siteHost = JURI::root(false);
 				$this->siteHostAdmin = $this->siteHost;
 				$this->weight_unit = 'kg'; //!Should not be hard-coded
-			} else {
+			} elseif (file_exists(JPATH_ADMINISTRATOR . '/components/com_rapidcart')) {
 				$this->callSuffix = 'JS';
 				$this->cmsName = 'Joomla!';
 				$this->cmsPluginName = 'RapidCart';
+				$this->currency = '$';
+				$this->form_method = 'POST';
+				$this->isJoomla = true;
+				$this->siteHost = JURI::root(false);
+				$this->siteHostAdmin = $this->siteHost;
+				$this->weight_unit = 'kg';
+			} elseif (file_exists(JPATH_ADMINISTRATOR . '/components/com_hikashop'))  {
+				$this->callSuffix = 'JH';
+				$this->cmsName = 'Joomla!';
+				$this->cmsPluginName = 'Hikashop';
 				$this->currency = '$';
 				$this->form_method = 'POST';
 				$this->isJoomla = true;
@@ -77,6 +87,7 @@ class PFeedCore {
 					$this->siteHost = site_url();
 					$this->siteHostAdmin = admin_url();
 					$this->weight_unit = esc_attr(get_option('woocommerce_weight_unit'));
+					$this->dimension_unit =  esc_attr(get_option( 'woocommerce_dimension_unit' )); //cm
 					$this->manage_stock = strtolower(get_option('woocommerce_manage_stock')) == 'yes';
 					$this->hide_outofstock = strtolower(get_option('woocommerce_hide_out_of_stock_items')) == 'yes';
 					break;
@@ -96,11 +107,16 @@ class PFeedCore {
 
 	public function listOfRapidCartShops() {
 		$user = JFactory::getUser();
+		$groups = $user->groups;
+		if (isset($groups[8]) && $groups[8])
+			$where = '';
+		else
+			$where = 'WHERE created_by = ' . $user->id;
 		$db = JFactory::getDBO();
 		$db->setQuery('
 			SELECT id, name
 			FROM #__rapidcart_shops
-			WHERE created_by = ' . $user->id);
+			' . $where);
 		return $db->loadObjectList();
 	}
 
@@ -120,6 +136,10 @@ class PFeedCore {
 
 		$result = $db->loadResult();
 		return $result;
+	}
+
+	function settingDeleteJH($settingName) {
+		return $this->settingDeleteJ($settingName);
 	}
 
 	function settingDeleteJS($settingName) {
@@ -159,13 +179,21 @@ class PFeedCore {
 		return $result;
 	}
 
+	function settingGetJH($settingName) {
+		return $this->settingGetJ($settingName);
+	}
+
 	function settingGetJS($settingName) {
 		global $pfcore;
+		if ($pfcore->shopID == -1)
+			$shopCondition = '';
+		else
+			$shopCondition = ' AND (shop_id = ' . $pfcore->shopID . ')';
 		$db = JFactory::getDBO();
 		$db->setQuery('
 			SELECT value
 			FROM #__cartproductfeed_options
-			WHERE name = ' . $db->quote($settingName) . ' AND (shop_id = ' . $pfcore->shopID . ')');
+			WHERE name = ' . $db->quote($settingName) . $shopCondition);
 		$result = $db->loadResult();
 		return $result;
 	}
@@ -227,6 +255,10 @@ class PFeedCore {
 
 	}
 
+	function settingSetJH($settingName, $value) {
+		return $this->settingSetJ($settingName, $value);
+	}
+
 	function settingSetJS($settingName, $value) {
 
 		//Initialize
@@ -272,6 +304,25 @@ class PFeedCore {
 
 	function settingSetWe($settingName, $value) {
 		update_option($settingName, $value);
+	}
+
+	public function trigger($eventname) {
+		$getListCall = 'trigger' . $this->callSuffix;
+		$this->$getListCall($eventname);
+	}
+
+	private function triggerJ($eventname) {
+	}
+
+	private function triggerJS($eventname) {
+	}
+
+	private function triggerW($eventname) {
+		do_action($eventname);
+	}
+
+	private function triggerWE($eventname) {
+		do_action($eventname);
 	}
 
 }

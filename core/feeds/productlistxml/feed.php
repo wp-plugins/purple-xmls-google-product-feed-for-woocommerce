@@ -11,7 +11,9 @@
 
 require_once dirname(__FILE__) . '/../basicfeed.php';
 
-class PProductlistxmlFeed extends PBasicFeed{
+class PProductlistxmlFeed extends PXMLFeed {
+
+	public $mapAttributesOnTheFly = true;
 
 	function __construct () {
 		parent::__construct();
@@ -21,11 +23,6 @@ class PProductlistxmlFeed extends PBasicFeed{
 	}
   
 	function formatProduct($product) {
-
-		//Cheat: These three fields aren't ready to be attributes yet, so adding manually:
-		$product->attributes['description'] = $product->description;
-		$product->attributes['current_category'] = $this->current_category;
-		$product->attributes['feature_imgurl'] = $product->feature_imgurl;
 
 		//Price
 		if (strlen($product->attributes['regular_price']) == 0)
@@ -47,53 +44,16 @@ class PProductlistxmlFeed extends PBasicFeed{
 		//********************************************************************
 		//Make sure all the fields for this product are mapped
 		//********************************************************************
-		foreach($product->attributes as $key => $value)
-			if ($this->getMappingByMapto($key) == null)
-				$this->addAttributeMapping($key, $key, $this->forceCData);
+		if ($this->mapAttributesOnTheFly)
+			foreach($product->attributes as $key => $value) {
+				//$keyto = str_replace(' ', '_', $key);
+				//if ($this->getMappingByMapto($keyto) == null)
+				if ($this->getMappingByMapto($key) == null)
+					if ($key != 'category_ids')
+						$this->addAttributeMapping($key, $key, $this->forceCData);
+			}
 
-		//********************************************************************
-		//Mapping 3.0 Pre-processing
-		//********************************************************************
-		foreach ($this->attributeDefaults as $thisDefault)
-			if ($thisDefault->stage == 2)
-				$product->attributes[$thisDefault->attributeName] = $thisDefault->getValue($product);
-		
-		$output = '
-	<item>';
-
-		//********************************************************************
-		//Add attributes (Mapping 3.0)
-		//********************************************************************
-
-		foreach($this->attributeMappings as $thisAttributeMapping)
-			if ($thisAttributeMapping->enabled && !$thisAttributeMapping->deleted && isset($product->attributes[$thisAttributeMapping->attributeName]) )
-				$output .= $this->formatLine($thisAttributeMapping->mapTo, $product->attributes[$thisAttributeMapping->attributeName], $thisAttributeMapping->usesCData);
-
-		//********************************************************************
-		//Mapping 3.0 post processing
-		//********************************************************************
-
-		foreach ($this->attributeDefaults as $thisDefault)
-			if ($thisDefault->stage == 3)
-				$thisDefault->postProcess($product, $output);
-
-    $output .= '
-	</item>';
-
-    return $output;
-  }
-
-  function getFeedFooter() {   
-    $output = '
- </items>';
-	return $output;
-  }
-
-  function getFeedHeader($file_name, $file_path) {
-
-    $output = '<?xml version="1.0" encoding="UTF-8" ?>
-<items>';
-	return $output;
+		return parent::formatProduct($product);
   }
 
 }

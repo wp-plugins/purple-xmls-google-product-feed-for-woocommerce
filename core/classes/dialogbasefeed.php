@@ -6,7 +6,7 @@
 		Copyright 2014 Purple Turtle Productions. All rights reserved.
 		license	GNU General Public License version 3 or later; see GPLv3.txt
 	By: Keneto 2014-05-05
-		This file could still use some work
+		2014-10 Moved to template (.tpl) format for simplicity (hopefully) -Keneto
   ********************************************************************/
 
 require_once dirname(__FILE__) . '/../data/productcategories.php';
@@ -41,43 +41,50 @@ class PBaseFeedDialog {
 		return $output;
   }
 
-	function advancedTab($source_feed) {
-
-		global $pfcore;
-
-		$output = '';
-
-		$advancedSettings = $pfcore->settingGet($this->service_name . '-cart-product-settings');
-		if ($source_feed == null)
-			$cbUnique = '';
-		else {
-			$cbUnique = '<div><label><input type="checkbox" id="cbUniqueOverride" />Advanced commands unique to this feed</label></div>';
-			if ($source_feed->own_overrides == 1) {
-				$advancedSettings = $source_feed->feed_overrides;
-				$output .= '
-					<script type="text/javascript">
-						jQuery( document ).ready( function( $ ) {
-								jQuery("#cbUniqueOverride").prop("checked", true);
-						} );
-					</script>';
-			}
+  function createDropdownAttr($FoundAttributes, $defaultValue = '', $mapTo) {
+    $output = '
+	<select class="attribute_select" service_name="' . $this->service_name . '"
+		mapto="' . $mapTo . '"
+		onchange="setAttributeOptionV2(this)" >
+	  <option value=""></option>
+	  <option value="(Reset)">(Reset)</option>';
+		foreach($FoundAttributes->attributes as $attr) {
+			if ($defaultValue == $attr->attribute_name)
+				$selected = ' selected="true"';
+			else
+				$selected = '';
+			$output .= '<option value="' . $attr->attribute_name . '"' . $selected . '>' . $attr->attribute_name . '</option>';
 		}
-
 		$output .= '
-			<div class="feed-advanced" id="feed-advanced">
-				<textarea class="feed-advanced-text" id="feed-advanced-text">' . $advancedSettings . '</textarea>
-				' . $cbUnique . '
-				<button class="navy_blue_button" id="bUpdateSetting" name="bUpdateSetting" onclick="doUpdateSetting(\'feed-advanced-text\', \'cp_advancedFeedSetting-' . $this->service_name . '\'); return false;" >Update</button>
-				<div id="updateSettingMessage">&nbsp;</div>
-			</div>';
+		<option value="brand">brand (auto-detect)</option>
+		<option value="id">id</option>	
+		<option value="sku">sku</option>
+		<option value="default1">default1</option>
+		<option value="default2">default2</option>
+		<option value="default3">default3</option>	
+	</select>';
 		return $output;
-	}
+  }
 
   function attributeMappings() {
-		if (count($this->options) == 0)
-			return;
+
 		global $pfcore;
 		$FoundAttributes = new FoundAttribute();
+		$savedAttributes = $FoundAttributes->attributes;
+		$FoundAttributes->attributes = array();
+		foreach($savedAttributes as $attr)
+			$FoundAttributes->attributes[] = $attr;
+
+		foreach($this->provider->attributeMappings as $thisAttributeMapping) {
+			//if empty mapping, don't add to drop down list
+			if ( strlen(trim($thisAttributeMapping->attributeName)) > 0 ) {
+				$attr = new stdClass();
+				$attr->attribute_name = $thisAttributeMapping->attributeName;
+				$FoundAttributes->attributes[] = $attr;
+			}
+		}
+		
+		/*
 		//patch: for google feed, ram the brand in
 		if ($this->service_name == 'Google') {
 			$has_brand = false;
@@ -92,19 +99,35 @@ class PBaseFeedDialog {
 				$FoundAttributes->attributes[] = $thisAttribute;
 			}
 		}
-		$output = '
-				<p>This Export Feed will map your ' . $pfcore->cmsPluginName . ' attributes to ' .$this->service_name.'\'s required attributes.</p>
-				<p><a target=\'_blank\' href=\'http://www.shoppingcartproductfeed.com/tos/\' >View Step-by-step Guide</a></p>
-			  <h2>Attribute Mapping</h2>
-			  <table>
-			  <tr>
-			    <td>Attribute</td><td width="20"></td><td>' . $this->service_name . ' Attribute</td></tr>';
-		$index = 0;
-		foreach($FoundAttributes->attributes as $attr)
-			$output .= '
-				<tr><td>' . $attr->attribute_name . '</td><td></td><td>' . $this->createDropdown($attr->attribute_name, $index++) . '</td></tr>';
+http://www.shoppingcartproductfeed.com/tos/generate-google-merchant-feed-woocommerce/
+		*/
+		$output = '				
+				<p><a target="blank" title="Generate Merchant Feed" href="http://shoppingcartproductfeed.com/generate-google-merchant-feed-woocommerce/">Generate your first feed</a> | 
+				<a target=\'_blank\' href=\'http://www.shoppingcartproductfeed.com/tos/\' >View guides</a></p>
+				<p>Use the drop downs below to re-map ' . $pfcore->cmsPluginName . ' attributes to ' .$this->service_name.'\'s required attributes.</p>
+				<p>Additional attributes can also be found below by clicking the [Show] button.</p>
+				<label class="attributes-label" title="Required Attributes" id="toggleRequiredAttributes" onclick="toggleRequiredAttributes()">Required Attributes</label>
+				<div class="required-attributes" id=\'required-attributes\'>
+				<table>
+				<tr><td>Attribute</td><td width="20"></td><td>' . $this->service_name . ' Attribute</td></tr>';
+
+		foreach($this->provider->attributeMappings as $thisAttributeMapping)
+			if ($thisAttributeMapping->isRequired)
+				$output .= '<tr><td>' . $this->createDropdownAttr($FoundAttributes, $thisAttributeMapping->attributeName, $thisAttributeMapping->mapTo) . '</td><td></td><td>' . $thisAttributeMapping->mapTo . '</td></tr>';
 		$output .= '
-			  </table>';
+			  </table>
+			  </div>
+			  <label class="attributes-label" title="Optional Attributes" id="toggleOptionalAttributes" onclick="toggleOptionalAttributes()">[Show] Additional Attributes</label>
+			  <div class="optional-attributes" id=\'optional-attributes\'>
+			  <table>
+			  <tr><td>Attribute</td><td width="20"></td><td>' . $this->service_name . ' Attribute</td></tr>';
+
+		foreach($this->provider->attributeMappings as $thisAttributeMapping)
+			if (!$thisAttributeMapping->isRequired)
+				$output .= '<tr><td>' . $this->createDropdownAttr($FoundAttributes, $thisAttributeMapping->attributeName, $thisAttributeMapping->mapTo) . '</td><td></td><td>' . $thisAttributeMapping->mapTo . '</td></tr>';
+		$output .= '
+			  </table>
+			  </div>';
 
 		return $output;
   }
@@ -120,14 +143,35 @@ class PBaseFeedDialog {
 				  <input type="hidden" id="remote_category" name="remote_category" value="' . $initial_remote_category . '">';
 	}
 
+	public function getTemplateFile() {
+		$filename = dirname(__FILE__) . '/../feeds/' . strtolower($this->service_name) . '/dialog.tpl.php';
+		if (!file_exists($filename))
+			$filename = dirname(__FILE__) . '/dialogbasefeed.tpl.php';
+		return $filename;
+	}
+
+	public function initializeProvider() {
+		//Load the feed provider
+		require_once dirname(__FILE__) . '/md5.php';
+		require_once dirname(__FILE__) . '/../feeds/' . strtolower($this->service_name) . '/feed.php';
+		$providerName = 'P' . $this->service_name . 'Feed';
+		$this->provider = new $providerName;
+		$this->provider->loadAttributeUserMap();
+	}
+
 	function line2() {
 		global $pfcore;
 		if ($pfcore->cmsPluginName != 'RapidCart')
 			return '';
 		$listOfShops = $pfcore->listOfRapidCartShops();
-		$output = '<select class="text_big" id="edtRapidCart">';
-		foreach($listOfShops as $shop)
-			$output .= '<option value="' . $shop->id . '">' . $shop->name . '</option>';
+		$output = '<select class="text_big" id="edtRapidCartShop" onchange="doFetchLocalCategories()" >';
+		foreach($listOfShops as $shop) {
+			if ($shop->id == $pfcore->shopID)
+				$selected = ' selected="selected"';
+			else
+				$selected = '';
+			$output .= '<option value="' . $shop->id . '"' . $selected . '>' . $shop->name . '</option>';
+		}
 		$output .= '</select>';
 		return '
 				<div class="feed-right-row">
@@ -136,91 +180,61 @@ class PBaseFeedDialog {
 				</div>';
 	}
 
-  function mainDialog($source_feed = null) {
+  public function mainDialog($source_feed = null) {
 
 		global $pfcore;
 
-		$output = '';
-
+		$this->advancedSettings = $pfcore->settingGet($this->service_name . '-cart-product-settings');
 		if ($source_feed == null) {
 			$initial_local_category = '';
-			$initial_local_category_id = '';
+			$this->initial_local_category_id = '';
 			$initial_remote_category = '';
-			$initial_filename = '';
+			$this->initial_filename = '';
+			$this->script = '';
+			$this->cbUnique = '';
 		} else {
 			$initial_local_category = $source_feed->local_category;
-			$initial_local_category_id = $source_feed->category_id;
+			$this->initial_local_category_id = $source_feed->category_id;
 			$initial_remote_category = $source_feed->remote_category;
-			$initial_filename = $source_feed->filename;
+			$this->initial_filename = $source_feed->filename;
+			if ($source_feed->own_overrides == 1) {
+				$strChecked = 'checked="checked" ';
+				$this->advancedSettings = $source_feed->feed_overrides;
+			} else
+				$strChecked = '';
+			$this->cbUnique = '<div><label><input type="checkbox" id="cbUniqueOverride" ' . $strChecked . '/>Advanced commands unique to this feed</label></div>';
+			/*if ($source_feed->own_overrides == 1) {
+				$this->advancedSettings = $source_feed->feed_overrides;
+				$this->script = '
+					<script type="text/javascript">
+						jQuery( document ).ready( function() {
+							jQuery("#cbUniqueOverride").prop("checked", true);
+						});
+					</script>';
+			}*/
 		}
 
-		$servName = strtolower($this->service_name);
+		$this->servName = strtolower($this->service_name);
+
+		$this->initializeProvider();
 
 		$attrVal = array();
-		$folders = new PFeedFolder();
-		$product_categories = new PProductCategories();
+		$this->folders = new PFeedFolder();
+		$this->product_categories = new PProductCategories(); //used?
 
-		$localCategoryList = '
-			<input type="text" name="local_category_display" class="text_big" id="local_category_display"  onclick="showLocalCategories(\'' . $this->service_name . '\')" value="' . $initial_local_category . '" autocomplete="off" readonly="true" />
-			<input type="hidden" name="local_category" id="local_category" value="' . $initial_local_category_id .'" />';
+		$this->localCategoryList = '
+			<input type="text" name="local_category_display" class="text_big" id="local_category_display"  onclick="showLocalCategories(\'' . $this->service_name . '\')" value="' . $initial_local_category . '" autocomplete="off" readonly="true" placeholder="Click here to select your categories"/>
+			<input type="hidden" name="local_category" id="local_category" value="' . $this->initial_local_category_id .'" />';
+		$this->source_feed = $source_feed;
 
-		//2014-09: (K): Starting to break this up in the hopes of one day organizing it. 
-		//  There is a missing tag-pair or HTML element somewhere that is giving Joomla a hard time
-    $output .= '
-	  <div class="attributes-mapping">
-        <div id="poststuff">
-		  <div class="postbox" style="width: 98%;">
-		    <h3 class="hndle">' . $this->service_name_long . '</h3>
-			<div class="inside export-target">
-			<div class="feed-left">
-			' . $this->attributeMappings() . '
-			</div>';
 
-		$output .= '
-			<div class="feed-right">
-				<form1 action="' . $folders->feedURL() . '" name="' . $servName . '" id="cat-feeds-xml-' . $servName . '-form" method="' . $pfcore->form_method . '" target="_blank">
-				<div class="feed-right-row">
-				  <span class="label">' . $pfcore->cmsPluginName . ' Category : </span>
-				  ' . $localCategoryList . '
-				</div>' . $this->line2() . '
-				<div class="feed-right-row">' .
-					$this->categoryList($initial_remote_category) . '
-				</div>';
+		//Pass this to the template for processing
+		
+		include $this->getTemplateFile();
 
-		$output .= '
-				<div class="feed-right-row">
-				  <span class="label">File name for feed : </span>
-				  <span ><input type="text" name="feed_filename" id="feed_filename" class="text_big" value="' . $initial_filename . '" /></span>
-				</div>
-				<div class="feed-right-row">
-				  <label>* If you use an existing file name, the file will be overwritten.</label>
-				</div>';
-
-		$output .= '
-				<div class="feed-right-row">
-				  <input type="hidden" name="RequestCode" value="' . $this->service_name . '" />
-					<input class="cupid-green" type="button" onclick="doGetFeed(\'' . $servName . '\')" value="Get Feed" \>
-					<div id="feed-error-display">&nbsp;</div>
-					<div id="feed-status-display">&nbsp;</div>
-				</div>
-				</form1>
-			</div>
-		  <div style="clear: both;">&nbsp;</div>';
-
-		$output .= '
-		  <div>
-		    <label class="un_collapse_label" title="Advanced" id="toggleAdvancedSettingsButton" onclick="toggleAdvancedDialog()">[ Open Advanced Commands ]</label>
-				<label class="un_collapse_label" title="Erase existing mappings" id="erase_mappings" onclick="doEraseMappings(\'' . $this->service_name . '\')">[ Reset Attribute Mappings ]</label>
-		  </div>';
-
-		$output .= '
-		  ' . $this->advancedTab($source_feed) . '
-		</div>
-	  </div>';
-		return $output;
 	}
 
-  //!Who even call this??
+  //Strip special characters out of an option so it can safely go in a <select /> in the dialog
 	function convert_option($option) {
 		//Some Feeds (like Google & eBay) need to modify this
 		return $option;

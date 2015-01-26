@@ -21,7 +21,7 @@ require_once 'cart-product-setup.php';
  */
 function register_cart_product_styles_and_scripts() 
 {
-	wp_register_style( 'cart-product-style', plugins_url( 'css/cart-product_v3.40.css', __FILE__ ) );
+	wp_register_style( 'cart-product-style', plugins_url( 'css/cart-product_v3.60.css', __FILE__ ) );
 	wp_enqueue_style( 'cart-product-style' );
 
 	wp_register_style( 'cart-product-colorstyle', plugins_url( 'css/colorbox.css', __FILE__ ) );
@@ -85,11 +85,18 @@ function cart_product_feed_admin_page()
 	require_once 'cart-product-wpincludes.php';
 	require_once 'core/classes/dialoglicensekey.php';
 	include_once 'core/classes/dialogfeedpage.php';
+	require_once 'core/feeds/basicfeed.php';
 
-	echo 	"<div class='purplefeedspage wrap'>";
-	echo 	"<div class='cpf-header'>";
-	echo 	'<h2>Shopping Cart Product Feed</h2>';
-	echo    '</div>';
+	global $pfcore;
+	$pfcore->trigger('cpf_init_feeds');
+
+	echo 	"<div class='wrap'>";
+	//echo 	"<div class='cpf-header'>";
+	echo 	'<h2>Create Product Feed';
+	$url = site_url() . '/wp-admin/admin.php?page=cart-product-feed-manage-page';
+    echo '<input style="margin-top:12px;" type="button" class="add-new-h2" onclick="document.location=\'' . $url . '\';" value="' . __( 'Manage Feeds', 'cart-product-strings' ) . '" />
+    </h2>';
+	//echo    '</div>';
 	//prints logo/links header info: also version number/check
 	CPF_print_info();
 	$action = '';

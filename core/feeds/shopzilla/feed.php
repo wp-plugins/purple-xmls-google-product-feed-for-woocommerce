@@ -11,42 +11,57 @@
 
 require_once dirname(__FILE__) . '/../basicfeed.php';
 
-class PShopzillaFeed extends PCSVFeedEx{
+class PShopzillaFeed extends PCSVFeedEx {
 
 	function __construct () {
 		parent::__construct();
 		$this->providerName = 'Shopzilla';
 		$this->providerNameL = 'shopzilla';
-		$this->fileformat = 'csv';
+		$this->fileformat = 'txt';
+		$this->fieldDelimiter = "\t";
 		$this->fields = array();
-		$this->descriptionStrict = true;
 
-		$this->addAttributeMapping('id', 'Unique ID');
-		$this->addAttributeMapping('item_group_id', 'Item Group ID');
-		$this->addAttributeMapping('title', 'Title');
-		$this->addAttributeMapping('description', 'Description', true);
-		$this->addAttributeMapping('category', 'Category', true);
-		$this->addAttributeMapping('link', 'Product URL');
-		$this->addAttributeMapping('feature_imgurl', 'Image URL');
+//required
+		$this->addAttributeMapping('id', 'Unique ID',true,true);
+		$this->addAttributeMapping('title', 'Title',true,true);
+		$this->addAttributeMapping('description', 'Description', true,true);
+		$this->addAttributeMapping('category', 'Category', true,true);
+		$this->addAttributeMapping('link', 'Product URL',true,true);
+		$this->addAttributeMapping('feature_imgurl', 'Image URL',true,true);
+		$this->addAttributeMapping('condition', 'Condition',true,true);
+		$this->addAttributeMapping('availability', 'Availability',true,true);
+		$this->addAttributeMapping('current_price', 'Current Price',true,true);
+//optional
 		$this->addAttributeMapping('additional_images', 'Additional Image URL');
-
-		$this->addAttributeMapping('condition', 'Condition');
-		$this->addAttributeMapping('availability', 'Availability');
-		$this->addAttributeMapping('current_price', 'Current Price');
+		$this->addAttributeMapping('item_group_id', 'Item Group ID');
 		$this->addAttributeMapping('original_price', 'Original Price');
 		$this->addAttributeMapping('weight', 'Ship Weight');
+
+		$this->addAttributeMapping('', 'Brand');
+		$this->addAttributeMapping('', 'GTIN');
+		$this->addAttributeMapping('', 'MPN');
+		$this->addAttributeMapping('', 'Gender');
+		$this->addAttributeMapping('', 'Age Group');
+		$this->addAttributeMapping('', 'Size');
+		$this->addAttributeMapping('', 'Color');
+		$this->addAttributeMapping('', 'Material');
+		$this->addAttributeMapping('', 'Pattern');
+		$this->addAttributeMapping('', 'Bid');
+		$this->addAttributeMapping('', 'Promo Text');
 	}
 
   function formatProduct($product) {
 
-		//cheat: Remap these
-		$product->attributes['category'] = $this->current_category;
-		$product->attributes['description'] = $product->description;		
-		$product->attributes['feature_imgurl'] = $product->feature_imgurl;
+		$category = explode(";", $this->current_category);
+  	if (isset($category[1]))
+			$product->attributes['category'] = trim($category[1]);
+		else
+			$product->attributes['category'] = "0,000,001"; //Other miscellaneous category id
+		
+		$productDescription = str_replace('"','""',$product->attributes['description']);		
+		$product->attributes['description'] = $productDescription;	
 
 		//prepare
-    if ($product->isVariable)
-			$product->attributes['item_group_id'] = $product->item_group_id;
 		$product->attributes['category'] = str_replace(',', '', $product->attributes['category']);
 
 		//Max 9 Additional Images

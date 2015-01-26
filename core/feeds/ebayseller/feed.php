@@ -25,24 +25,33 @@ class PeBaySellerFeed extends PCSVFeedEx
 
 		//Create some attributes (Mapping 3.0)
 		//Basic Template
-		$this->addAttributeMapping('action', 'Action(SiteID=US|Country=US|Currency=USD|Version=745)');
-		$this->addAttributeMapping('category1', 'Category');
-		$this->addAttributeMapping('title', 'Title',true);
-		$this->addAttributeMapping('description', 'Description',true);
+		//$this->addAttributeMapping('action', 'Action(SiteID=US|Country=US|Currency=USD|Version=745)');
+		//Action(SiteID=UK|Country=GB|Currency=GBP|Version=745)
+		$this->addAttributeMapping('', 'Action',true,true); //should select from list of valid values
+		$this->addAttributeMapping('Category', 'Category',true,true);
+		$this->addAttributeMapping('Title', 'Title',true,true);
+		$this->addAttributeMapping('Description', 'Description',true);
 		//$this->addAttributeMapping('productname', 'ProductName');
-		$this->addAttributeMapping('conditionid', 'ConditionID');
-		$this->addAttributeMapping('PicURL', 'PicURL');
-		$this->addAttributeMapping('quantity', 'Quantity');
-		$this->addAttributeMapping('format', 'Format');	//Auction, FixedPrice
-		$this->addAttributeMapping('startprice', 'StartPrice');	//
-		$this->addAttributeMapping('duration', 'Duration');
-		$this->addAttributeMapping('location', 'Location',true); //state and country where item is located
-						
+		$this->addAttributeMapping('ConditionID', 'ConditionID',true,true);
+		$this->addAttributeMapping('PicURL', 'PicURL',true);
+		$this->addAttributeMapping('Quantity', 'Quantity',true,true);
+		$this->addAttributeMapping('Format', 'Format',true,true);	//Auction, FixedPrice
+		$this->addAttributeMapping('StartPrice', 'StartPrice',true,true);	
+		$this->addAttributeMapping('duration', 'Duration',true,true); //5,7,10,GTC
+		$this->addAttributeMapping('location', 'Location',true,true); //state and country where item is located
+		$this->addAttributeMapping('', 'PostalCode',true,true); //state and country where item is located
+		$this->addAttributeMapping('ReturnsAcceptedOption', 'ReturnsAcceptedOption',true,true); //ReturnsAccepted
+		$this->addAttributeMapping('ShippingType', 'ShippingType',true,true); //Calculated, Flat, Freight 
+		$this->addAttributeMapping('ShippingService-1:Option', 'ShippingService-1:Option'); //UPSGround
+		$this->addAttributeMapping('ShippingService-1:Cost', 'ShippingService-1:Cost'); //UPSGround
+		$this->addAttributeMapping('DispatchTimeMax', 'DispatchTimeMax',true,true); //max # business days you take to prepare an item for shipment to a domestic buyer
+		$this->addAttributeMapping('PayPalAccepted', 'PayPalAccepted');	
+		$this->addAttributeMapping('PayPalEmailAddress', 'PayPalEmailAddress');		
 	}
 
 	function formatProduct($product) {
 
-		if ($product->isVariable) {
+		if ($product->attributes['isVariation']) {
 			//Not used in original code
 			//$variantUPC = rand();
 			//$variantMfr = rand();
@@ -51,20 +60,34 @@ class PeBaySellerFeed extends PCSVFeedEx
 		//$product->attributes['id'] = $product->attributes['id'] . $variantUPC; //Not used in original code
 		//$product->attributes['mfr_part_number'] = $product->attributes['id'] . $variantMfr;
 		//cheat
-		$category = explode(":", $product->attributes['current_category']);
+		//$product->attributes['Action'] = "VerifyAdd";
+		$category = explode(":", $this->current_category);
 		if (isset($category[1]))
-			$product->attributes['category'] = $category[1];
+			$product->attributes['Category'] = trim($category[1]);
 		else
-			$product->attributes['category'] = '';
+			$product->attributes['Category'] = 'no_category_selected';
 		//$product->attributes['category'] = $this->current_category;
-		$product->attributes['description'] = $product->description;		
-		$product->attributes['PicURL'] = $product->feature_imgurl;
+		$productDescription = str_replace('"','""',$product->attributes['description']);		
+		$product->attributes['Description'] = $productDescription;
+		$product->attributes['Quantity'] = $product->attributes['stock_quantity'];
+		//$product->attributes['Location'] = $product->attributes['woocommerce_default_country'];
+		//ebayseller title cannot be greater than 80 chars
+		$product->attributes['Title'] = (strlen($product->attributes['title']) > 80) ? substr($product->attributes['title'],0,80) : $product->attributes['title'];
+		$product->attributes['PicURL'] = str_replace('https://','http://',$product->attributes['feature_imgurl']);
 		
 		//List the product price in US dollars, without a $ sign, commas, text, or quotation marks.
-		$product->attributes['startprice'] = $product->attributes['regular_price'];
+		$product->attributes['StartPrice'] = $product->attributes['regular_price'];
 		if ( ($product->attributes['has_sale_price']) && ($product->attributes['sale_price'] != "") )
-			$product->attributes['startprice'] = $product->attributes['sale_price'];
+			$product->attributes['StartPrice'] = $product->attributes['sale_price'];
+		
+		$product->attributes['ConditionID'] = '1000'; //1000=new, 3000=used
+		$product->attributes['Format'] = "FixedPrice";
+		$product->attributes['ReturnsAcceptedOption'] = 'ReturnsAccepted';
 
+		if ( isset($product->attributes['weight']) ) {
+			$product->attributes['WeightMajor'] = $product->attributes['weight'];
+		}
+		
 		return parent::formatProduct($product);
 	}
 

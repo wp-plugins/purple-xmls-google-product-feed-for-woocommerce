@@ -20,7 +20,13 @@ require_once 'core/data/savedfeed.php';
     </div>
     -->
 
-    <h2><?php _e( 'Manage Cart Product Feeds', 'cart-product-strings' ); ?></h2>
+    <h2>
+    <?php 
+    _e( 'Manage Cart Product Feeds', 'cart-product-strings' );
+    $url = site_url() . '/wp-admin/admin.php?page=cart-product-feed-admin';
+    echo '<input style="margin-top:12px;" type="button" class="add-new-h2" onclick="document.location=\'' . $url . '\';" value="' . __( 'Generate New Feed', 'cart-product-strings' ) . '" />';
+    ?>
+    </h2>
     <?php CPF_print_info(); ?>
 
     <?php
@@ -41,7 +47,7 @@ require_once 'core/data/savedfeed.php';
     }
     //"New Feed" button
     $url = site_url() . '/wp-admin/admin.php?page=cart-product-feed-admin';
-    echo '<input style="margin-top:12px;" type="button" class="button-primary" onclick="document.location=\'' . $url . '\';" value="' . __( 'Generate New Feed', 'cart-product-strings' ) . '" />';
+    //echo '<input style="margin-top:12px;" type="button" class="button-primary" onclick="document.location=\'' . $url . '\';" value="' . __( 'Generate New Feed', 'cart-product-strings' ) . '" />';
     ?>
 
     <br />
@@ -66,6 +72,7 @@ function feeds_main_table() {
     global $wpdb;
 
     $feed_table = $wpdb->prefix . 'cp_feeds';
+		$providerList = new PProviderList();
 
     // Read the feeds
     $sql_feeds = ( "SELECT f.*,description FROM $feed_table as f LEFT JOIN $wpdb->term_taxonomy on ( f.category=term_id and taxonomy='product_cat'  ) ORDER BY f.id" );
@@ -157,11 +164,11 @@ function feeds_main_table() {
                         <a href="<?php echo $url . "id" ?>">
                             <?php
                             _e( 'ID', 'cart-product-strings' );
-                            if ( $order == 'id' ) {
-                                if ( $reverse )
-                                    echo $image['up_arrow'];
-                                else
-                                    echo $image['down_arrow'];
+                             if ( $order == 'id' ) {
+                                 if ( $reverse )
+                                     echo $image['up_arrow'];
+                                 else
+                                     echo $image['down_arrow'];
                             }
                             ?>
                         </a>
@@ -257,26 +264,23 @@ function feeds_main_table() {
                         <td><?php echo $this_feed['filename']; ?></td>
                         <td><small><?php echo esc_attr( stripslashes( $this_feed_ex->local_category ) ) ?></small></td>
                         <td><?php echo str_replace( ".and.", " & ", str_replace( ".in.", " > ", esc_attr( stripslashes( $this_feed['remote_category'] ) ) ) ); ?></td>
-                        <td><?php echo$this_feed['type'] ?></td>
+                        <td><?php echo $providerList->getPrettyNameByType($this_feed['type']) ?></td>
                         <td><?php echo $this_feed['url'] ?></td>
                         <?php //$url = get_admin_url() . 'admin.php?page=??? ( edit feed ) &amp;tab=edit&amp;edit_id=' . $this_feed['id']; ?>
                         <td><?php
-							$ext = '.xml';
-							if ( strpos( strtolower( $this_feed['url'] ), '.csv' ) > 0 ) {
-							  $ext = '.csv';
-							}
-							$feed_file = PFeedFolder::uploadFolder() . $this_feed['type'] . '/' . $this_feed['filename'] . $ext;
+														$ext = '.' . $providerList->getExtensionByType($this_feed['type']);
+														$feed_file = PFeedFolder::uploadFolder() . $this_feed['type'] . '/' . $this_feed['filename'] . $ext;
                             if ( file_exists( $feed_file ) ) {
                                 echo date( "d-m-Y H:i:s", filemtime( $feed_file ) );
                             } else echo 'DNE';
                             ?></td>
 
                         <td><a href="<?php echo $this_feed['url'] ?>" target="_blank" class="purple_xmlsedit"><?php _e( 'View', 'cart-product-strings' ); ?></a></td>
-												<?php $url_edit = get_admin_url() . 'admin.php?page=cart-product-feed-admin&action=edit&id=' . $this_feed['id']; ?>
-												<td><a href="<?php echo( $url_edit ) ?>" class="purple_xmlsedit"><?php _e( 'Edit', 'cart-product-strings' ); ?></a></td>
+						<?php $url_edit = get_admin_url() . 'admin.php?page=cart-product-feed-admin&action=edit&id=' . $this_feed['id']; ?>
+						<td><a href="<?php echo( $url_edit ) ?>" class="purple_xmlsedit"><?php _e( 'Edit', 'cart-product-strings' ); ?></a></td>
                         <?php $url = get_admin_url() . 'admin.php?page=cart-product-feed-manage-page&action=delete&id=' . $this_feed['id']; ?>
                         <td><a href="<?php echo( $url ) ?>" class="purple_xmlsedit"><?php _e( 'Delete', 'cart-product-strings' ); ?></a></td>
-												<td><?php echo $this_feed['product_count'] ?></td>
+						<td><?php echo $this_feed['product_count'] ?></td>
 
                     </tr>
                     <?php
@@ -292,7 +296,10 @@ function feeds_main_table() {
             </tbody>
             <tfoot>
                 <tr>
-                    <?php $url = get_admin_url() . 'admin.php?page=cart-product-manage-page&amp;order_by='; ?>
+                    <?php 
+                    $url = get_admin_url() . 'admin.php?page=cart-product-manage-page&amp;order_by='; 
+                    $order = '';
+                    ?>
                     <th scope="col" style="min-width: 40px;" >
                         <a href="<?php echo $url . "id" ?>">
                             <?php
@@ -381,7 +388,7 @@ function feeds_main_table() {
 
         </table>
 
-		<input class="navy_blue_button" type="submit" value="Update Now" id="submit" name="submit" onclick="doUpdateAllFeeds()">
+		<input class="button-primary" type="submit" value="Update Now" id="submit" name="submit" onclick="doUpdateAllFeeds()">
 		<div id="update-message">&nbsp;</div>
         <!--	</div> -->
         <?php

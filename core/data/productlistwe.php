@@ -176,8 +176,6 @@ class PProductList {
 		if ($this->products == null)
 			$this->loadProducts($parent);
 
-		$master_product_list = array();
-
 		//********************************************************************
 		//Convert the WP_Product List into a Cart-Product Master List (ListItems)
 		//********************************************************************
@@ -197,7 +195,8 @@ class PProductList {
 			//Basics
 			if (!$isVariation) {
 				$item->id = $prod->id;
-				$item->isVariable = false;
+				$item->attributes['isVariable'] = false;
+				$item->attributes['isVariation'] = false;
 				$item->attributes['sku'] = $prod->sku_main;
 				$item->attributes['regular_price'] = $prod->price_main;
 				$item->attributes['has_sale_price'] = false;
@@ -208,7 +207,8 @@ class PProductList {
 				$item->attributes['stock_quantity'] = $prod->stock_main;
 			} else {
 				$item->id = $prod->variation_id;
-				$item->isVariable = true;
+				$item->attributes['isVariable'] = false;
+				$item->attributes['isVariation'] = true;
 				$item->attributes['sku'] = $prod->sku_var;
 				$item->attributes['regular_price'] = $prod->price_var;
 				$item->attributes['has_sale_price'] = false;
@@ -228,9 +228,10 @@ class PProductList {
 			$item->description_long = substr(strip_shortcodes(strip_tags($prod->description)), 0, 1000);
 			$item->attributes['valid'] = true;
 
-			//Fetch any default attributes (Mapping 3.0)
+			//Fetch any default attributes Stage 0 (Mapping 3.0)
 			foreach ($parent->attributeDefaults as $thisDefault)
-				$item->attributes[$thisDefault->attributeName] = $thisDefault->value;
+				if ($thisDefault->stage == 0 && !$thisDefault->isRuled && !isset($item->attributes[$thisDefault->attributeName]))
+					$item->attributes[$thisDefault->attributeName] = $thisDefault->getValue($item);
 
 			$item->attributes['category'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
 			$item->attributes['product_type'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
@@ -239,9 +240,9 @@ class PProductList {
 			$item->attributes['link'] = $pfcore->siteHost . '?wpsc-product=' . $item->attributes['title'];
 			$images = explode(',', $prod->image_link);
 			if (count($images) == 0)
-				$item->feature_imgurl = '';
+				$item->attributes['feature_imgurl'] = '';
 			else
-				$item->feature_imgurl = $images[0];
+				$item->attributes['feature_imgurl'] = $images[0];
 			for ($i = 1; $i < count($images); $i++)
 				$item->imgurls[] = $images[$i];
 			$item->attributes['condition'] = 'New';
@@ -261,12 +262,16 @@ class PProductList {
 				$item->attributes['stock_quantity'] = 1;
 			elseif ($item->attributes['stock_quantity'] == 0)
 				$item->attributes['stock_status'] = 0;
+
+			//Fetch any default attributes (Mapping 3.0)
+			foreach ($parent->attributeDefaults as $thisDefault)
+				if ($thisDefault->stage == 1 && !$thisDefault->isRuled)
+					$item->attributes[$thisDefault->attributeName] = $thisDefault->getValue($item);
 	  
-			$master_product_list[] = $item;
+			//Send this item out for Feed processing
+			$parent->handleProduct($item);
 
 		}
-
-		return $master_product_list;
 
 	}
 

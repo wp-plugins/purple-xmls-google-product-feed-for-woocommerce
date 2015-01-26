@@ -35,7 +35,7 @@ function CPF_print_info()
 	 	<div class=\'version-style\'>
 	 		<a target="_blank" href="http://www.shoppingcartproductfeed.com/woocommerce-export/">Product Site</a> | 
 	 		<a target="_blank" href="http://www.shoppingcartproductfeed.com/faq/">FAQ/Help</a> |
-	 		<a target="_blank" href="http://www.shoppingcartproductfeed.com/search-2/">SEARCH</a> <br>
+	 		<a target="_blank" href="http://www.shoppingcartproductfeed.com/?s=">SEARCH</a> <br>
 	 		Version: ' . FEED_PLUGIN_VERSION . CPF_check_version() .'<br>
 	 	</div>
 	 	<div class="gts-link">

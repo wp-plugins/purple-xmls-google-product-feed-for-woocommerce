@@ -20,28 +20,36 @@ class PNextagFeed extends PCSVFeedEx{
 		$this->providerName = 'Nextag';
 		$this->providerNameL = 'nextag';
 		$this->fileformat = 'csv';
-		$this->descriptionStrict = true;
 		$this->fields = array();
 		//$this->fields = array("UPC", "Product Name", "Description", "Price", "Click-out URL", "Category", "Image URL", "Stock Status", "List Price");
 
-		$this->addAttributeMapping('id', 'UPC');
-		$this->addAttributeMapping('title', 'Product Name');
-		$this->addAttributeMapping('description', 'Description', true);
-		$this->addAttributeMapping('regular_price', 'Price');
-		$this->addAttributeMapping('sale_price', 'List Price');
-		$this->addAttributeMapping('link', 'Click-out URL');
-		$this->addAttributeMapping('category', 'Category', true);
+		$this->addAttributeMapping('', 'Manufacturer',true,true);
+		//identifiers: must provide one of:
+		$this->addAttributeMapping('', 'Manufacturer Part Number',true,true);
+		$this->addAttributeMapping('', 'UPC',true,true);
+		$this->addAttributeMapping('', 'ISBN',true,true);
+		$this->addAttributeMapping('', 'MUZE ID',true,true);
+		$this->addAttributeMapping('', 'Distributor ID',true,true);
+		//required
+		$this->addAttributeMapping('title', 'Product Name',true,true);
+		$this->addAttributeMapping('description', 'Description', true,true);
+		$this->addAttributeMapping('regular_price', 'Price',true,true);		
+		$this->addAttributeMapping('link', 'Click-out URL',true,true);
+		$this->addAttributeMapping('category', 'Category', true,true);
+		//recommended
 		$this->addAttributeMapping('feature_imgurl', 'Image URL');
 		$this->addAttributeMapping('stock_status', 'Stock Status');
+		$this->addAttributeMapping('condition', 'Product Condition');
+		$this->addAttributeMapping('', 'Ground Shipping');
+		$this->addAttributeMapping('weight', 'Weight');
+		//$this->addAttributeMapping('', 'List Price'); //MSRP
+		//$this->addAttributeMapping('', 'List Price'); 
+		//$this->addAttributeMapping('', 'List Price'); 
+		
 
 	}
 
 	function formatProduct($product) {
-
-		//cheat: Remap these
-		$product->attributes['category'] = $this->current_category;
-		$product->attributes['description'] = $product->description;		
-		$product->attributes['feature_imgurl'] = $product->feature_imgurl;
 
 		//Prepare input:
 		if (strlen($product->attributes['description']) > 500)

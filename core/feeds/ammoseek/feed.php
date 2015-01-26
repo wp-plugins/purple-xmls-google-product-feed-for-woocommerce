@@ -18,18 +18,20 @@ class PAmmoSeekFeed extends PBasicFeed{
 		$this->providerName = 'AmmoSeek';
 		$this->providerNameL = 'ammoseek';
 		//Create some attributes (Mapping 3.0)
-		$this->addAttributeMapping('brand', 'manufacturer', true);
-		$this->addAttributeMapping('caliber', 'caliber', true);
-		$this->addAttributeMapping('description', 'description', true);
-		$this->addAttributeMapping('link', 'url', true);
-		$this->addAttributeMapping('grains', 'grains', true);
-		$this->addAttributeMapping('type', 'type', true);
-		$this->addAttributeMapping('gun', 'gun', true);
-		$this->addAttributeMapping('count', 'count', true);
-		$this->addAttributeMapping('regular_price', 'price', true);
-		$this->addAttributeMapping('stock_quantity', 'numrounds', true);
-		$this->addAttributeMapping('shot_size', 'shot_size', true);
-		$this->addAttributeMapping('shell_length', 'shell_length', true);
+		//required
+		$this->addAttributeMapping('description', 'description', true,true);
+		$this->addAttributeMapping('link', 'url', true,true);
+		$this->addAttributeMapping('regular_price', 'price', true,true);
+		$this->addAttributeMapping('', 'caliber', true,true);
+		$this->addAttributeMapping('stock_quantity', 'numrounds', true,true);
+		$this->addAttributeMapping('', 'count', true,true);	//number of rounds for a given price
+		//optional
+		$this->addAttributeMapping('brand', 'manufacturer', true);		
+		$this->addAttributeMapping('', 'grains', true);
+		$this->addAttributeMapping('', 'type', true);
+		$this->addAttributeMapping('', 'gun', true);
+		$this->addAttributeMapping('', 'shot_size', true);
+		$this->addAttributeMapping('', 'shell_length', true);
 		$this->addAttributeMapping('stock_status', 'availability', true);
 
 	}
@@ -42,11 +44,7 @@ class PAmmoSeekFeed extends PBasicFeed{
 		//********************************************************************
 		//Prepare the Product Attributes
 		//********************************************************************
-		
-		//Cheat: These three fields aren't ready to be attributes yet, so adding manually:
-		$product->attributes['description'] = $product->description;
-		$product->attributes['current_category'] = $this->current_category;
-		$product->attributes['feature_imgurl'] = $product->feature_imgurl;
+
 		//Cheat: This should be a CustomModifier
 		if (isset($product->attributes['disable_vars'])) {
 			$ids = explode(',', $product->attributes['disable_vars']);

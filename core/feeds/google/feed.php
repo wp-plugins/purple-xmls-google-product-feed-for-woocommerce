@@ -7,159 +7,93 @@
 	license	GNU General Public License version 3 or later; see GPLv3.txt
 	By: Keneto 2014-05-08
 		2014-09 Retired Attribute Mapping v2.0 (Keneto)
+		2014-11 All required & optional parameters now show
 	********************************************************************/
 
 require_once dirname(__FILE__) . '/../basicfeed.php';
 
-class PGoogleFeed extends PBasicFeed
+class PGoogleFeed extends PXMLFeed
 {
 	function __construct () 
 	{
 		parent::__construct();
 		$this->providerName = 'Google';
 		$this->providerNameL = 'google';
-		//Create some attributes (Mapping 3.0)
-		$this->addAttributeMapping('id', 'g:id');
-		$this->addAttributeMapping('item_group_id', 'g:item_group_id');
-		$this->addAttributeMapping('title', 'title', true);
-		$this->addAttributeMapping('link', 'link', true);
-		$this->addAttributeMapping('product_type', 'g:product_type', true);
-		$this->addAttributeMapping('description', 'description', true);
-		$this->addAttributeMapping('current_category', 'g:google_product_category', true);
-		$this->addAttributeMapping('condition', 'g:condition');
-		$this->addAttributeMapping('stock_status', 'g:availability');
-		$this->addAttributeMapping('sku', 'g:mpn');
-		$this->addAttributeMapping('regular_price', 'g:price');
-		$this->addAttributeMapping('sale_price', 'g:sale_price');
-		//$this->addAttributeMapping('brand', 'g:brand'); //This new auto-mapping of brand has been suspended
-		$this->addAttributeMapping('weight', 'g:shipping_weight');
-		$this->addAttributeMapping('feature_imgurl', 'g:image_link', true);
+		//Create some attributes (Mapping 3.0) in the form (title, Google-title, CData, isRequired)
+		//  Note that isRequired is just to direct the plugin on where on the dialog to display
+		$this->addAttributeMapping('id', 'g:id', false, true);
+		$this->addAttributeMapping('item_group_id', 'g:item_group_id', false, true);
+		$this->addAttributeMapping('title', 'title', true, true);
+		$this->addAttributeMapping('description', 'description', true, true);
+		$this->addAttributeMapping('link', 'link', true, true);
+		$this->addAttributeMapping('product_type', 'g:product_type', true, true);	
+		$this->addAttributeMapping('current_category', 'g:google_product_category', true, true);
+		$this->addAttributeMapping('condition', 'g:condition', false, true);
+		$this->addAttributeMapping('stock_status', 'g:availability', false, true);
+		$this->addAttributeMapping('sku', 'g:mpn', false, true);
+		$this->addAttributeMapping('regular_price', 'g:price', false, true);
+		$this->addAttributeMapping('sale_price', 'g:sale_price', false, false);
+		$this->addAttributeMapping('brand', 'g:brand', false, true);
+		$this->addAttributeMapping('weight', 'g:shipping_weight', false, false);
+		$this->addAttributeMapping('feature_imgurl', 'g:image_link', true, true);
+
+		//Optional Attributes
+		$this->addAttributeMapping('gender', 'g:gender', false, false);
+		$this->addAttributeMapping('age_group', 'g:age_group', false, false);
+		$this->addAttributeMapping('color', 'g:color', false, false);
+		$this->addAttributeMapping('size', 'g:size', false, false);
+		$this->addAttributeMapping('material', 'g:material', false, false);
+		$this->addAttributeMapping('pattern', 'g:pattern', false, false);
+		$this->addAttributeMapping('', 'g:sale_price_effective_date', false, false);
+		$this->addAttributeMapping('tax', 'g:tax', false, false);
+		$this->addAttributeMapping('', 'g:multipack', false, false);
+		$this->addAttributeMapping('adult', 'g:adult', false, false);
+		$this->addAttributeMapping('adwords_grouping', 'g:adwords_grouping', false, false);
+		$this->addAttributeMapping('adwords_labels', 'g:adwords_labels', false, false);
+		$this->addAttributeMapping('adwords_redirect', 'g:adwords_redirect', false, false);
+		$this->addAttributeMapping('', 'g:unit_pricing_measure', false, false);
+		$this->addAttributeMapping('', 'g:unit_pricing_base_measure', false, false);
+		$this->addAttributeMapping('', 'g:energy_efficiency_class', false, false);
+		$this->addAttributeMapping('', 'g:excluded_destination', false, false);
+		$this->addAttributeMapping('', 'g:expiration_date', false, false);
+		$this->addAttributeMapping('', 'g:custom_label_0', false, false);
+		$this->addAttributeMapping('', 'g:custom_label_1', false, false);
+		$this->addAttributeMapping('', 'g:custom_label_2', false, false);
+		$this->addAttributeMapping('', 'g:custom_label_3', false, false);
+		$this->addAttributeMapping('', 'g:custom_label_4', false, false);
+
+		$this->google_exact_title = false;
+		$this->google_combo_title = false;
+		$this->productLevelElement = 'item';
+
+		$this->addAttributeDefault('additional_images', 'none', 'PGoogleAdditionalImages');
+		$this->addAttributeDefault('tax_country', 'US');
+
+		$this->addRule('price_standard', 'pricestandard');
+		$this->addRule('status_standard', 'statusstandard');
+		$this->addRule('weight_unit', 'weightunit');
+		$this->addRule('google_exact_title', 'googleexacttitle');
+		$this->addRule('google_combo_title', 'googlecombotitle');
+
 	}
-  
+ 
   function formatProduct($product) 
   {
 		//********************************************************************
 		//Prepare the Product Attributes
 		//********************************************************************
-		
-		//Cheat: These three fields aren't ready to be attributes yet, so adding manually:
-		$product->attributes['description'] = $product->description;
-		$product->attributes['current_category'] = $this->current_category;
-		$product->attributes['feature_imgurl'] = $product->feature_imgurl;
-		$product->attributes['tax_country'] = 'US';
 
-		//Upper case the first character of each word in the title:
-		//Google doesn't like block letters
-		$product->attributes['title'] = ucwords(strtolower( $product->attributes['title'] ));
-
-		//Stock Status
-		if ($product->attributes['stock_status'] == 1)
-			$product->attributes['stock_status'] = 'in stock';
-		else
-			$product->attributes['stock_status'] = 'out of stock';
-
-		//Price
-		if (strlen($product->attributes['regular_price']) == 0)
-			$product->attributes['regular_price'] = '0.00';
-			$product->attributes['regular_price'] = sprintf($this->currency_format, $product->attributes['regular_price']) . $this->currency;
-			$this->getMapping('sale_price')->enabled = $product->attributes['has_sale_price'];
-		if ($product->attributes['has_sale_price'])
-			$product->attributes['sale_price'] = sprintf($this->currency_format, $product->attributes['sale_price']) . $this->currency;
-
-		//Misc
-		if (isset($product->attributes['weight']) && ($product->attributes['weight'] != "")) {
-			$this->getMapping('weight')->enabled = true;
-			$product->attributes['weight'] = $product->attributes['weight'] . ' ' . $this->weight_unit;
-		} else
-			$this->getMapping('weight')->enabled = false;
-
-		foreach ($this->attributeDefaults as $thisDefault)
-			if ($thisDefault->stage == 2)
-				$product->attributes[$thisDefault->attributeName] = $thisDefault->getValue($product);
-
-		$output = '
-      <item>';
-
-		//********************************************************************
-		//Add attributes (Mapping 3.0)
-		//********************************************************************
-
-		foreach($this->attributeMappings as $thisAttributeMapping)
-			if ($thisAttributeMapping->enabled && !$thisAttributeMapping->deleted && isset($product->attributes[$thisAttributeMapping->attributeName]) )
-				$output .= $this->formatLine($thisAttributeMapping->mapTo, $product->attributes[$thisAttributeMapping->attributeName], $thisAttributeMapping->usesCData);
-							
-		if ($this->allow_additional_images) {
-			$image_count = 0;
-			foreach($product->imgurls as $imgurl) {
-				$output .= $this->formatLine('g:additional_image_link', $imgurl, true);
-				$image_count++;
-				if ($image_count > 9)
-					break;
-			}
-		}
-
-		//********************************************************************
-		//Shipping & Tax = Special Attributes
-		//********************************************************************
-
-		if ( $this->system_wide_shipping ) 
-		{
-			/*Deprecated / Legacy
-			if (strpos($this->system_wide_shipping_rate, '%') === false)
-				$product->shipping_amount = $this->system_wide_shipping_rate;
-			else
-				$product->shipping_amount = sprintf("%1.2f", substr($this->system_wide_shipping_rate, 1) * $product->attributes['regular_price']);
-			*/
-			$output.= '
-        <g:shipping>' .
-			$this->formatLine('g:service', $this->system_wide_shipping_type, false, '  ') .
-			$this->formatLine('g:price', sprintf($this->currency_format, $product->shipping_amount) . $this->currency_shipping, false, '  ') . '
-        </g:shipping>';
-		}
-
-		if ( isset($product->attributes['tax']) ) 
-		{
-			$output .= '
-        <g:tax>' .
-			$this->formatLine('g:country', $product->attributes['tax_country'], false, '  ') .
-			$this->formatLine('g:rate', $product->attributes['tax'], false, '  ') . '
-        </g:tax>';	
-		}
-
-		//********************************************************************
-		//This is mapping 2.0 > Deprecated > Gone
-		//********************************************************************
-		/*
-		$used_so_far = array();
-		foreach($product->attributes as $key => $a) {
-			//Only use the override if it's set and hasn't been used_so_far in this product
-			if (isset($this->feedOverrides->overrides[$key]) && !in_array($this->feedOverrides->overrides[$key], $used_so_far)) {
-				$output .= $this->formatLine($key, $a);
-				$used_so_far[] = $this->feedOverrides->overrides[$key];
-			}
-		}
-		*/
-
-		//********************************************************************
-		//Mapping 3.0 post processing
-		//********************************************************************
-
-		foreach ($this->attributeDefaults as $thisDefault)
-			if ($thisDefault->stage == 3)
-				$thisDefault->postProcess($product, $output);
-
+//PLA
+//$product->attributes['link'] .= '?source=googleproduct&cvars='. rawurlencode($product->attributes['title']);
 		//********************************************************************
 		//Validation checks & Error messages
 		//********************************************************************
 
 		if (!isset($product->attributes['brand']) || (strlen($product->attributes['brand']) == 0))
-			if (($this->getMappingByMapto('g:identifier_exists') == null) && ($this->getMappingByMapto('g:gtin') == null) && ($this->getMappingByMapto('g:brand') == null))
+			if ($this->getMappingByMapto('g:identifier_exists') == null)
 				$this->addErrorMessage(2000, 'Missing brand for ' . $product->attributes['title']);
 
-    $output .= '
-      </item>';
-
-		return $output;
+		return parent::formatProduct($product);
 
 	}
 

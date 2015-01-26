@@ -12,6 +12,7 @@
   require_once dirname(__FILE__) . '/../../../../../../wp-load.php';
   require_once dirname(__FILE__) . '/../../data/feedcore.php';
   require_once dirname(__FILE__) . '/../../classes/dialogbasefeed.php';
+	require_once dirname(__FILE__) . '/../../classes/providerlist.php';
   
   $feedType = $_POST['feedtype'];
 

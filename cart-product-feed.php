@@ -5,7 +5,7 @@
   Plugin URI: www.shoppingcartproductfeed.com
   Description: WooCommerce Shopping Cart Export :: <a target="_blank" href="http://shoppingcartproductfeed.com/tos/">How-To Click Here</a>
   Author: ShoppingCartProductFeed.com
-  Version: 3.0.6.12
+  Version: 3.1.0.10
   Author URI: www.shoppingcartproductfeed.com
   Authors: Haris, Keneto (May2014)
   Note: The "core" folder is shared to the Joomla component.
@@ -19,7 +19,7 @@ require_once dirname(__FILE__) . '/../../../wp-admin/includes/plugin.php';
 $plugin_version_data = get_plugin_data( __FILE__ );
 //current version: used to show version throughout plugin pages
 define('FEED_PLUGIN_VERSION', $plugin_version_data[ 'Version' ] ); 
-define('CPF_PLUGIN_BASENAME', plugin_basename( __FILE__ ) ); //cart-product-feed/cart-produdct-feed.php
+define('CPF_PLUGIN_BASENAME', plugin_basename( __FILE__ ) ); //cart-product-feed/cart-product-feed.php
 
 //functions to display cart-product-feed version and checks for updates
 include_once ('cart-product-information.php');
@@ -132,18 +132,53 @@ function update_all_cart_feeds($doRegCheck = true) {
 	if ($doRegCheck && ($reg->results["status"] != "Active"))
 		return;
 
+	do_action('load_cpf_modifiers');
+	add_action( 'get_feed_main_hook', 'update_all_cart_feeds_step_2' );
+	do_action('get_feed_main_hook');
+}
+
+function update_all_cart_feeds_step_2() {
 	global $wpdb;
 	$feed_table = $wpdb->prefix . 'cp_feeds';
-	$sql = 'SELECT id FROM ' . $feed_table;
+	$sql = 'SELECT id, type, filename FROM ' . $feed_table;
 	$feed_ids = $wpdb->get_results($sql);
 	$savedProductList = null;
 
+	//***********************************************************
+	//Build stack of aggregate providers
+	//***********************************************************
+	$aggregateProviders = array();
 	foreach ($feed_ids as $this_feed_id) {
+
+		if ($this_feed_id->type == 'AggXml') {
+			$providerName = $this_feed_id->type;
+			$providerFile = 'core/feeds/' . strtolower($providerName) . '/feed.php';
+			if (!file_exists(dirname(__FILE__) . '/' . $providerFile))
+				continue;
+			require_once $providerFile;
+
+			//Initialize provider data
+			$providerClass = 'P' . $providerName . 'Feed';
+			$x = new $providerClass(null);
+			$x->initializeAggregateFeed($this_feed_id->id, $this_feed_id->filename);
+			$aggregateProviders[] = $x;
+		};
+	}
+
+	//***********************************************************
+	//Main
+	//***********************************************************
+	foreach ($feed_ids as $index => $this_feed_id) {
 
 		$saved_feed = new PSavedFeed($this_feed_id->id);
 
-		//Make sure someone exists in the core who can provide the feed
 		$providerName = $saved_feed->provider;
+
+		//Skip any Aggregate Types
+		if ($providerName == 'AggXml')
+			continue;
+
+		//Make sure someone exists in the core who can provide the feed
 		$providerFile = 'core/feeds/' . strtolower($providerName) . '/feed.php';
 		if (!file_exists(dirname(__FILE__) . '/' . $providerFile))
 			continue;
@@ -151,12 +186,20 @@ function update_all_cart_feeds($doRegCheck = true) {
 
 		//Initialize provider data
 		$providerClass = 'P' . $providerName . 'Feed';
-		$x = new $providerClass($savedProductList);
+		$x = new $providerClass();
+		$x->aggregateProviders = $aggregateProviders;
+		$x->savedFeedID = $saved_feed->id;
+
+		$x->productList = $savedProductList;
 		$x->getFeedData($saved_feed->category_id, $saved_feed->remote_category, $saved_feed->filename, $saved_feed);
 		
 		$savedProductList = $x->productList;
+		$x->products = null;
 
 	}
+
+	foreach ($aggregateProviders as $thisAggregateProvider)
+		$thisAggregateProvider->finalizeAggregateFeed();
 
 }
 

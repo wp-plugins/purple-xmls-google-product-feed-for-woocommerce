@@ -8,23 +8,31 @@
 	By: Keneto 2014-07-01
 	********************************************************************/
 
-	define ('XMLRPC_REQUEST', true);
-	//ob_start(null, 0, PHP_OUTPUT_HANDLER_FLUSHABLE | PHP_OUTPUT_HANDLER_CLEANABLE);
-  ob_start(null);
+define ('XMLRPC_REQUEST', true);
+//ob_start(null, 0, PHP_OUTPUT_HANDLER_FLUSHABLE | PHP_OUTPUT_HANDLER_CLEANABLE);
+ob_start(null);
 
-	require_once dirname(__FILE__) . '/../../../../../../wp-load.php';
+require_once dirname(__FILE__) . '/../../../../../../wp-load.php';
 
-	function safeGetPostData($index) {
-		if (isset($_POST[$index]))
-			return $_POST[$index];
-		else
-			return '';
-	}
+function safeGetPostData($index) {
+	if (isset($_POST[$index]))
+		return $_POST[$index];
+	else
+		return '';
+}
 
-	function doOutput($output) {
-		ob_clean();
-		echo json_encode($output);
-	}
+function doOutput($output) {
+	ob_clean();
+	echo json_encode($output);
+}
+
+require_once dirname(__FILE__) . '/../../../cart-product-wpincludes.php';
+
+do_action('load_cpf_modifiers');
+add_action( 'get_feed_main_hook', 'get_feed_main' );
+do_action('get_feed_main_hook');
+
+function get_feed_main() {
 
 	$requestCode = safeGetPostData('provider');
 	$local_category =	safeGetPostData('local_category');
@@ -32,6 +40,7 @@
 	$file_name = safeGetPostData('file_name');
 	$feedIdentifier = safeGetPostData('feed_identifier');
 	$saved_feed_id = safeGetPostData('feed_id');
+	$feed_list = safeGetPostData('feed_ids'); //For Aggregate Feed Provider
 
 	$output = new stdClass();
 	$output->url = '';
@@ -47,8 +56,6 @@
 	 	doOutput($output);
 	 	return;
 	 }
-	
-	require_once dirname(__FILE__) . '/../../../cart-product-wpincludes.php';
 
 	// Check if form was posted and select task accordingly
 	$dir = PFeedFolder::uploadRoot();
@@ -90,6 +97,7 @@
 
 	$providerClass = 'P' . $requestCode . 'Feed';
 	$x = new $providerClass;
+	$x->feed_list = $feed_list; //For Aggregate Provider only
 	if (strlen($feedIdentifier) > 0)
 	  $x->activityLogger = new PFeedActivityLog($feedIdentifier);
 	$x->getFeedData($local_category, $remote_category, $file_name, $saved_feed);
@@ -99,5 +107,6 @@
 	$output->errors = $x->getErrorMessages();
 
 	doOutput($output);
+}
 
 ?>

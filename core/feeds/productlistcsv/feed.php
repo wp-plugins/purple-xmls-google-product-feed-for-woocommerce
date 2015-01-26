@@ -13,56 +13,34 @@ require_once dirname(__FILE__) . '/../basicfeed.php';
 
 class PProductlistcsvFeed extends PCSVFeedEx {
 
+	public $mapAttributesOnTheFly = true;
+
 	function __construct () {
+		parent::__construct();
 		$this->providerName = 'Productlistcsv';
 		$this->providerNameL = 'productlistcsv';
+		$this->fieldDelimiter = ',';
 		$this->fileformat = 'csv';
-		$this->descriptionStrict = true;
-		$this->stripHTML = true;	
-		parent::__construct();
+		$this->stripHTML = true;
+
+		$this->addAttributeMapping('description', 'description', true);
 	}
   
 	function formatProduct($product) {
 
-		//Cheat: These three fields aren't ready to be attributes yet, so adding manually:
-		$product->attributes['description'] = $product->description;
-		$product->attributes['current_category'] = $this->current_category;
-		$product->attributes['feature_imgurl'] = $product->feature_imgurl;
+		$product->attributes['description'] = str_replace('"','""',$product->attributes['description']);
 
 		//********************************************************************
 		//Make sure all the fields for this product are mapped
 		//********************************************************************
-		foreach($product->attributes as $key => $value)
-			if ($this->getMappingByMapto($key) == null)
-				$this->addAttributeMapping($key, $key);
-
-		//********************************************************************
-		//Mapping 3.0 Pre-processing
-		//********************************************************************
-		foreach ($this->attributeDefaults as $thisDefault)
-			if ($thisDefault->stage == 2)
-				$product->attributes[$thisDefault->attributeName] = $thisDefault->getValue($product);
+		if ($this->mapAttributesOnTheFly)
+			foreach($product->attributes as $key => $value)
+				if ($this->getMappingByMapto($key) == null)
+					if ($key != 'category_ids')
+						$this->addAttributeMapping($key, $key);
 
 		return parent::formatProduct($product);
 
-  }
-
-  function getFeedHeader($file_name, $file_path) {
-		return ''; //Skip header - We'll do it later
-  }
-
-  function getFeedFooter() {
-		//Now we finally write the headers! Start by creating them
-		$headers = array();
-		foreach($this->attributeMappings as $thisMapping)
-			if ($thisMapping->enabled && !$thisMapping->deleted)
-				$headers[] = $thisMapping->mapTo;
-		$headerString = implode($this->fieldDelimiter, $headers);
-
-		$savedData = file_get_contents($this->filename);
-		file_put_contents($this->filename, $headerString . "\r\n" .$savedData);
-
-    return '';
   }
 
 }

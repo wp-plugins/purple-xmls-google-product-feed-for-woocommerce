@@ -8,28 +8,26 @@
 	By: Keneto 2014-05-08
 
   ********************************************************************/
+
+require_once dirname(__FILE__) . '/../data/rules.php';
  
 class PBasicFeed {
 
 	public $activityLogger = null; //If set, someone wants me to log what phase I'm at in feed-generation';
+	public $aggregateProviders = array();
 	public $allow_additional_images = true;
+	public $allow_attributes = true;
+	public $allow_variationPermutations = false;
+	public $allowRelatedData = true;
 	public $attributeAssignments = array();
 	public $attributeDefaults = array();
+	public $attributeDefaultStages = array(0, 0, 0, 0, 0, 0);
 	public $attributeMappings = array();
 	public $categories;
 	public $current_category; //This is the active category while in formatProduct()
 	public $currency;
-	public $currency_shipping = ''; //Defaults to $currency
+	public $currency_shipping = ''; //(Currently uses currency_format)
 	public $currency_format = '%1.2f';
-	public $default_brand = '';
-	public $descriptionFormat; //0 = short or long, 1 = long 2 = short
-	public $descriptionStrict = false; //hack out ALL special characters from the description including multinational
-	public $descriptionStrictReplacementChar = ' ';
-	public $discount = false;
-	public $discount_amount = 0;
-	public $discount_sale_amount = 0;
-	public $discount_multiplier = 1.00;
-	public $discount_sale_multiplier = 1.00;
 	public $errors = array();
 	public $fileformat = 'xml';
 	public $fieldDelimiter = "\t"; //For CSVs
@@ -38,6 +36,7 @@ class PBasicFeed {
 	public $feedOverrides;
 	public $forceCData = false; //Applies to ProductListXML only
 	public $force_currency = false;
+	public $get_wc_shipping_attributes = false;
 	public $gmc_enabled = false; //Allow Google merchant centre woothemes extension (WordPress)
 	public $gmc_attributes = array(); //If anything added in here, restrict GMC list to these
 	public $has_product_range = false;
@@ -50,21 +49,17 @@ class PBasicFeed {
 	public $productCount = 0; //Number of products successfully exported
 	public $productList;
 	public $productTypeFromLocalCategory = false;
+	public $providerType = 0;
+	public $relatedData = array();
+	public $rules = array();
 	//public $sellerName = ''; //Required Bing attribute - Merchant/Store that provides this product
-	public $shipping_amount = '0.00';
-	public $shipping_multiplier = 0;
-	public $shipping_sale_multiplier = 0;
 	public $success = false;
 	public $stripHTML = false;
-	public $system_wide_shipping = true;
-	public $system_wide_shipping_rate = '0.00';  //Deprecated as of v3.0.1.23: Use $shipping
-	public $system_wide_shipping_type = 'Ground';
-	public $system_wide_tax = false;
-	public $system_wide_tax_rate = 0;
+	public $utf8encode = false; //Temporary until a better encoding system can be engineered
 	public $timeout = 0; //If >0 try to override max_execution time
 	public $weight_unit;
 
-	public function addAttributeDefault($attributeName, $value, $defaultClass) {
+	public function addAttributeDefault($attributeName, $value, $defaultClass = 'PAttributeDefault') {
 		if (!class_exists($defaultClass)) {
 			$this->addErrorMessage(5, 'AttributeDefault class "' . $defaultClass . '" not found. Reconfigure Advanced Commands to resolve.');
 			return;
@@ -74,18 +69,33 @@ class PBasicFeed {
 		$thisDefault->attributeName = $attributeName;
 		$thisDefault->value = $value;
 		$thisDefault->parent_feed = $this;
+		$tvalue = trim($value);
+		if (strlen($tvalue) > 0 && $tvalue[0] == '$') {
+			$thisDefault->value = trim($thisDefault->value);
+			$thisDefault->isRuled = true;
+		}
 		$this->attributeDefaults[] = $thisDefault;
+		$this->attributeDefaultStages[$thisDefault->stage] += 1;
 		return $thisDefault;
 	}
 
-	public function addAttributeMapping($attributeName, $mapTo, $usesCData = false) {
+	public function addAttributeMapping($attributeName, $mapTo, $usesCData = false, $isRequired = false) {
+
 		$thisMapping = new stdClass();
 		$thisMapping->attributeName = $attributeName;
 		$thisMapping->mapTo = $mapTo;
 		$thisMapping->enabled = true;
 		$thisMapping->deleted = false;
 		$thisMapping->usesCData = $usesCData;
+		$thisMapping->isRequired = $isRequired;
+		$thisMapping->systemDefined = false;
 		$this->attributeMappings[] = $thisMapping;
+
+		//Auto-delete any system defined Mappings with matching mapTo
+		foreach($this->attributeMappings as $mapping)
+			if ($mapping->systemDefined && $mapping->mapTo == $mapTo)
+				$mapping->deleted = true;
+
 		return $thisMapping;
 	}
 
@@ -101,6 +111,20 @@ class PBasicFeed {
 		}
 		$this->errors[$id]->occurrences++;
 
+	}
+
+	public function addRule($ruleName, $ruleClass, $parameters = array(), $order = 0 ) {
+		$className = 'PFeedRule' . ucwords(strtolower($ruleClass));
+		if (!class_exists($className))
+			return null;
+		$thisRule = new $className();
+		$thisRule->name = $ruleName;
+		$thisRule->parameters = $parameters;
+		$thisRule->parent_feed = $this;
+		$thisRule->order = $order;
+		$thisRule->initialize();
+		$this->rules[] = $thisRule;
+		return $thisRule;
 	}
  
 	function checkFolders() {
@@ -127,6 +151,31 @@ class PBasicFeed {
 		return true;
 	}
 
+	protected function containsNonUTF8Character($text) {
+		for($i=0; $i<strlen($text); $i++)
+			//if ($text[$i] > "\xFF")
+			if (ord($text[$i]) > 224)
+				return true;
+		return false;
+	}
+
+	protected function createFeed($file_name, $file_path, $remote_category) {
+		//$file_name is (incorrectly) a url due to an unfortunate nomenclature left over from v2.x
+		$this->fileHandle = fopen($this->filename, "w");
+		fwrite($this->fileHandle, $this->getFeedHeader($file_name, $file_path));
+		$this->getFeedData_internal($remote_category);
+		fwrite($this->fileHandle, $this->getFeedFooter());
+		fclose($this->fileHandle);
+	}
+
+	function fetchProductAttribute($name, $product) {
+		$thisAttributeMapping = $this->getMapping($name);
+		if ($thisAttributeMapping->enabled && !$thisAttributeMapping->deleted && isset($product->attributes[$thisAttributeMapping->attributeName]) )
+			return $product->attributes[$thisAttributeMapping->attributeName];
+		else
+			return '';
+	}
+
 	function formatLine($attribute, $value, $cdata = false, $leader_space = '') {
 		//Prep a single line for XML
 		//Allow the $attribute to be overridden
@@ -141,6 +190,13 @@ class PBasicFeed {
 		//Allow force strip HTML
 		if ($this->stripHTML)
 			$value = strip_tags(html_entity_decode($value));
+
+		//UTF8Encode is guaranteed to create garbled text because we don't know the source encoding type
+		//However, it will create a feed that will process, so it's a good temporary measure
+		if ($this->utf8encode) {
+			$value = utf8_encode($value);
+			$attribute = utf8_encode($attribute);
+		}
 
 		//if not CData, don't allow '&'
 		if (!$cdata)
@@ -171,103 +227,48 @@ class PBasicFeed {
 	}
   
 	function getFeedData_internal($remote_category) {
-		//Old
-		//$products = $this->productList->getProductList($this, $remote_category);
-		//foreach($products as $this_product)
-			//$this->handleProduct($this_product);
-		//New
 		$this->productList->getProductList($this, $remote_category);
 	}
 
 	public function handleProduct($this_product) {
 
-			//********************************************************************
-			//Adjust the product a little before sending it out to be Formatted
-			//********************************************************************
-			switch ($this->descriptionFormat) {
-				case 1: //Force Long
-					$this_product->description = $this_product->description_long;
-					break;
-				case 2: //Force Short
-					$this_product->description = $this_product->description_short;
-					break;
-				default:
-					//By default pick short... if no short, pick long (original behaviour)
-					if ( strlen ( $this_product->description_short ) == 0 ) 
-						$this_product->description = $this_product->description_long;
-					else 
-						$this_product->description = $this_product->description_short;		  
-					break;
-			}
-			//check if description is empty
-			if ( '' == ( trim($this_product->description) ) )
-				//if so use title
-				$this_product->description = $this_product->attributes['title'];
+		$this_product->attributes['current_category'] = $this->current_category;
 
-			if (strlen($this_product->description) > $this->max_description_length) 
-				$this_product->description = substr($this_product->description, 0, $this->max_description_length);
+		//********************************************************************
+		//Run the rules
+		//********************************************************************
 
-			if ($this->descriptionStrict) {
-				//I really should use preg_replace here one day
-				//$this_product->description = preg_replace('/[^A-Za-z0-9\-]/', '', $this_product->description);
-				for($i=0;$i<strlen($this_product->description);$i++) {
-					if (($this_product->description[$i] < "\x20") || ($this_product->description[$i] > "\x7E")) {
-						$this_product->description[$i] = $this->descriptionStrictReplacementChar;
-					}
-				}
-			}
-			//***********************************************************
-			//Category & Brand
-			//***********************************************************
-			if ($this->productTypeFromLocalCategory)
-				$this_product->attributes['product_type'] = $this_product->attributes['localCategory'];
+		foreach($this->rules as $rule)
+			if ($rule->enabled)
+				$rule->clearValue();
 
-			//This form of handling brand (Attribute Mapping v2) is deprecated as of v3.0.3.0
-			if ((!isset($this_product->attributes['brand'])) && (strlen($this->default_brand) > 0))
-				$this_product->attributes['brand'] = $this->default_brand;
+		foreach($this->rules as $index => $rule)
+			if ($rule->enabled)
+				$rule->process($this_product);
 
-			//***********************************************************
-			//Price Discount
-			//***********************************************************
-			if ($this->discount) {
-				//Basic sale_price is a function of price
-				if ($this->discount_amount > 0 || $this->discount_multiplier != 1) {
-					$this_product->attributes['sale_price'] = $this_product->attributes['regular_price'] * $this->discount_multiplier - $this->discount_amount;
-					$this_product->attributes['has_sale_price'] = true;
-				}
-				//Possible to do sale as a function of sale price, but IFF this_product->has_sale_price already
-				if (($this->discount_sale_amount > 0 || $this->discount_sale_multiplier != 1) && $this_product->attributes['has_sale_price']) {
-					$this_product->attributes['sale_price'] = $this_product->attributes['sale_price'] * $this->discount_sale_multiplier - $this->discount_sale_amount;
-					$this_product->attributes['has_sale_price'] = true;
-				}
-				//Disallow negative price
-				if ($this_product->attributes['sale_price'] < 0)
-					$this_product->attributes['sale_price'] = 0;
+		foreach ($this->attributeDefaults as $thisDefault)
+			if ($thisDefault->isRuled) {
+				$rule = $this->getRuleByName($thisDefault->value);
+				if ($rule != null)
+					$this_product->attributes[$thisDefault->attributeName] = $rule->value;
 			}
 
-			//***********************************************************
-			//Shipping
-			//***********************************************************
-			$this_product->shipping_amount = 
-				$this->shipping_amount + 										//Base amount
-				$this_product->attributes['regular_price'] * $this->shipping_multiplier + 		//% of Price
-				($this_product->attributes['has_sale_price'] ? $this_product->attributes['sale_price'] * $this->shipping_sale_multiplier : 0);		//% of Sale Price
-			//***********************************************************
-			//Other
-			//***********************************************************
-			if ($this->system_wide_tax  && (!isset($this_product->attributes['tax'])))
-				$this_product->attributes['tax'] = $this->system_wide_tax_rate;
 
-			//***********************************************************
-			//Done Adjustments. Send to descendant feed-provider for formatting
-			//***********************************************************
+		//***********************************************************
+		//Send to descendant feed-provider for formatting
+		//***********************************************************
+		$product_text = $this->formatProduct($this_product);
+		if ($this->feed_category->verifyProduct($this_product) && $this_product->attributes['valid']) {
+			$this->handleProductSave($this_product, $product_text);
+			foreach($this->aggregateProviders as $thisProvider)
+				$thisProvider->aggregateProductSave($this->savedFeedID, $this_product, $product_text);
+			$this->productCount++;
+		}
 
-			$product_text = $this->formatProduct($this_product);
-			if ($this->feed_category->verifyProduct($this_product) && $this_product->attributes['valid']) {
-				fwrite($this->fileHandle, $product_text);
-				$this->productCount++;
-			}
+	}
 
+	function handleProductSave($product, $product_text) {
+		fwrite($this->fileHandle, $product_text);
 	}
 
 	function getFeedData($category, $remote_category, $file_name, $saved_feed = null) {
@@ -278,6 +279,7 @@ class PBasicFeed {
 		global $pfcore;
 
 		$x = new PLicense();
+		$this->loadAttributeUserMap();
 		$this->initializeFeed($category, $remote_category);
 
 		$this->logActivity('Loading paths...');
@@ -294,7 +296,7 @@ class PBasicFeed {
 
 		//Shipping and Taxation systems
 		$this->shipping = new PShippingData($this);
-		$this->shipping = new PTaxationData($this);
+		$this->taxData = new PTaxationData($this);
 
 		$this->logActivity('Initializing categories...');
 
@@ -311,6 +313,15 @@ class PBasicFeed {
 
 		$this->initializeOverrides($saved_feed);
 
+		//Reorder the rules
+		usort($this->rules, 'sort_rule_func');
+
+		//Load relations into ProductList
+		//Note: if relation exists, we don't overwrite
+		foreach($this->relatedData as $relatedData)
+			if (!isset($this->productList->relatedData[$relatedData[1]]))
+				$this->productList->relatedData[$relatedData[1]] = new PProductSupplementalData($relatedData[0]);
+
 		//Trying to change max_execution_time will throw privilege errors on some installs
 		//so it's been left as an option
 		if ($this->timeout > 0)
@@ -318,17 +329,11 @@ class PBasicFeed {
 
 		if (strlen($this->currency) > 0)
 			$this->currency = ' ' . $this->currency;
-		if (strlen($this->currency_shipping) == 0)
-			$this->currency_shipping = $this->currency;
-
+		
 		//Create the Feed
 		$this->logActivity('Creating feed data');
 		$this->filename = $file_url;
-		$this->fileHandle = fopen($file_url, "w");
-		fwrite($this->fileHandle, $this->getFeedHeader($file_name, $file_path));
-		$this->getFeedData_internal($remote_category);
-		fwrite($this->fileHandle, $this->getFeedFooter());
-		fclose($this->fileHandle);
+		$this->createFeed($file_name, $file_path, $remote_category);
 
 		$this->logActivity('Updating Feed List');
 		PFeedActivityLog::updateFeedList($category, $remote_category, $file_name, $file_path, $this->providerName, $this->productCount);
@@ -372,6 +377,13 @@ class PBasicFeed {
 		return null;
 	}
 
+	function getRuleByName($name) {
+		foreach($this->rules as $rule)
+			if ($rule->name == $name)
+				return $rule;
+		return null;
+	}
+
 	function initializeFeed($category, $remote_category) {
 		//Allow descendant to perform initialization based on category/remote category
 	}
@@ -379,6 +391,10 @@ class PBasicFeed {
 	function initializeOverrides($saved_feed) {
 
 		$this->logActivity('Initializing overrides...');
+		//Mark all existing mappings as "SystemDefined" meaning auto-delete
+		foreach($this->attributeMappings as $mapping)
+			$mapping->systemDefined = true;
+		//Load Attribute mappings
 		$this->feedOverrides = new PFeedOverride($this->providerName, $this, $saved_feed);
 
 	}
@@ -399,6 +415,25 @@ class PBasicFeed {
 		$this->fields = $new_array;
 	}
 
+	function loadAttributeUserMap() {
+		//Called during feed initialization to map the Attributes
+		global $pfcore;
+		$map_string = $pfcore->settingGet('cpf_attribute_user_map_' . $this->providerName);
+
+		if (strlen($map_string) == 0)
+			$map = array();
+		else {
+			$map = json_decode($map_string);
+			$map = get_object_vars($map);
+		}
+
+		foreach($map as $mapto => $attr) {
+			$thisAttribute = $this->getMappingByMapto($mapto);
+			if ($thisAttribute != null && strlen($attr) > 0)
+				$thisAttribute->attributeName = $attr;
+		}
+	}
+
 	function logActivity($activity) {
 	  if ($this->activityLogger != null)
 			$this->activityLogger->logPhase($activity);
@@ -409,18 +444,78 @@ class PBasicFeed {
 		return true;
 	}
   
-	function __construct ($cachedProductList = null) {
+	function __construct () {
 
 		global $pfcore;
 
 		$this->feed_category = new md5y();
-		if ($cachedProductList != null)
-		  $this->productList = $cachedProductList;
 		$this->weight_unit = $pfcore->weight_unit;
 		$this->currency = $pfcore->currency;
+
+		$this->addRule('description', 'description');
+
 	}
 
 } //PBasicFeed
+
+//********************************************************************
+// PXMLFeed has functions an XML Feed would need
+//********************************************************************
+
+class PXMLFeed extends PBasicFeed {
+
+	public $productLevelElement = 'item';
+	public $topLevelElement = 'items';
+
+	function formatProduct($product) {
+
+		//********************************************************************
+		//Mapping 3.0 Pre-processing
+		//********************************************************************
+		foreach ($this->attributeDefaults as $thisDefault)
+			if ($thisDefault->stage == 2)
+				$product->attributes[$thisDefault->attributeName] = $thisDefault->getValue($product);
+		
+		$output = '
+	<' . $this->productLevelElement . '>';
+
+		//********************************************************************
+		//Add attributes (Mapping 3.0)
+		//********************************************************************
+
+		foreach($this->attributeMappings as $thisAttributeMapping)
+			if ($thisAttributeMapping->enabled && !$thisAttributeMapping->deleted && isset($product->attributes[$thisAttributeMapping->attributeName]) )
+				$output .= $this->formatLine($thisAttributeMapping->mapTo, $product->attributes[$thisAttributeMapping->attributeName], $thisAttributeMapping->usesCData);
+
+		//********************************************************************
+		//Mapping 3.0 post processing
+		//********************************************************************
+
+		foreach ($this->attributeDefaults as $thisDefault)
+			if ($thisDefault->stage == 3)
+				$thisDefault->postProcess($product, $output);
+
+    $output .= '
+	</' . $this->productLevelElement . '>';
+
+    return $output;
+
+	}
+
+  function getFeedFooter() {   
+    $output = '
+</' . $this->topLevelElement . '>';
+	return $output;
+  }
+
+  function getFeedHeader($file_name, $file_path) {
+
+    $output = '<?xml version="1.0" encoding="UTF-8" ?>
+<' . $this->topLevelElement . '>';
+	return $output;
+  }
+
+}
 
 //********************************************************************
 // PCSVFeed has functions a CSV Feed would need
@@ -513,6 +608,11 @@ class PCSVFeed extends PBasicFeed {
 
 class PCSVFeedEx extends PBasicFeed {
 
+	function __construct () {
+		parent::__construct();
+		$this->addRule('description', 'description', array('strict'));
+	}
+
 	function formatProduct($product) {
 
 		//********************************************************************
@@ -554,7 +654,7 @@ class PCSVFeedEx extends PBasicFeed {
 
 	}
 
-	function getFeedHeader($file_name, $file_path) {
+	/*function getFeedHeader($file_name, $file_path) {
 
 		$output = '';
 
@@ -564,7 +664,27 @@ class PCSVFeedEx extends PBasicFeed {
 
 		return substr($output, 0, -1) .  "\r\n";
 
-	}
+	}*/
+
+  function getFeedHeader($file_name, $file_path) {
+		return ''; //Skip header - We'll do it later
+  }
+
+  function getFeedFooter() {
+
+		//Now we finally write the headers! Start by creating them
+		$headers = array();
+		foreach($this->attributeMappings as $thisMapping)
+			if ($thisMapping->enabled && !$thisMapping->deleted)
+				$headers[] = $thisMapping->mapTo;
+		$headerString = implode($this->fieldDelimiter, $headers);
+
+		$savedData = file_get_contents($this->filename);
+		file_put_contents($this->filename, $headerString . "\r\n" .$savedData);
+
+    return '';
+
+  }
 
 	function initializeOverrides($saved_feed) {
 		parent::initializeOverrides($saved_feed);
@@ -581,4 +701,11 @@ class PCSVFeedEx extends PBasicFeed {
 
 	}
 
+}
+
+function sort_rule_func($a, $b) {
+	if ($a->order == $b->order)
+		return 0;
+	else
+		return ($a->order < $b->order) ? -1 : 1;
 }

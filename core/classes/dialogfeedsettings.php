@@ -37,17 +37,17 @@ class PFeedSettingsDialogs {
     global $wpdb;
     return '
       <div id="poststuff">
-	    <div class="postbox" style="width: 98%;">
+	    <div class="postbox">
 		  <h3 class="hndle">Interval at which feed auto-refreshes</h3>
 		  <div class="inside export-target">
 		    <table class="form-table">
 		      <tbody>
 			    <tr>
-				  <th style="width:150px;"><label>Interval:</label></th>
-				  <td><div id="updateSettingMessage"></div>' . PFeedSettingsDialogs::fetchRefreshIntervalSelect() . '
+				  <th style="width:90px;"><label>Interval:</label></th>
+				  <td style="width:120px;"><div id="updateSettingMessage"></div>' . PFeedSettingsDialogs::fetchRefreshIntervalSelect() . '
 				  </td>
 				  <td>
-					<input class="navy_blue_button" style="float:right;" type="submit" value="Update" id="submit" name="submit" onclick="doUpdateSetting(\'selectDelay\', \'cp_feed_delay\')">
+					<input class="button-primary" style="margin-left:30px; float:left;" type="submit" value="Update Interval" id="submit" name="submit" onclick="doUpdateSetting(\'selectDelay\', \'cp_feed_delay\')">
 				  </td>
 				</tr>
 			  </tbody>

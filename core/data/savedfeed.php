@@ -20,6 +20,20 @@ class PSavedFeed {
 		$db->setQuery("SELECT * FROM #__cartproductfeed_feeds WHERE id=$id");
 		$feed_details = $db->loadObject();
 
+		if (!isset($feed_details) || !isset($feed_details->type) || strlen($feed_details->type) == 0) {
+			$feed_details = new stdClass();
+			$feed_details->provider = '';
+			$feed_details->category_id = 0;
+			$feed_details->remote_category = 0;
+			$feed_details->filename = '';
+			$feed_details->url = '';
+			$feed_details->own_overrides = false;
+			$feed_details->feed_overrides = '';
+			$feed_details->title = '';
+			$feed_details->category = 0;
+			$feed_details->type = '';
+		}
+
 		$this->id = $id;
 		$this->provider = $feed_details->type;
 		//$this->local_category = $feed_details->local_category;
@@ -50,7 +64,7 @@ class PSavedFeed {
 		//Don't technically need shop_id here, but this does prevent a malicious user from supplying a feed_id he doesn't own
 		global $pfcore;
 
-		$shopID = $pfcore->shopID;
+		$shopID = (int) $pfcore->shopID;
 		if ((strlen($shopID) > 0) && ($shopID > 0))
 			$shopIDClause = " AND (shop_id = $shopID)";
 		else
@@ -59,6 +73,17 @@ class PSavedFeed {
 		$db = JFactory::getDBO();
 		$db->setQuery("SELECT * FROM #__cartproductfeed_feeds WHERE (id=$id) $shopIDClause");
 		$feed_details = $db->loadObject();
+
+		if (!isset($feed_details) || !isset($feed_details->type) || strlen($feed_details->type) == 0) {
+			$this->provider = '';
+			$this->category_id = 0;
+			$this->remote_category = 0;
+			$this->filename = '';
+			$this->url = '';
+			$this->own_overrides = false;
+			$this->feed_overrides = '';
+			$this->title = '';
+		}
 
 		$this->id = $id;
 		$this->provider = $feed_details->type;
@@ -69,9 +94,20 @@ class PSavedFeed {
 		$this->url = $feed_details->url;
 		$this->own_overrides = $feed_details->own_overrides;
 		$this->feed_overrides = $feed_details->feed_overrides;
+		$this->title = $feed_details->title;
 
 		//Load the categories
 		$this->local_category = '';
+		$my_categories = explode(',', $this->category_id);
+		$db->setQuery('
+			SELECT id, title
+			FROM #__rapidcart_categories');
+		$j_categories = $db->loadObjectList();
+		foreach($j_categories as $this_category)
+			if (in_array($this_category->id, $my_categories))
+				$this->local_category .= $this_category->title . ', ';
+		//Strip trailing comma
+		$this->local_category = substr($this->local_category, 0, -2);
 	}
 
 	private function feedLoaderW($id) {

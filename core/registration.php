@@ -14,12 +14,12 @@ class PLicense {
 	public $error_message = '';
 	public $results = array();
 	public $valid = false;
-	private $strErrorMsgMain = '- Register for the pro version to get full functionality: <a target=\'_blank\' href = \'http://shoppingcartproductfeed.com/\'>shoppingcartproductfeed.com</a> ';
+	protected $strErrorMsgMain = ' Register for the pro version to get full functionality: <a target=\'_blank\' href = \'http://shoppingcartproductfeed.com/\'>shoppingcartproductfeed.com</a> ';
 
-	private $strLicenseKey = 'cp_licensekey';
-	private $strLocalKey = 'cp_localkey';
-	private $strLicenseKeyOld = 'purplexml_licensekey';
-	private $strLocalKeyOld = 'purplexml_localkey';
+	protected $strLicenseKey = 'cp_licensekey';
+	protected $strLocalKey = 'cp_localkey';
+	protected $strLicenseKeyOld = 'purplexml_licensekey';
+	protected $strLocalKeyOld = 'purplexml_localkey';
 
 	function __construct($debug = false) {
 
@@ -69,7 +69,8 @@ class PLicense {
 	function checkLicense( $licensekey, $localkey = '' ) 
 	{
 		//initial values
-	    $whmcsurl = 'https://www.purpleturtle.pro/';
+			//$whmcsurl = 'https://www.purpleturtle.pro/'; //Old
+			$whmcsurl = 'https://shop.shoppingcartproductfeed.com/';
 	    $licensing_secret_key = '437682532'; # Unique value, should match what is set in the product configuration for MD5 Hash Verification
 	    $check_token = time() . md5(mt_rand(1000000000, 9999999999) . $licensekey);
 	    $checkdate = date('Ymd'); # Current date
@@ -217,6 +218,7 @@ class PLicense {
 		//Remove all stored license keys for all known products
 		$pfcore->settingDelete('cp_licensekey');
 		$pfcore->settingDelete('cp_localkey');
+		$pfcore->settingDelete('cp_rapidcarttoken');
 		$pfcore->settingDelete('purplexml_licensekey');
 		$pfcore->settingDelete('purplexml_localkey');
 		$pfcore->settingDelete('gts_licensekey');

@@ -13,11 +13,10 @@ class RakutenDlg extends PBaseFeedDialog {
 
 	function __construct() {
 		parent::__construct();
-		$this->service_name = 'Rakuten';
-		$this->service_name_long = 'Rakuten New SKU Feed';
-		$this->options = array(
-			'mfg-name', 'mfg-part-number', 'Seller-sku', 'Title', 'weight', 'isbn', 'asin', 'features'
-		);
+		$this->service_name = 'Rakuten';		
+		$this->service_name_long = 'Rakuten Inventory Listing';
+		$this->blockCategoryList = true;
+	
 	}
 
 }

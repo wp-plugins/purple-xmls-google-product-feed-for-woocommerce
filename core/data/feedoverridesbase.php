@@ -165,18 +165,34 @@ class PBaseFeedOverride {
 		$used_so_far = 0;
 		$this_token = '';
 		while ($used_so_far < strlen($source)) {
-			if ($source[$used_so_far] == ' ') {
-				$items[$index] = $this_token;
-				$this_token = '';
-				$index++;
-			} elseif ($source[$used_so_far] == '"') {
+			switch ($source[$used_so_far]) {
+			case ' ': case ',':
+				if (strlen($this_token) > 0) {
+					$items[$index] = $this_token;
+					$this_token = '';
+					$index++;
+				}
+				break;
+			case '"':
 				$used_so_far++;
 				while (($used_so_far < strlen($source)) && ($source[$used_so_far] != '"')) {
 					$this_token .= $source[$used_so_far];
 					$used_so_far++;
 				}
-			} else
+				break;
+			case '(': case ')':
+				if (strlen($this_token) > 0) {
+					$items[$index] = $this_token;
+					$this_token = '';
+					$index++;
+				}
+				$items[$index] = $source[$used_so_far];
+				$this_token = '';
+				$index++;
+				break;
+			default:
 				$this_token .= $source[$used_so_far];
+			}
 			$used_so_far++;
 		}
 		$items[$index] = $this_token;

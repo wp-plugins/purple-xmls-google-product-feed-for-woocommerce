@@ -12,18 +12,54 @@ class PAProductW extends PAProduct {
 
 }
 
+class PMasterAttributeList {
+
+	protected $children;
+
+	public function __construct() {
+		$this->children = array();
+	}
+
+	public function add($child) {
+		$this->children[] = $child;
+	}
+
+	public function findByName($name) {
+		foreach ($this->children as $child)
+			if ($child->name == $name)
+				return $child;
+		return null;
+	}
+
+	public function findBySlug($slug) {
+		foreach ($this->children as $mainChild)
+			foreach ($mainChild->children as $termChild)
+				if ($termChild->slug == $slug)
+					return $termChild;
+		return null;
+	}
+
+}
+
 class PProductList {
 
 	public $AttributeCategory;
 	public $exclude_variable_attributes;
+	public $masterAttributeList;
 	public $products = null;
-	public $tag_list;
+	//public $tag_list;
+	public $relatedData;
   
 	public function __construct() {
+
 		$this->AttributeCategory = array();
+		$this->relatedData = array();
+
+		$this->loadMasterAttributeList();
+
 	}
 
-  function ExistsInChildList($needle, $haystack) {
+  /*function ExistsInChildList($needle, $haystack) {
     $result = false;
 	foreach($haystack as $x) {
 	 	if ($x->ID == $needle->id) {
@@ -32,42 +68,18 @@ class PProductList {
 	  	}
 	}
 	return $result;
-  }
+  }*/
   
 	public function get_customfields($parent) {
-		global $wpdb;
-		$sql = "SELECT post_id, meta_key, meta_value FROM $wpdb->postmeta WHERE meta_key NOT LIKE '\_%' LIMIT 0, " . $parent->max_custom_field;
-		$this->custom_fields = $wpdb->get_results($sql);
+		if ($parent->max_custom_field == 0)
+			$this->custom_fields = array();
+		else {
+			global $wpdb;
+			$sql = "SELECT post_id, meta_key, meta_value FROM $wpdb->postmeta WHERE meta_key NOT LIKE '\_%' LIMIT 0, " . $parent->max_custom_field;
+			$this->custom_fields = $wpdb->get_results($sql);
+		}
 	}
-  
-	public function get_woobrands() {
-		global $wpdb;
-		$sql = "
-			SELECT id, post_title, post_name, $wpdb->term_taxonomy.term_taxonomy_id, $wpdb->term_taxonomy.taxonomy, $wpdb->terms.name
-			FROM $wpdb->posts
-			LEFT JOIN $wpdb->term_relationships on ($wpdb->posts.ID = $wpdb->term_relationships.object_id)
-			LEFT JOIN $wpdb->term_taxonomy ON ($wpdb->term_relationships.term_taxonomy_id = $wpdb->term_taxonomy.term_taxonomy_id)
-			LEFT JOIN $wpdb->terms on ($wpdb->term_taxonomy.term_id = $wpdb->terms.term_id)
-			WHERE $wpdb->posts.post_type='product'
-			AND $wpdb->term_taxonomy.taxonomy = 'product_brand'
-		";
-		$this->brand_list = $wpdb->get_results($sql);
-	}
-  
-	public function get_wootags() {
-		global $wpdb;
-		$sql = "
-			SELECT id, post_title, post_name, $wpdb->term_taxonomy.term_taxonomy_id, $wpdb->term_taxonomy.taxonomy, $wpdb->terms.name as term_name
-			FROM $wpdb->posts
-			LEFT JOIN $wpdb->term_relationships on ($wpdb->posts.ID = $wpdb->term_relationships.object_id)
-			LEFT JOIN $wpdb->term_taxonomy ON ($wpdb->term_relationships.term_taxonomy_id = $wpdb->term_taxonomy.term_taxonomy_id)
-			LEFT JOIN $wpdb->terms on ($wpdb->term_taxonomy.term_id = $wpdb->terms.term_id)
-			WHERE $wpdb->posts.post_type='product'
-			AND $wpdb->term_taxonomy.taxonomy = 'product_tag'
-		";
-		$this->tag_list = $wpdb->get_results($sql);
-	}
-  
+
   public function loadProducts($parent) {
 
 		global $wpdb;
@@ -88,24 +100,11 @@ class PProductList {
 
 		$extra_sql_query = '';
 		$extra_sql_part = '';
-  
-		//Try to extract the brands from wc-brands
-		if (!isset($this->brand_list)) {
-			$this->get_woobrands();
-		}
-		//If fail to extract... stop trying
-		if (!isset($this->brand_list)) {
-			$this->brand_list = array();
-		}
-		
-		//Try to extract the tags from woo_commerce
-		if (!isset($this->tag_list)) {
-			$this->get_wootags();
-		}
-		//If fail to extract... stop trying
-		if (!isset($this->tag_list)) {
-			$this->tag_list = array();
-		}
+
+		if (!isset($this->relatedData['brand']) && $parent->allowRelatedData)
+			$this->relatedData['brand'] = new PProductSupplementalData('product_brand');
+		if (!isset($this->relatedData['tag']) && $parent->allowRelatedData)
+			$this->relatedData['tag'] = new PProductSupplementalData('product_tag');
 		
 		//Load up the meta attributes which will tell us the custom fields
 		$this->get_customfields($parent);
@@ -131,34 +130,13 @@ class PProductList {
 		//********************************************************************
 
 		if ($parent->has_product_range)
-			$limit = 'LIMIT ' . $parent->product_limit_low . ', ' . $parent->product_limit_high;
+			$limit = 'LIMIT ' . $parent->product_limit_low . ', ' . $parent->product_limit_high - $parent->product_limit_low;
 		else
 			$limit = '';
-		
-		$sql = "
-				SELECT 
-				  $wpdb->posts.ID, $wpdb->posts.post_title, $wpdb->posts.post_content, $wpdb->posts.post_name, $wpdb->term_taxonomy.taxonomy, 
-					$wpdb->terms.name as category_name, $wpdb->terms.term_id as category_id, details.name as product_type,
-					attributes.meta_value as attribute_list, attribute_details.attribute_details, variation_id_table.variation_ids as variation_ids 
-					#, stock_levels.parent_manage_stock
-					$extra_sql_query
-				FROM $wpdb->posts
-				
-				#Match the terms / relationships / taxonomy
-				LEFT JOIN $wpdb->term_relationships ON ($wpdb->posts.ID = $wpdb->term_relationships.object_id)
-				LEFT JOIN $wpdb->term_taxonomy ON ($wpdb->term_relationships.term_taxonomy_id = $wpdb->term_taxonomy.term_taxonomy_id)
-				LEFT JOIN $wpdb->terms ON ($wpdb->term_taxonomy.term_id = $wpdb->terms.term_id)
-				
-				#Link in product type
-				LEFT JOIN 
-					(
-						SELECT a.ID, d.name FROM $wpdb->posts a
-						LEFT JOIN $wpdb->term_relationships b ON (a.ID = b.object_id)
-						LEFT JOIN $wpdb->term_taxonomy c ON (b.term_taxonomy_id = c.term_taxonomy_id)
-						LEFT JOIN $wpdb->terms d ON (c.term_id = d.term_id)
-						WHERE c.taxonomy = 'product_type'
-					) as details ON details.ID = $wpdb->posts.ID
-				
+
+		if ($parent->allow_attributes) {
+			$attribute_select = 'attributes.meta_value as attribute_list, attribute_details.attribute_details, ';
+			$attribute_sql_part = "
 				#Attribute_list
 				LEFT JOIN
 					(
@@ -177,32 +155,61 @@ class PProductList {
 						LEFT JOIN $wpdb->terms d ON (c.term_id = d.term_id)
 						WHERE c.taxonomy LIKE 'pa_%'
 						GROUP BY a.ID
-					) as attribute_details ON attribute_details.ID = $wpdb->posts.ID
+					) as attribute_details ON attribute_details.ID = $wpdb->posts.ID";
+		} else {
+			$attribute_select = '';
+			$attribute_sql_part = '';
+		}
+		
+		$sql = "
+				SELECT 
+				  $wpdb->posts.ID, $wpdb->posts.post_title, $wpdb->posts.post_content, $wpdb->posts.post_name, 
+					tblCategories.category_names, tblCategories.category_ids,
+					#$wpdb->term_taxonomy.taxonomy, $wpdb->terms.name as category_name, $wpdb->terms.term_id as category_id, 
+					details.name as product_type,
+					$attribute_select
+					variation_id_table.variation_ids as variation_ids 
+					#, stock_levels.parent_manage_stock
+					$extra_sql_query
+				FROM $wpdb->posts
+				
+				#Categories
+				LEFT JOIN
+					(
+						SELECT postsAsTaxo.ID, GROUP_CONCAT(category_terms.name) as category_names, GROUP_CONCAT(category_terms.term_id) as category_ids
+						FROM $wpdb->posts postsAsTaxo
+						LEFT JOIN $wpdb->term_relationships category_relationships ON (postsAsTaxo.ID = category_relationships.object_id)
+						LEFT JOIN $wpdb->term_taxonomy category_taxonomy ON (category_relationships.term_taxonomy_id = category_taxonomy.term_taxonomy_id)
+						LEFT JOIN $wpdb->terms category_terms ON (category_taxonomy.term_id = category_terms.term_id)
+						WHERE category_taxonomy.taxonomy = 'product_cat' # AND category_terms.term_id IN (" . $parent->categories->asCSV() . ")
+						GROUP BY postsAsTaxo.ID
+					) as tblCategories ON tblCategories.ID = $wpdb->posts.ID
+				
+				#Link in product type
+				LEFT JOIN 
+					(
+						SELECT a.ID, d.name FROM $wpdb->posts a
+						LEFT JOIN $wpdb->term_relationships b ON (a.ID = b.object_id)
+						LEFT JOIN $wpdb->term_taxonomy c ON (b.term_taxonomy_id = c.term_taxonomy_id)
+						LEFT JOIN $wpdb->terms d ON (c.term_id = d.term_id)
+						WHERE c.taxonomy = 'product_type'
+					) as details ON details.ID = $wpdb->posts.ID
+				
+				$attribute_sql_part
 
 				#variations
 				LEFT JOIN
 					(
 						SELECT GROUP_CONCAT(postvars.id) as variation_ids, postvars.post_parent
 						FROM $wpdb->posts postvars
-						WHERE postvars.post_type = 'product_variation'
+						WHERE (postvars.post_type = 'product_variation') AND (postvars.post_status = 'publish')
 						GROUP BY postvars.post_parent
 					) as variation_id_table on variation_id_table.post_parent = $wpdb->posts.ID
 
-				#stock-levels
-				#LEFT JOIN
-				#	(
-				#		SELECT post_id, meta_value as parent_manage_stock
-				#		FROM $wpdb->postmeta
-				#		WHERE meta_key = '_manage_stock'
-				#	) as stock_levels ON stock_levels.post_id = $wpdb->posts.ID
-
 				$extra_sql_part
 
-				WHERE $wpdb->posts.post_status = 'publish'
-					AND $wpdb->posts.post_type = 'product'
-					AND $wpdb->term_taxonomy.taxonomy = 'product_cat'
-					AND $wpdb->terms.term_id IN (" . $parent->categories->asCSV() . ")
-					ORDER BY $wpdb->terms.term_id, post_date DESC
+				WHERE $wpdb->posts.post_status = 'publish' AND $wpdb->posts.post_type = 'product'
+				ORDER BY post_date ASC
 
 				$limit
 
@@ -214,6 +221,46 @@ class PProductList {
 			$parent->message .= 'ProductList returned Zero results';
 		}
 	} //loadProducts
+
+	protected function loadMasterAttributeList() {
+		$this->masterAttributeList = new PMasterAttributeList();
+		global $wpdb;
+
+		//Load the main attributes
+		$sql = '
+			SELECT attribute_name as name, attribute_type as type
+			FROM ' . $wpdb->prefix . 'woocommerce_attribute_taxonomies';
+		$data = $wpdb->get_results($sql);
+		foreach ($data as $datum) {
+			$thisAttribute = new stdClass();
+			$thisAttribute->name = $datum->name;
+			$thisAttribute->type = $datum->type;
+			$thisAttribute->children = array();
+			$this->masterAttributeList->add($thisAttribute);
+		}
+
+		//Load the taxonomies
+		$sql = "
+			SELECT taxo.taxonomy, terms.name, terms.slug
+			FROM $wpdb->term_taxonomy taxo
+			LEFT JOIN $wpdb->terms terms ON (terms.term_id = taxo.term_id)
+			WHERE taxo.taxonomy LIKE 'pa\_%'
+		";
+		$data = $wpdb->get_results($sql);
+
+		//Load the taxonomies in as child terms
+		foreach ($data as $datum) {
+			$thisAttribute = $this->masterAttributeList->findByName(substr($datum->taxonomy, 3));
+			if ($thisAttribute != null) {
+				$term = new stdClass();
+				$term->taxonomy = $thisAttribute->name;
+				$term->name = $datum->name;
+				$term->slug = $datum->slug;
+				$thisAttribute->children[] = $term;
+			}
+		}
+
+	}
 
 	public function getProductList($parent, $remote_category) {
 
@@ -235,9 +282,17 @@ class PProductList {
 			if ($index % 100 == 0)
 				$parent->logActivity('Converting master product list...' . round($index / count($this->products) * 100) . '%' );
 
-			//if no category associated with parent product, skip
-			if ( !$parent->categories->containsCategory( $prod->category_id ) )
+			//if skip product with non-matching category
+			$category_ids = explode(',', $prod->category_ids);
+			$skip = true;
+			foreach($category_ids as $id)
+				if ($parent->categories->containsCategory($id) ) {
+					$skip = false;
+					break;
+				}
+			if ($skip)
 				continue;
+			$category_names = explode(',', $prod->category_names);
 
 			//if parent has variations, do we need it? 
 			if ( $parent->categories->containsCategory( $prod->variation_ids ) )
@@ -257,46 +312,34 @@ class PProductList {
 
 			//Basics
 			$item->id = $prod->ID;
-			$item->parent_item = null;
 			$item->attributes['id'] = $prod->ID;
 			$item->attributes['title'] = $prod->post_title;
-			$item->taxonomy = $prod->taxonomy;
-			$item->isVariable = $prod->product_type == 'variable';
+			$item->taxonomy = $category_names;
+			$item->attributes['isVariable'] = $prod->product_type == 'variable';
+			$item->attributes['isVariation'] = false;
 			$item->description_short = substr(strip_shortcodes(strip_tags($product->post->post_excerpt)), 0, 1000);
 			$item->description_long = substr(strip_shortcodes(strip_tags($prod->post_content)), 0, 1000);
 			$item->attributes['valid'] = true;
 
 			//Fetch any default attributes Stage 0 (Mapping 3.0)
 			foreach ($parent->attributeDefaults as $thisDefault)
-				if ($thisDefault->stage == 0)
+				if ($thisDefault->stage == 0 && !$thisDefault->isRuled && !isset($item->attributes[$thisDefault->attributeName]))
 					$item->attributes[$thisDefault->attributeName] = $thisDefault->getValue($item);
-			
 
-			//Assign any brands
-			foreach($this->brand_list as $this_brand) {
-				if ($this_brand->id == $item->id) {
-					$item->attributes['brand'] = $this_brand->name;
-					break;
-				}
-			}
-			
-			//Assign any tags
-			foreach($this->tag_list as $this_tag) {
-				if ($this_tag->id == $item->id) {
-					$item->attributes['tag'] = $this_tag->term_name;
-					break;
-				}
-			}
+			//Assign related data (like brands and tags)
+			foreach($this->relatedData as $index => $relation)
+				$relation->check($index, $item);
 
 			$item->attributes['category'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
 			$item->attributes['product_type'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
-			$item->attributes['localCategory'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $prod->category_name));
+			$item->attributes['localCategory'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $category_names[0]));
 			$item->attributes['localCategory'] = str_replace("|", ">", $item->attributes['localCategory']);
-			$item->attributes['category_id'] = $prod->category_id;
+			$item->attributes['category_id'] = $category_ids[0];
+			$item->attributes['category_ids'] = $category_ids;
 			$item->attributes['link'] = get_permalink($prod->ID);
 			$thumb_ID = get_post_thumbnail_id($prod->ID);
 			$thumb = wp_get_attachment_image_src($thumb_ID, 'small-feature');
-			$item->feature_imgurl = $thumb['0'];
+			$item->attributes['feature_imgurl'] = $thumb['0'];
 			$attachments = $product->get_gallery_attachment_ids();
 			$attachments = array_diff($attachments, array($thumb_ID));
 			if ($attachments) 
@@ -320,12 +363,25 @@ class PProductList {
 			}
 			$item->attributes['sku'] = $product->sku;
 			$item->attributes['weight'] = $product->get_weight();
+			if ($parent->get_wc_shipping_attributes) {
+				//WooCommerce shipping weight and unit				
+				//WooCommerce shipping dimensions + unit
+				$item->attributes['length'] = $product->length;
+				$item->attributes['width'] = $product->width;
+				$item->attributes['height'] = $product->height; 
+			}
 			//$item->parent_manage_stock = $prod->parent_manage_stock;
 			$item->parent_manage_stock = true; //Temp... testing Calvin's new code
 			$item->attributes['stock_status'] = 1; //Assume in stock
 			$item->attributes['stock_quantity'] = 1;
 			//$item->stock_status_explicitly_set = false;
-			//$item->attributes['vendor'] = $product->vendor; Suggested new attribute not found on local dev setup
+
+			if ( isset($product->vendor) )
+				$item->attributes['vendor'] = $product->vendor; //Suggested new attribute not found on local dev setup
+			if ( isset($product->model) )
+				$item->attributes['model'] = $product->model;
+			if ( isset($product->size) )
+				$item->attributes['size'] = $product->size;
 			$item->attributes['product_is_in_stock'] = $product->is_in_stock(); //already checks for global manage stock and product inventory stock_status
 			$item->attributes['product_stock_qty'] = $product->get_stock_quantity();
 			
@@ -335,11 +391,11 @@ class PProductList {
 			//$item->attributes['condition'] = $koostis[0];				
 
 			//Attributes (General)
-			if (strlen($prod->attribute_list) == 0)
+			if (!$parent->allow_attributes || strlen($prod->attribute_list) == 0)
 				$attributes = array();
 			else
 				$attributes = unserialize($prod->attribute_list);
-			foreach($attributes as $this_attribute) 
+			foreach($attributes as $this_attribute)
 			{
 				if ( isset($this_attribute['name']) && (strlen($this_attribute['name']) > 0) && (strpos($this_attribute['name'], 'pa_') === false) )
 				//error_log($this_attribute['name'] . ' > ' . $this_attribute['value'] . ' | ' . strpos($this_attribute['name'], 'pa_'));
@@ -351,7 +407,10 @@ class PProductList {
 			//  pa_attribute=example,pa_attribute2=example2,pa_attribute3=example3
 			//convert to:
 			//  item->attributes[attribute]=example; item->attributes[attribute2]=example2; etc
-			$item->attribute_details = explode(',', $prod->attribute_details);
+			if ($parent->allow_attributes)
+				$item->attribute_details = explode(',', $prod->attribute_details);
+			else
+				$item->attribute_details = array();
 			foreach($item->attribute_details as $this_attribute){
 				$this_attribute = explode('=', $this_attribute);
 				if (count($this_attribute) > 1)
@@ -368,6 +427,7 @@ class PProductList {
 			//If woocommerce-google-merchant-center, we have to do extra work to extract data
 			if ( ($this->gmc_active) && (strlen($prod->gmc_value) > 0) ) 
 			{
+
 				$gmc_attributes = unserialize($prod->gmc_value);
 				foreach( $gmc_attributes as $key => $this_attribute ) 
 				{
@@ -397,7 +457,15 @@ class PProductList {
 				}
 			}
 
+			//Fetch any default attributes Stage 5 (Mapping 3.1)
+			if ($parent->attributeDefaultStages[5] > 0) {
+				foreach ($parent->attributeDefaults as $thisDefault)
+					if ($thisDefault->stage == 5 && !$thisDefault->isRuled)
+						$item->attributes[$thisDefault->attributeName] = $thisDefault->getValue($item);
+			}
+
 			$this->expandProduct($item, $parent);
+
 		}
 
 		$parent->logActivity('ProductList successfully generated.');
@@ -410,33 +478,21 @@ class PProductList {
 		global $pfcore;
 
 		$resultlist = array();
+
+		//Insert any WooCommerce "Official" Variations
+		$variations = explode(",", $listitem->variation_ids);
+		foreach ($variations as $variation)
+			$this->insertVariation($variation, $listitem, $resultlist, $parent);
 		
-			//Check for simple variation
-			if ($listitem->isVariable)
-				$variable_attribute_count = $this->populateVariableAttributes($listitem, $resultlist, $parent);
-			else
-				$variable_attribute_count = 0;
-
-			if ($variable_attribute_count > 0) 
-			{
-				//If item has variations, don't export the parent (but we still need it in the list)
-				$listitem->attributes['valid'] = false;
-				$listitem->parent_manage_stock = 'no';
-			}
+		if (count($resultlist) == 0)  {
+			//If item has no variations, use the parent
+			$listitem->parent_manage_stock = 'no';
 			$resultlist[] = $listitem;
+		}
 
-		//********************************************************************
-		//Meta-data iteration
-		//a) Now that variations are known, we can tell if it's in-stock or out-of-stock
-		//********************************************************************
+		//Process the results
 
 		foreach($resultlist as $index => $item) {
-
-			//Strange bug: Woocommerce says parent_manage_stock = yes even if item has no parent
-			if (($item->parent_manage_stock == 'yes') && ($item->parent_item == null))
-				$item->parent_manage_stock = 'no';
-
-			//$product_availability = $product->get_availability();	
 
 			//attempting to pull flat  shipping cost
 			//Note: extra call to new WC_product means an extra trip to the database which will increase timeouts (-K)
@@ -460,60 +516,10 @@ class PProductList {
 			else
 				$item->attributes['stock_status'] = 0;
 			$item->attributes['stock_quantity'] = $item->attributes['product_stock_qty'];
-		
-			/*
-			foreach ($metadata as $m) {
+			unset($item->attributes['product_stock_qty']); //This was causing confusion among users
+			unset($item->attributes['product_is_in_stock']); //This was causing confusion among users
 
-				//Stock levels
-				//Global setting. If unchecked, don't handle stock. Leave everything as in-stock.
-				//In the case of parent-manage-stock, handle on second pass
-				if (($pfcore->manage_stock) && ($item->parent_manage_stock != 'yes')) {
-
-					if ($m->meta_key == '_stock_status') {
-						$item->stock_status_explicitly_set = true;
-						if ($m->meta_value == 'outofstock') 
-							$item->attributes['stock_status'] = 0;
-						
-					}
-
-					if (($m->meta_key == '_stock') && !$item->stock_status_explicitly_set) {
-						$item->attributes['stock_quantity'] = $m->meta_value;
-						//if (($m->meta_value == '') || ($m->meta_value < 1))
-						if ($m->meta_value == '')  //don't change status. use parent settings
-						{
-							$item->attributes['stock_status'] = $product->is_in_stock() ;
-						}
-						else if ($m->meta_value < 1)
-							$item->attributes['stock_status'] = 0;
-						else 
-							$item->attributes['stock_status'] = 1;
-					}
-				}
-			} //foreach $metadata
-			*/
-
-		}
-
-		/*
-		//Second pass: Meta-data iteration
-		foreach($resultlist as $item) {
-
-			if ($pfcore->manage_stock) {
-				//do stock-levels of variations who don't want to manage themselves
-				if (($item->parent_manage_stock == 'yes') && ($item->parent_item != null)) {
-					$item->attributes['stock_status'] = $item->parent_item->attributes['stock_status'];
-					$item->attributes['stock_quantity'] = $item->parent_item->attributes['stock_quantity'];
-					$item->stock_status_explicitly_set = $item->parent_item->stock_status_explicitly_set;
-					if ($item->attributes['stock_quantity'] == 0)
-						$item->attributes['stock_status'] = 0;
-				}
-			}
-		}
-		*/
-
-		//Third pass: Meta-data iteration
-		foreach($resultlist as $item) {
-		
+			//Hide out of stock
 			if (($pfcore->manage_stock) && ($pfcore->hide_outofstock) && ($item->attributes['stock_status'] == 0))
 				$item->attributes['valid'] = false;
 
@@ -521,92 +527,141 @@ class PProductList {
 			if (isset($item->attributes['valid']) && (strcmp($item->attributes['valid'], 'false') == 0) )
 				$item->attributes['valid'] = false;
 
-		}
-
-		foreach($resultlist as $item) {
 			//Fetch any default attributes (Mapping 3.0)
 			foreach ($parent->attributeDefaults as $thisDefault)
-				if ($thisDefault->stage == 1)
+				if ($thisDefault->stage == 1 && !$thisDefault->isRuled)
 					$item->attributes[$thisDefault->attributeName] = $thisDefault->getValue($item);
-		}
 
-		foreach($resultlist as $item)
+			//Send this item out for Feed processing
 			$parent->handleProduct($item);
 
-		foreach($resultlist as &$item) {
+			//Free resources
 			foreach($item->attributes as &$x)
 				unset($x);
 			unset($item);
+
+			if (!$listitem->attributes['isVariable'])
+				break;
+
 		}
 		
   }
   
-  function populateVariableAttributes($listitem, &$resultlist, $parent) {
-  
+  function insertVariation($id, $parentItem, &$resultlist, $parent) {
+
 		//********************************************************************
 		//Variable attributes occur when the user has fully defined the variations and attributes.
 		//In woocommerce, a true variation appears in wp_posts.post_type = product_variation
 		//with post_parent pointed to the original product. So it's like a sub-product or a sub-post.
 		//********************************************************************
 
+		if (strlen($id) == 0)
+			return;
+
 		global $wpdb;
 
-		$variations = explode(",", $listitem->variation_ids);
+		//Copy item
+		$item = clone $parentItem;
+		$resultlist[] = $item;
 
-		$count = 0;
-		foreach($variations as $variation) {
+		$item->attributes['parent_title'] = $item->attributes['title']; //This is for eBay feed only, and could otherwise be deleted
 
-			//Copy item
-			$item = clone $listitem;
-			$resultlist[] = $item;
-			$count++;
+		//Special Variations settings
+		$item->item_group_id = $parentItem->id;
+		$item->id = $id;
+		$item->attributes['isVariation'] = true;
+		$item->attributes['id'] = $id;
+		$item->attributes['item_group_id'] = $parentItem->id;
 
-			$item->attributes['parent_title'] = $item->attributes['title']; //This is for eBay feed only, and could otherwise be deleted
-			$item->parent_item = $listitem;
+		//Some basics
+		$product = get_product($id);
+		$item->product = $product; //Save for meta-data iteration
 
-			//Special Variations settings
-			$item->item_group_id = $listitem->id;
-			$item->id = $variation;
-			$item->isVariable = true;
-			$item->attributes['id'] = $variation;
-			$item->attributes['item_group_id'] = $listitem->id;
-
-			//Some basics
-			$product = get_product($item->id);
-			$item->product = $product; //Save for meta-data iteration
-
-			$item->attributes['regular_price'] = $product->regular_price;
-			$item->attributes['has_sale_price'] = false;
-			if ($product->sale_price != "") {
-				$item->attributes['has_sale_price'] = true;
-				$item->attributes['sale_price'] = $product->sale_price;
-			}
-			$item->attributes['sku'] = $product->sku;
-			$item->attributes['weight'] = $product->get_weight();
-			$item->attributes['product_is_in_stock'] = $product->is_in_stock();
-			$item->attributes['product_stock_qty'] = $product->get_stock_quantity();
-
-			//Go find the Variations' Attributes
-			$sql = "SELECT meta_key, meta_value FROM $wpdb->postmeta
-				WHERE post_id = " . $variation . " AND 
-				meta_key LIKE 'attribute\_pa\_%'";
-			$attributes = $wpdb->get_results($sql);
-
-			//Add the variation attributes
-			//meta_value takes the slug from wp_terms instead of the name
-			foreach($attributes as $this_attribute) {
-				if (strpos($this_attribute->meta_key, 'attribute_pa') == 0)
-					$this_attribute->meta_key = substr($this_attribute->meta_key, 13);
-				$item->attributes[$this_attribute->meta_key] = $this_attribute->meta_value;
-			}
+		$item->attributes['regular_price'] = $product->regular_price;
+		$item->attributes['has_sale_price'] = false;
+		if ($product->sale_price != "") {
+			$item->attributes['has_sale_price'] = true;
+			$item->attributes['sale_price'] = $product->sale_price;
+		}
+		$item->attributes['sku'] = $product->sku;
+		$item->attributes['weight'] = $product->get_weight();
+		if ($parent->get_wc_shipping_attributes) {
+			//WooCommerce shipping dimensions + unit
+			//dimension unit provided from feedcore.php
+			$item->attributes['length'] = $product->length;
+			$item->attributes['width'] = $product->width;
+			$item->attributes['height'] = $product->height; 
 		}
 
-		//If we got our Variable Attributes, Done! Get out now
-		if ($count > 0)
-			return $count;
+		$item->attributes['product_is_in_stock'] = $product->is_in_stock();
+		$item->attributes['product_stock_qty'] = $product->get_stock_quantity();
 
-		//Here, life is more difficult because the user didn't select
-		//specific variations
+		//Go find the Variations' Attributes
+		$sql = "SELECT meta_key, meta_value FROM $wpdb->postmeta
+			WHERE post_id = " . $id . " AND 
+			meta_key LIKE 'attribute\_pa\_%'";
+		$attributes = $wpdb->get_results($sql);
+
+		//Add the variation attributes
+		//meta_value takes the slug from wp_terms instead of the name
+		$permutations = array();
+		foreach($attributes as $this_attribute) {
+			if (strpos($this_attribute->meta_key, 'attribute_pa') == 0) {
+				$this_attribute->meta_key = substr($this_attribute->meta_key, 13);
+				//Convert from Slug to Term
+				$term = $this->masterAttributeList->findBySlug($this_attribute->meta_value);
+				if ($term != null)
+					$this_attribute->meta_value = $term->name;
+				//If no meta_value provided it means ANY of this attribute. Mark it for future permutation
+				if (strlen($this_attribute->meta_value) == 0) {
+					$termcat = $this->masterAttributeList->findByName($this_attribute->meta_key);
+					if ($termcat != null)
+						$permutations[] = $termcat;
+				}
+			}
+			$item->attributes[$this_attribute->meta_key] = $this_attribute->meta_value;
+		}
+
+		//If no permutations, we're done
+		if (count($permutations) == 0 || !$parent->allow_variationPermutations)
+			return;
+
+		//The presence of permutations forcefully invalidate existing items
+		 foreach ($resultlist as $thisItem)
+		 	if ($thisItem->id == $id)
+		 		$thisItem->attributes['valid'] = false;
+
+		//Now, add the permutations
+		//for ($i = 0; $i < count($permutations); $i++) //Only need this loop if counting null values into permutations
+		// $i = 0;
+		// $this->permute($id, $i, $permutations, $resultlist, $parent);
 
   }
+
+	function permute($id, $index, $permutations, &$resultlist, $parent, $stack = array() ) {
+		foreach ($permutations[$index]->children as $thisChild) 
+			if ($index == count($permutations) - 1) {
+				//At the end of the permutation chain, insert
+				foreach($resultlist as $listitem)
+					if ($listitem->id == $id && !$listitem->attributes['valid']) {
+						$item = clone $listitem;
+						$item->attributes['valid'] = true;
+						$resultlist[] = $item;
+						$newStack = $stack;
+						$newStack[] = $thisChild;
+						//Debug
+						//$a = '';
+						//foreach($newStack as $term) $a .= $term->taxonomy . '=' . $term->name . ' ';
+						//error_log($id . ' end of stack ' . $a);
+						foreach($newStack as $term)
+							$item->attributes[$term->taxonomy] = $term->name;
+					}
+			} else {
+				//Not the end of permutation chain means keep looking
+				$newStack = $stack;
+				$newStack[] = $thisChild;
+				$this->permute($id, $index + 1, $permutations, $resultlist, $parent, $newStack);
+			}
+	}
+
 }

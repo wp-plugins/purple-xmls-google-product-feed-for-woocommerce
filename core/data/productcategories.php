@@ -155,12 +155,34 @@ class PProductCategories {
 	}
 
 	public function getListJS() {
-		$nullCategory = new stdClass();
-		$nullCategory->id = 1;
-		$nullCategory->title = 'All Categories';
-		$nullCategory->tally = 0;
-		$nullCategory->children = array();
-		$this->categories = array($nullCategory);
+
+		global $pfcore;
+
+		//Load the categories: id, title, tally-of-products
+		$db = JFactory::getDBO();
+		$db->setQuery('
+			SELECT id, title, tally
+			FROM #__rapidcart_categories
+			WHERE shop_id = ' . (int) $pfcore->shopID);
+		$this->categories = $db->loadObjectList();
+
+		//Load the category-category-child links: parent_category, child_category
+		$db->setQuery('
+			SELECT parent_category as parent_category, id as child_category
+			FROM #__rapidcart_categories');
+		$links = $db->loadObjectList();
+
+		if (count($this->categories) == 0) {
+			$nullCategory = new stdClass();
+			$nullCategory->id = 1;
+			$nullCategory->title = 'All Categories';
+			$nullCategory->tally = 0;
+			$nullCategory->children = array();
+			$this->categories = array($nullCategory);
+		}
+
+		$this->interpretCategories($links);
+
 	}
 
 	public function getListW() {

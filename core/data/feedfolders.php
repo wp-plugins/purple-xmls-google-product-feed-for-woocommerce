@@ -110,11 +110,11 @@ class PFeedFolder {
 	}
 
 	private static function uploadURLJ() {
-		return JURI::root(true) . '/media/cart_product_feeds/';
+		return JURI::root() . 'media/cart_product_feeds/';
 	}
 
 	private static function uploadURLJS() {
-		return JURI::root(true) . '/media/cart_product_feeds/';
+		return JURI::root() . 'media/cart_product_feeds/';
 	}
 
 	private static function uploadURLW() {

@@ -2,7 +2,7 @@
 Contributors: PurpleTurtlePro, KH_PDev
 Tags: WooCommerce export, getshopped export, wp-e-commerce export, amazon product Ads, amazon product ads export, Google Merchant, Google Merchant Export, Shopping.com export, xml export, Nextag, Google product feed export, Amazon export, amazon seller, amazon seller export, Ammoseek, ammoseek export, Bing! Export, eBay export, eBay Merchant, Google Adwords, Houzz export,  google merchant product feed, amazon seller export, shopzilla export, shopify export, houzz export, beslist export, export csv, export xml, export tab, woocommerce variations, variations export, product variations, godatafeed, shareasale, thefind.com, sell.com, newegg.com, sears.com, rakuten, pricefalls, pricegrabber
 Requires at least: 3.0.1
-Tested up to: 4.0
+Tested up to: 4.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -25,23 +25,27 @@ The created feeds are available for export (timed and on demand) for these merch
 * Google Merchant & Google Trusted Store & Google Adwords
 * Amazon Seller, Amazon Product Ads
 * AmmoSeek
+* Beslist
 * Bing!
 * eBay Merchant
+* GoDataFeed
+* Kelkoo
+* Newegg
 * NextTag
 * PriceGrabber
+* Rakuten
 * Shopping.com
 * ShopZilla
 * Houzz
-* Beslist
-* GoDataFeed
 * Shareasale
-* XML & CSV & Excel Export
+* Webgains
+* XML & CSV & TXT & Excel Export
 <P>
 
 
 >[**Free Version**](https://downloads.wordpress.org/plugin/purple-xmls-google-product-feed-for-woocommerce.zip) --  Includes all functionality - limited to 3 feeds & 10 items each 
-><BR>[**FREE TRIAL (Pro Version)**](https://www.purpleturtle.pro/cart.php?a=add&pid=88) -- 5 day unlimited free Feeds & Merchants
-><BR>[**PRO VERSION**](https://www.purpleturtle.pro/cart.php?a=add&pid=61) -- PRO VERSION - UNLIMITED FEEDS & MERCHANTS
+><BR>[**Free 5-Day Trial of the Pro Version**](https://shop.shoppingcartproductfeed.com/cart.php?a=add&pid=88) --  5 day highly scalable to multiple Feeds & Merchants.  Self-assessment - Please review the qualification questions and the online instructions.
+><BR>[**Just Do It!**](https://shop.shoppingcartproductfeed.com/cart.php?a=add&pid=61) -- PRO Version - HIGHLY SCALABLE FOR FEEDS & MERCHANTS.  Please fill out the qualification questions to help us help you.
 <P>
 ><BR>[**READ OUR FAQ**](http://www.shoppingcartproductfeed.com/faq/) -- Or Click on the LiveChat link!
 ><P>See our other products, including the only: <BR>[**Google Trusted Store!**](http://www.shoppingcartproductfeed.com/google-trusted-store/) The only two click installation for Google Trusted Stores
@@ -117,6 +121,21 @@ This will not redirect to the feed URL you just created - ready for submission!
 5. Manage existing feeds that you have created
 
 == Changelog ==
+<h4>Version 3.1.0.10 2015-01-26</h4>
+<ul>
+  <li><strong>Add</strong> Added support for Newegg, Kelkoo, Webgains</li>
+  <li><strong>Fix</strong> Hidden variations no longer load</li>
+  <li><strong>Fix</strong> Revamped Amazon Seller template system</li>
+  <li><strong>Fix</strong> eBay: update category list</li>
+  <li><strong>Fix</strong> Restructure product loading for speed</li>
+  <li><strong>Fix</strong> Ability to ignore product variations</li>
+  <li><strong>New</strong> Required / Optional mappings are now displayed</li>
+  <li><strong>New</strong> Optional WooCommerce piped attribute permutations</li>
+  <li><strong>New</strong> Extract shipping dimensions (length, width, height)</li>
+  <li><strong>New</strong> Create .txt (in addition to .csv, .xml) files</li>
+  <li><strong>New</strong> Ability to aggregate feeds (you can now join feeds together)</li>
+
+</ul>
 <h4>Version 3.0.6.10 2014-10-21</h4>
 <ul>
   <li><strong>New</strong> Massive update of Amazon templates - over 25 added</li>

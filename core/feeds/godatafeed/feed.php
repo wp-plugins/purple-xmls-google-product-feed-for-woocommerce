@@ -20,17 +20,20 @@ class PGoDataFeedFeed extends PBasicFeed {
 		$this->providerName = 'GoDataFeed';
 		$this->providerNameL = 'godatafeed';
 		//Create some attributes (Mapping 3.0)
-		$this->addAttributeMapping('id', 'UniqueID', true);
-		$this->addAttributeMapping('title', 'Name', true);
-		$this->addAttributeMapping('description', 'Description', true);
-		$this->addAttributeMapping('regular_price', 'Price', true);
-		$this->addAttributeMapping('localCategory', 'MerchantCategory', true);
-		$this->addAttributeMapping('link', 'URL', true);
-		$this->addAttributeMapping('feature_imgurl', 'ImageURL', true);
-		$this->addAttributeMapping('manufacturer', 'Manufacturer', true);
-		$this->addAttributeMapping('sku', 'ManufacturerPartNumber', true);
-		$this->addAttributeMapping('brand', 'Brand', true);
-		$this->addAttributeMapping('stock_status', 'StockStatus', true);
+		//required
+		$this->addAttributeMapping('id', 'UniqueID', true,true);
+		$this->addAttributeMapping('title', 'Name', true,true); //product name (15-70 chars)
+		$this->addAttributeMapping('description', 'Description', true,true);
+		$this->addAttributeMapping('regular_price', 'Price', true,true);
+		$this->addAttributeMapping('localCategory', 'MerchantCategory', true,true);
+		$this->addAttributeMapping('link', 'URL', true,true);
+		$this->addAttributeMapping('feature_imgurl', 'ImageURL', true,true);
+		$this->addAttributeMapping('', 'Manufacturer', true,true);
+		$this->addAttributeMapping('sku', 'ManufacturerPartNumber', true,true);
+		$this->addAttributeMapping('brand', 'Brand', true,true);
+		$this->addAttributeMapping('', 'Keywords', true);
+		//$this->addAttributeMapping('stock_status', 'StockStatus', true);
+		$this->addAttributeMapping('', 'Shipping Price', true);
 		$this->addAttributeMapping('stock_quantity', 'Quantity', true);
 		$this->addAttributeMapping('weight', 'Weight', true);
 		$this->addAttributeMapping('condition', 'Condition', true);
@@ -42,17 +45,12 @@ class PGoDataFeedFeed extends PBasicFeed {
 		//********************************************************************
 		//Prepare the Product Attributes
 		//********************************************************************
-		
-		//Cheat: These three fields aren't ready to be attributes yet, so adding manually:
-		$product->attributes['description'] = $product->description;
-		$product->attributes['current_category'] = $this->current_category;
-		$product->attributes['feature_imgurl'] = $product->feature_imgurl;
 
-		//Stock Status
-		if ($product->attributes['stock_status'] == 1)
-			$product->attributes['stock_status'] = 'in stock';
-		else
-			$product->attributes['stock_status'] = 'out of stock';
+		//Stock Status: not found in feed spec?
+		//if ($product->attributes['stock_status'] == 1)
+		//	$product->attributes['stock_status'] = 'in stock';
+		//else
+		//	$product->attributes['stock_status'] = 'out of stock';
 
 		//Price
 		if (strlen($product->attributes['regular_price']) == 0)
@@ -87,20 +85,6 @@ class PGoDataFeedFeed extends PBasicFeed {
 		foreach($this->attributeMappings as $thisAttributeMapping)
 			if ($thisAttributeMapping->enabled && !$thisAttributeMapping->deleted && isset($product->attributes[$thisAttributeMapping->attributeName]) )
 				$output .= $this->formatLine($thisAttributeMapping->mapTo, $product->attributes[$thisAttributeMapping->attributeName], $thisAttributeMapping->usesCData);
-
-		/*
-		//********************************************************************
-		//This is mapping 2.0 > Deprecated > Gone
-		//********************************************************************
-
-		$used_so_far = array();
-		foreach($product->attributes as $key => $a) {
-			//Only use the override if it's set and hasn't been used_so_far in this product
-			if (isset($this->feedOverrides->overrides[$key]) && !in_array($this->feedOverrides->overrides[$key], $used_so_far)) {
-				$output .= $this->formatLine($key, $a);
-				$used_so_far[] = $this->feedOverrides->overrides[$key];
-			}
-		}*/
 
 		//********************************************************************
 		//Mapping 3.0 post processing

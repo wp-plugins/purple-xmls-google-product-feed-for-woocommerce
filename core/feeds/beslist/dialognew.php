@@ -17,22 +17,6 @@ class BeslistDlg extends PBaseFeedDialog
 		parent::__construct();
 		$this->service_name = 'Beslist';
 		$this->service_name_long = 'Beslist XML Export';
-		$this->options = array(
-			'brand',
-			'colour',
-			'delivery_costs',
-			'delivery_period',
-			'ean',
-			'extra_url_image',
-			'gender',
-			'material',
-			'model_code',
-			'mpn_color',
-			'original',
-			'price-old',
-			'size',
-			'variant_code'
-			);
 	}
 
 	function convert_option($option) 

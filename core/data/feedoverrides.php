@@ -56,10 +56,17 @@ class PFeedOverride extends PBaseFeedOverride {
 				case 'deleteattribute':
 					//If the Attribute doesn't exist (yet), map it first.
 					//This allows variable-attribute feeds to have attributes deleted since their attribute mappings might not yet be complete
-					if ($parent->getMapping($params[1]) == null)
-						$parent->addAttributeMapping($params[1], $params[1]);
-					//Delete it
-					$parent->getMapping($params[1])->deleted = true;
+					if ($params[1] == '*') {
+						foreach($parent->attributeMappings as $thisAttributeMapping)
+							$thisAttributeMapping->deleted = true;
+						if (isset($parent->mapAttributesOnTheFly))
+							$parent->mapAttributesOnTheFly = false;
+					} else {
+						if ($parent->getMapping($params[1]) == null)
+							$parent->addAttributeMapping($params[1], $params[1]);
+						//Delete it
+						$parent->getMapping($params[1])->deleted = true;
+					}
 					break;
 				case 'deletelicensekeys':
 					$reg = new PLicense();
@@ -82,6 +89,29 @@ class PFeedOverride extends PBaseFeedOverride {
 						$usesCData = true;
 					$recent_attribute = $parent->addAttributeMapping($params[1], $params[3], $usesCData);
 					break;
+				case 'rule': case 'addrule':
+					//Rule name after last ")"
+					$ruleName = '';
+					for($i = count($params) - 3; $i > 0; $i--)
+						if ($params[$i] == ')') {
+							$ruleName = $params[$i + 2];
+							break;
+						}
+					if (strtolower($ruleName) == 'substring')
+						$ruleName = 'substr';
+					//Rule Parameters is everything within ()
+					$start = false;
+					$ruleParams = array();
+					foreach($params as $param) {
+						if ($param == ')')
+							break;
+						if ($start)
+							$ruleParams[] = $param;
+						if ($param == '(')
+							$start = true;
+					}
+					$parent->addRule($ruleName, $params[1], $ruleParams, 100);
+					break;
 				case 'set':
 					//Eg: set forceCData to off
 					if (count($params) > 2) {
@@ -94,6 +124,10 @@ class PFeedOverride extends PBaseFeedOverride {
 						if ($this->validIdentifier($params[1]))
 							$parent->$params[1] = $params[3];
 					}
+					break;
+				case 'maptaxonomy':
+					//Example: mapTaxonomy product_brand to brand
+					$parent->relatedData[] = array($params[1], $params[3]);
 					break;
 				case 'setattribute':
 					if (strtolower($params[2]) == 'mapto')
@@ -132,6 +166,10 @@ class PFeedOverride extends PBaseFeedOverride {
 					//eg setParam localized_name "A local name"
 					if ($recent_attribute != null)
 						$recent_attribute->$params[1] = $params[2];
+					break;
+				case 'setrapidcarttoken':
+					global $pfcore;
+					$pfcore->settingSet('cp_rapidcarttoken', $params[1]);
 					break;
 				default: //Mapping 2.0 override
 					$this->interpretOverride($this_option);
@@ -177,23 +215,31 @@ class PFeedOverride extends PBaseFeedOverride {
 		//if ($this_option == '$bing_force_google_category') {$parent->bingForceGoogleCategory = true;} //Not IMPL
 		if ($this_option == '$bing_force_price_discount') {$parent->bingForcePriceDiscount = true;} //Debug for beta testers
 		if ($this_option == '$currency_format') {$parent->currency_format = $value;}
-		if ($this_option == '$default_brand') {$parent->default_brand = $value;}
+		if ($this_option == '$default_brand') {$parent->addErrorMessage(11003, 'Use of deprecated command: $default_brand', true);}
 		if ($this_option == '$exclude_variable_attributes') {$parent->productList->exclude_variable_attributes = true;}
 		if ($this_option == '$field_delimiter') {$parent->fieldDelimiter = $value;}
+		if ($this_option == '$get_wc_shipping_attributes') {$parent->get_wc_shipping_attributes = true;}		
 		if ($this_option == '$hide_out_of_stock') {$pfcore->hide_outofstock = true;}
 		if ($this_option == '$ignore_duplicates') {$parent->ignoreDuplicates = true;}
-		if ($this_option == '$max_description_length') {$parent->max_description_length = $value;}
+		if ($this_option == '$max_description_length') {$parent->addErrorMessage(11001, 'Use of deprecated command: $max_description_length', true);}
 		if ($this_option == '$max_custom_field') {$parent->max_custom_field = $value;}
-		if ($this_option == '$productTypeFromLocalCategory') {$parent->productTypeFromLocalCategory = true;}
-		if ($this_option == '$productTypeFromWooCommerceCategory') {$parent->productTypeFromLocalCategory = true;} //Deprecated
 		if ($this_option == '$strip_html_markup') {$parent->stripHTML = true;}
-		if ($this_option == '$system_wide_shipping_type') {$parent->system_wide_shipping_type = $value;}  //Deprecated. Use $shipping
+		if ($this_option == '$system_wide_shipping_type') {$parent->addErrorMessage(11001, 'Use of deprecated command: $system_wide_shipping_type', true);} 
 		if ($this_option == '$timeout') {$parent->timeout = $value;}
 		if ($this_option == '$weight_unit') {$parent->weight_unit = $value;}
 
+		if ($this_option == '$basic_feed') {
+			//Minimal settings across the board
+			$parent->max_custom_field = 0; //no custom fields
+			$parent->allowRelatedData = false; //hunt for brand/tag/other
+			$parent->allow_attributes = false; //disables even woo attributes
+		}
+
 		if ($this_option == '$descriptions') {
-			if ($value == 'long') {$parent->descriptionFormat = 1;}
-			if ($value == 'short') {$parent->descriptionFormat = 2;}
+			$parent->addErrorMessage(11001, 'Use of deprecated command: $descriptions', true);
+		}
+		if ($this_option == '$description') {
+			$parent->addErrorMessage(11001, 'Use of deprecated command: $description', true);
 		}
 		if ($this_option == '$google_merchant_center') {
 			$parent->gmc_enabled = true;
@@ -201,9 +247,8 @@ class PFeedOverride extends PBaseFeedOverride {
 				$parent->gmc_attributes[] = $value;
 		}
 		if ($this_option == '$strict_description') {
-			$parent->descriptionStrict = true;
-			if (strlen($value) > 0)
-				$parent->descriptionStrictReplacementChar = $value;
+			//Complain about deprecated function
+			$parent->addErrorMessage(11000, 'Use of deprecated command: $strict_description', true);
 		}
 	
 		//***********************************************************
@@ -211,96 +256,24 @@ class PFeedOverride extends PBaseFeedOverride {
 		//***********************************************************
 
 		if ($this_option == '$discount') {
-			/*
-			Note: the spaces for the explode function to work
-			Note: BEDMAS means multiplier stronger than additive value
-			$discount = 5			Take 5 dollars off
-			$discount = 5 s			Take 5 dollars off sale price (if sale given - if sale not given, do not apply discount)
-			$discount = 0.95 *		Take 95% of price (5% discount)
-			$discount = 0.95 * s	Take 95% of sale price (5% discount)
-			*/
-			$parent->discount = true;
-			$discount_parameters = explode(' ', $value);
-			//Look for the number
-			foreach($discount_parameters as $this_parameter)
-				if (is_numeric($this_parameter)) {
-					$number_value = $this_parameter;
-					break;
-				}
-			if (in_array('*', $discount_parameters)) {
-				//multiplier. Default number_value -> 1.00
-				if (!isset($number_value)) $number_value = 1;
-				if (in_array('s', $discount_parameters))
-					$parent->discount_sale_multiplier = $number_value;
-				else
-					$parent->discount_multiplier = $number_value;
-			} else {
-				//Additive value
-				if (!isset($number_value)) $number_value = 0;
-				if (in_array('s', $discount_parameters))
-					$parent->discount_sale = $number_value;
-				else
-					$parent->discount_amount = $number_value;
-			}
+			//Complain about deprecated function
+			$parent->addErrorMessage(11002, 'Use of deprecated command: $discount', true);
 		}
-
-		//***********************************************************
-		// System-Wide Shipping - Legacy
-		//***********************************************************
 
 		//Deprecated shipping code. Migrate people away from this
 		if ($this_option == '$system_wide_shipping') {
-			$parent->system_wide_shipping = true;
-			$parent->system_wide_shipping_rate = $value;
-			if (($value == 'false') || ($value == 'off') || ($value == 'no'))
-				$parent->system_wide_shipping = false;
+			//Complain about deprecated function
+			$parent->addErrorMessage(11004, 'Use of deprecated command: $system_wide_shipping', true);
 		}
 
-		//***********************************************************
-		//System-Wide Shipping
-		//***********************************************************/
-
 		if ($this_option == '$shipping') {
-			/*
-			Note: the spaces for the explode function to work
-			Note: BEDMAS means multiplier stronger than additive value
-			$shipping = off|false	Shipping cost is forced off
-			$shipping = 5			Shipping cost is $5
-			$shipping = 0.95 *		Shipping is 95% of the full price
-			$shipping = 0.95 * s	Shipping is 95% of the sale price
-			$shipping = grnd|air t	Type
-			*/
-			$parameters = explode(' ', $value);
-			//Look for the number
-			foreach($parameters as $this_parameter)
-				if (is_numeric($this_parameter)) {
-					$number_value = $this_parameter;
-					break;
-				}
-			if (in_array('*', $parameters)) {
-				//multiplier. Default number_value -> 1.00
-				if (!isset($number_value)) $number_value = 1;
-				if (in_array('s', $parameters))
-					$parent->shipping_sale_multiplier = $number_value;
-				else
-					$parent->shipping_multiplier = $number_value;
-			} elseif (in_array('t', $parameters))
-				$parent->system_wide_shipping_type = $parameters[0];
-			else {
-				//Additive value
-				if (!isset($number_value)) $number_value = 0;
-				$parent->shipping_amount = $number_value;
-			}
-
-			//Toggle Shipping on/off
-			$parent->system_wide_shipping = true;
-			if (($value == 'false') || ($value == 'off') || ($value == 'no'))
-			$parent->system_wide_shipping = false;
+			//Complain about deprecated function
+			$parent->addErrorMessage(11004, 'Use of deprecated command: $shipping', true);
 		}
 
 		if ($this_option == '$system_wide_tax') {
-			$parent->system_wide_tax = true;
-			$parent->system_wide_tax_rate = $value;
+			//Complain about deprecated function
+			$parent->addErrorMessage(11005, 'Use of deprecated command: $system_wide_tax', true);
 		}
 
 		//Trick to block additional_images. This may come in handy if the user is getting errors
