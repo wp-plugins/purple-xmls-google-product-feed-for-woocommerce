@@ -37,6 +37,7 @@ class PAmazonSCFeed extends PCSVFeed
 	function loadTemplate($template) {
 
 		$this->initializeTemplateData($template);
+	//$this->addAttributeMapping($this->headerTemplateType, 'item_sku', true, true)->localized_name = 'SKU';
 		//The "All" template excludes FoodService and Inventory AND Coins 
 		if ($this->headerTemplateType != 'FoodServiceAndJanSan' 
 			&& $this->headerTemplateType != 'inventoryloader' 
@@ -70,101 +71,128 @@ class PAmazonSCFeed extends PCSVFeed
 		if ( $this->headerTemplateType == 'inventoryloader')
 		{
 			//sku auto mapped, product-id will be mapped by user
-		$product->attributes['price'] = $product->attributes['regular_price'];
-		if (isset($product->attributes['sale_price']))
-			$product->attributes['price'] = $product->attributes['sale_price'];
-		$product->attributes['quantity'] = $product->attributes['stock_quantity'];
-		}
+			$product->attributes['price'] = $product->attributes['regular_price'];
+			if (isset($product->attributes['sale_price']))
+				$product->attributes['price'] = $product->attributes['sale_price'];
+			$product->attributes['quantity'] = $product->attributes['stock_quantity'];
+			$product->attributes['item-condition'] = $product->attributes['condition'];
+
+		} //if headertemplatetype == inventoryloader
 		else { 
-		//********************************************************************
-		//Prepare the product
-		//********************************************************************		
-		$product->attributes['product_description'] = str_replace('"','""',$product->attributes['description']); //Needs a rule
-		$product->attributes['category'] = $this->current_category;
+			//********************************************************************
+			//Prepare the product
+			//********************************************************************		
+			$product->attributes['product_description'] = str_replace('"','""',$product->attributes['description']); //Needs a rule
+			$product->attributes['category'] = $this->current_category;
 
-		//format attributes (set them manually)
-		//.. instead of mapping brand -> manufacturer, map manufacturer->manufacturer and format here
-		//...easier for user to map using advanced commands
-		$product->attributes['item_sku'] = $product->attributes['sku'];	
-		if (isset($product->attributes['brand']))
-			$product->attributes['manufacturer'] = $product->attributes['brand'];
-		
-		if ( $product->attributes['stock_status'] == 1 ) {
-			if ( !empty($product->attributes['stock_quantity']) )
-				$product->attributes['quantity'] = $product->attributes['stock_quantity'];
+			//format attributes (set them manually)
+			//.. instead of mapping brand -> manufacturer, map manufacturer->manufacturer and format here
+			//...easier for user to map using advanced commands
+			$product->attributes['item_sku'] = $product->attributes['sku'];	
+			$product->attributes['item_name'] = $product->attributes['title'];
+
+			if (isset($product->attributes['brand']))
+				$product->attributes['manufacturer'] = $product->attributes['brand'];
+			
+			if ( $product->attributes['stock_status'] == 1 ) {
+				if ( !empty($product->attributes['stock_quantity']) )
+					$product->attributes['quantity'] = $product->attributes['stock_quantity'];
+				}
+			else {
+			$product->attributes['quantity'] = '0';
 			}
-		else {
-		$product->attributes['quantity'] = '0';
-		}
-		
-		//what if regular_price is blank but sale_price is present?
-		$product->attributes['standard_price'] = $product->attributes['regular_price'];	
-		if (isset($product->attributes['sale_price']))
-			$product->attributes['sales_price'] = $product->attributes['sale_price'];	
-		
-		$product->attributes['item-weight'] = $product->attributes['weight'];
-		$product->attributes['website-shipping-weight'] = $product->attributes['weight'];	
-		
-		$valid_weight_unit = $this->weight_unit;
-		if ( $valid_weight_unit == 'kg' ) {
-			$product->attributes['item-weight-unit-of-measure'] = 'kilograms';
-			$product->attributes['website-shipping-weight-unit-of-measure'] = 'kilograms';
-			$product->attributes['item_weight_unit_of_measure'] = 'kilograms';
-		}			
-		else if ( $valid_weight_unit == 'g' ) {
-			$product->attributes['item-weight-unit-of-measure'] = 'grams';
-			$product->attributes['website-shipping-weight-unit-of-measure'] = 'grams';
-			$product->attributes['item_weight_unit_of_measure'] = 'grams';
-		}
-		else if ( $valid_weight_unit == 'lbs' ) {
-			$product->attributes['item-weight-unit-of-measure'] = 'pounds';
-			$product->attributes['website-shipping-weight-unit-of-measure'] = 'pounds';
-			$product->attributes['item_weight_unit_of_measure'] = 'pounds';
-		}
-		else {
-			$product->attributes['item-weight-unit-of-measure'] = 'ounces';
-			$product->attributes['website-shipping-weight-unit-of-measure'] = 'ounces';
-			$product->attributes['item_weight_unit_of_measure'] = 'ounces';
-		}
+			
+			//what if regular_price is blank but sale_price is present?
+			$product->attributes['standard_price'] = $product->attributes['regular_price'];	
+			//sale price usually requires an effective date.
+			if (isset($product->attributes['sale_price']))
+				$product->attributes['standard_price'] = $product->attributes['sale_price'];	
+			
+			$product->attributes['item_weight'] = $product->attributes['weight'];			
+			$product->attributes['website-shipping-weight'] = $product->attributes['weight'];
+			$product->attributes['dimension_unit'] = $this->dimension_unit;	
+			
+			//modify item weight unit to fit amazon's valid weight units. ex: convert g -> GR 
+			$valid_weight_unit = $this->weight_unit;
+			if ( $valid_weight_unit == 'kg' ) {
+				$product->attributes['item-weight-unit-of-measure'] = 'kilograms';
+				$product->attributes['weight_unit'] = 'KG';
+				$product->attributes['item_weight_unit'] = 'KG';
+			}			
+			else if ( $valid_weight_unit == 'g' ) {
+				$product->attributes['item-weight-unit-of-measure'] = 'grams';
+				$product->attributes['weight_unit'] = 'GR';
+				$product->attributes['item_weight_unit'] = 'GR';
+			}
+			else if ( $valid_weight_unit == 'lbs' ) {
+				$product->attributes['item-weight-unit-of-measure'] = 'pounds';
+				$product->attributes['weight_unit'] = 'LB';
+				$product->attributes['item_weight_unit'] = 'LB';
+			}
+			else {
+				$product->attributes['item-weight-unit-of-measure'] = 'ounces';
+				$product->attributes['weight_unit'] = 'OZ';
+				$product->attributes['item_weight_unit'] = 'OZ';
+			}
 
-		//fix missing brand error (customized error)
-		if (isset($product->attributes['brand']))
-			$product->attributes['brand_name'] = $product->attributes['brand'];
-		else
-			$product->attributes['brand_name'] = '';
+			switch($this->dimension_unit){
+				case 'm':
+					$product->attributes['item-dimensions-unit-of-measure'] = 'meters';
+					break;
+				case 'cm':
+					$product->attributes['item-dimensions-unit-of-measure'] = 'centimeters';
+					break;
+				case 'mm':
+					$product->attributes['item-dimensions-unit-of-measure'] = 'millimeters';
+					break;
+				case 'in':
+					$product->attributes['item-dimensions-unit-of-measure'] = 'inches';
+					break;
+				case 'ft':					
+					$product->attributes['item-dimensions-unit-of-measure'] = 'feet';
+					break;
+				default:
+					$product->attributes['dimension_unit'] = $this->dimension_unit;
+			}
 
-		if ( !isset($product->attributes['item_sku']) )
-			$product->attributes['item_sku'] = $product->id;
-		if ( !isset($product->attributes['manufacturer']) )
-			$product->attributes['manufacturer'] = '';
-		if ( isset($product->attributes['feed_product_type']) )
-			$product->attributes['feed_product_type'] = '';
-		
-		//sometimes templates only have one feed_product_type.
-		if (isset($this->feed_product_type) && strlen($this->feed_product_type) > 0)
-		if ( !isset($product->attributes['feed_product_type']) || (strlen($product->attributes['feed_product_type']) == 0) )
-			$product->attributes['feed_product_type'] = $this->feed_product_type;
-		
-		$image_count = 1;
-		foreach($product->imgurls as $imgurl) {
-			$image_index = "other_image_url$image_count";
-			$product->attributes[$image_index] = $imgurl;
-			$image_count++;
-			if ($image_count >= 9)
-				break;
-		}
+			//fix missing brand error (customized error)
+			if (isset($product->attributes['brand']))
+				$product->attributes['brand_name'] = $product->attributes['brand'];
+			// else
+			// 	$product->attributes['brand_name'] = $product->attributes['brand_name'];
 
-		if (!$product->attributes['has_sale_price'])
-			$product->attributes['sale_price'] = '';
-		if (!isset($product->attributes['currency']) || (strlen($product->attributes['currency']) == 0))
-			$product->attributes['currency'] = $this->currency;
-		if (!isset($product->attributes['item_package_quantity']))
-			$product->attributes['item_package_quantity'] = 1;
-		$product->attributes['shipping_cost'] = '0.00';
-		$product->attributes['shipping_weight'] = $product->attributes['weight'];
+			//default values
+			if ( !isset($product->attributes['feed_product_type']) )
+			 	$product->attributes['feed_product_type'] = '- refer to Inventory Template -';
+			if ( !isset($product->attributes['item_type']) )
+				$product->attributes['item_type'] = '- refer to Template\'s BTG -';
+			if ( !isset($product->attributes['item-type-keyword']) )
+				$product->attributes['item-type-keyword'] = '- refer to Template\'s BTG -';
+			
+			//sometimes templates only have one feed_product_type.
+			if ( (strlen($this->feed_product_type) > 0) || (strlen($product->attributes['feed_product_type']) == 0) )
+				$product->attributes['feed_product_type'] = $this->feed_product_type;
+			
+			$image_count = 1;
+			foreach($product->imgurls as $imgurl) {
+				$image_index = "other_image_url$image_count";
+				$product->attributes[$image_index] = $imgurl;
+				$image_count++;
+				if ($image_count >= 9)
+					break;
+			}
+
+			if (!$product->attributes['has_sale_price'])
+				$product->attributes['sale_price'] = '';
+			if (!isset($product->attributes['currency']) || (strlen($product->attributes['currency']) == 0))
+				$product->attributes['currency'] = $this->currency;
+			if (!isset($product->attributes['item_package_quantity']))
+				$product->attributes['item_package_quantity'] = 1;
+			$product->attributes['shipping_cost'] = '0.00';
+			$product->attributes['shipping_weight'] = $product->attributes['weight'];
 		
 		
-		} //if NOT inventoryloader
+		} //else NOT inventoryloader
 
 		//if ($product->attributes['isVariation'])
 			//$product->attributes['parent_child'] = 'Variation'; //Trying without variations for now
@@ -177,6 +205,7 @@ class PAmazonSCFeed extends PCSVFeed
 			$product->attributes['product_description'] = substr($product->attributes['description'], 0, 2000);
 			$this->addErrorMessage(8000, 'Description truncated for ' . $product->attributes['title'], true);
 		}
+		
 		/*if (!isset($product->attributes['brand']) || (strlen($product->attributes['brand']) == 0))
 			$this->addErrorMessage(8001, 'Brand not set for ' . $product->attributes['title'], true);
 		if (($this->external_product_id_type == 'UPC') && (strlen($product->attributes['external_product_id']) == 0))

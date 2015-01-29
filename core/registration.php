@@ -106,7 +106,7 @@ class PLicense {
 			curl_setopt($ch, CURLOPT_URL, $whmcsurl . 'modules/servers/licensing/verify.php');
 			curl_setopt($ch, CURLOPT_POST, 1);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
-			curl_setopt($ch, CURLOPT_TIMEOUT, 150);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 			//added for users who experience 'Remote Check Failed' license issue.
 			//it is not enough to disable CURLOPT_SSL_VERIFYPEER

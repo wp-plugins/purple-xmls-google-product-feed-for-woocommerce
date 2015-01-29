@@ -59,6 +59,8 @@ class PBaseFeedDialog {
 		<option value="brand">brand (auto-detect)</option>
 		<option value="id">id</option>	
 		<option value="sku">sku</option>
+		<option value="title">title</option>
+		<option value="sale_price">sale_price</option>
 		<option value="default1">default1</option>
 		<option value="default2">default2</option>
 		<option value="default3">default3</option>	
@@ -105,7 +107,7 @@ http://www.shoppingcartproductfeed.com/tos/generate-google-merchant-feed-woocomm
 				<p><a target="blank" title="Generate Merchant Feed" href="http://shoppingcartproductfeed.com/generate-google-merchant-feed-woocommerce/">Generate your first feed</a> | 
 				<a target=\'_blank\' href=\'http://www.shoppingcartproductfeed.com/tos/\' >View guides</a></p>
 				<p>Use the drop downs below to re-map ' . $pfcore->cmsPluginName . ' attributes to ' .$this->service_name.'\'s required attributes.</p>
-				<p>Additional attributes can also be found below by clicking the [Show] button.</p>
+				<p>Additional attributes can also be found below by clicking [Show] Additional Attributes.</p>
 				<label class="attributes-label" title="Required Attributes" id="toggleRequiredAttributes" onclick="toggleRequiredAttributes()">Required Attributes</label>
 				<div class="required-attributes" id=\'required-attributes\'>
 				<table>

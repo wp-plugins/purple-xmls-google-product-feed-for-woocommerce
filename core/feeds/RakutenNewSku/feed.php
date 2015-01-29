@@ -83,8 +83,10 @@ class PRakutenNewSkuFeed extends PCSVFeedEx {
 		$product->attributes['listing-price'] = $rakuten_price;
 
 		//if product weight is in ounces, conver to lbs
-		$product_weight_in_lbs = $product->attributes['weight']*0.0625;
-		$product->attributes['weight'] = sprintf('%0.2f', $product_weight_in_lbs);
+		if ($this->weight_unit == 'oz' || $this->weight_unit == 'ounces') {
+			$product_weight_in_lbs = $product->attributes['weight']*0.0625;
+			$product->attributes['weight'] = sprintf('%0.2f', $product_weight_in_lbs);
+		}
 
 		$category = explode(" ", $product->attributes['current_category']);
 		if (isset($category[0]))

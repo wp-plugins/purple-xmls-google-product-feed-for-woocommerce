@@ -7,8 +7,9 @@
 
 //Amazon attributes that almost all templates use.
 	$this->addAttributeMapping('item_sku', 'item_sku', true, true)->localized_name = 'SKU';
-	$this->addAttributeMapping('title', 'item_name', true,true)->localized_name = 'Product Name';
-	$this->addAttributeMapping('-refer to BTG-', 'item_type',true,true)->localized_name = 'Item Type Keyword';
+	$this->addAttributeMapping('item_name', 'item_name', true,true)->localized_name = 'Product Name';
+	//-refer to BTG
+	$this->addAttributeMapping('item_type', 'item_type',true,true)->localized_name = 'Item Type Keyword';
 
 	//brand required by default
 	$brandRequired = !($this->template == 'home.and.garden' || $this->template == 'software.and.video games' 
@@ -36,7 +37,7 @@
 	
 	$this->addAttributeMapping('currency', 'currency')->localized_name = 'Currency'; 
 	$this->addAttributeMapping('quantity', 'quantity')->localized_name = 'Quantity';
-
+	$this->addAttributeMapping('condition', 'condition_type')->localized_name = 'Item Condition';
 	//need to 'set get_wc_shipping_attributes as true' to enable pulling l,w,h
 	//may be a taxing call
 	$this->addAttributeMapping('length', 'item_length')->localized_name = 'Item Length';
@@ -47,8 +48,7 @@
 	$this->addAttributeMapping('weight', 'item_weight')->localized_name = 'Item Weight';
 	$this->addAttributeMapping('weight_unit', 'item_weight_unit_of_measure')->localized_name = 'Item Weight Unit Of Measure';
 	
-	//$this->addAttributeMapping('sale_price', 'sale_price')->localized_name = 'Sale Price';	
-
+	//$this->addAttributeMapping('sale_price', 'sale_price')->localized_name = 'Sale Price';
 	//Optional
 	for ($i = 1; $i <= 3; $i++)
 		$this->addAttributeMapping('', 'bullet_point' . $i, true)->localized_name = 'Key Product Features' . $i; //in camera.and.photo, localized name is Bullet Point1

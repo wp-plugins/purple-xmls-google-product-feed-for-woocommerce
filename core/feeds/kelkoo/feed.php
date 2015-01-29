@@ -40,7 +40,45 @@ class PkelkooFeed extends PBasicFeed {
 
   	function initializeFeed( $category, $remote_category ) 
 	{		
-		$this->loadTemplate($remote_category);
+		switch ($remote_category){
+			case 'Any/Other':
+				$template = '';
+				break;
+			case 'Books':
+				$template = 'books';
+				break;
+			case 'Video games and software':
+				$template = 'videogames.software';
+				break;
+			case 'Fashion and Fashion accessories':
+				$template = 'fashion.accessories';
+				break;
+			case 'Mobilephones with subscription and Prepaid cards':
+				$template = 'mobilephones';
+				break;	
+			case 'Movies':
+				$template = 'movies';
+				break;	
+			case 'Music':
+				$template = 'music';
+				break;	
+			case 'New and used cars':
+				$template = 'new.usedcars';
+				break;	
+			case 'Property':
+				$template = 'property';
+				break;	
+			case 'Wine and Champagne':
+				$template = 'wine.champagne';
+				break;	
+			case 'Tyres':
+				$template = 'tyres';
+				break;				
+			default:
+				$template = '';
+				break;
+		}
+		$this->loadTemplate($template);
 	}
 
 	function formatProduct($product) {

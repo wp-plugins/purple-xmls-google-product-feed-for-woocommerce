@@ -1,4 +1,3 @@
-All.Templates
 Any/Other
 Books
 Video games and software

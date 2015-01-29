@@ -13,8 +13,9 @@
   require_once dirname(__FILE__) . '/../../classes/dialogbasefeed.php';
 	require_once dirname(__FILE__) . '/../../classes/providerlist.php';
   
-  $feedType = $_POST['provider']; //'kelkoo';//'amazonsc';
-	$template = $_POST['template'];
+  $feedType = $_POST['provider']; //ex: 'kelkoo', 'amazonsc';
+  $category = $_POST['template'];
+	//$template = $_POST['template'];
 
   if (strlen($feedType) == 0)
     return;
@@ -25,7 +26,8 @@
   include_once $inc;
   $f = new $feedObjectName();
 	$f->initializeProvider();
-	$f->provider->loadTemplate($template);
+  $f->provider->initializeFeed($category, $category);
+	//$f->provider->loadTemplate($template, $template);
   echo $f->attributeMappings();
 	
 ?>

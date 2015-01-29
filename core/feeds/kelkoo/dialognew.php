@@ -23,8 +23,8 @@ class kelkooDlg extends PBaseFeedDialog {
 			return '';
 		else
 			return '
-			  <label class="label" for="categoryDisplayText" >Template : </label>
-			  <span><input type="text" name="categoryDisplayText" class="text_big" id="categoryDisplayText"  onkeyup="doFetchCategory_timed(\'' . $this->service_name . '\',  this.value);" value="' . $initial_remote_category . '" autocomplete="off" placeholder="Start typing template name" /></span>
+			  <label class="label" for="categoryDisplayText" >Category : </label>
+			  <span><input type="text" name="categoryDisplayText" class="text_big" id="categoryDisplayText"  onkeyup="doFetchCategory_timed(\'' . $this->service_name . '\',  this.value);" value="' . $initial_remote_category . '" autocomplete="off" placeholder="Start typing category name" /></span>
 			  <div id="categoryList" class="categoryList"></div>
 			  <input type="hidden" id="remote_category" name="remote_category" value="' . $initial_remote_category . '">';
 	}

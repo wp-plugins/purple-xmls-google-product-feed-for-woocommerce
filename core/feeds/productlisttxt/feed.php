@@ -19,7 +19,7 @@ class PProductlisttxtFeed extends PCSVFeedEx {
 		$this->providerName = 'Productlisttxt';
 		$this->providerNameL = 'productlisttxt';
 		$this->fileformat = 'txt';
-		$this->stripHTML = true;	
+		$this->stripHTML = true;
 
 		$this->addAttributeMapping('description', 'description', true);
 	}

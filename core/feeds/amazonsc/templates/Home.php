@@ -14,6 +14,9 @@
 	SeedsAndPlants
 	*/
 	$this->addAttributeMapping('feed_product_type', 'feed_product_type',true,true)->localized_name = 'Product Type';
+	$this->addAttributeMapping('', 'model',true,false)->localized_name = 'Model Number';
+	
+
 	$this->addAttributeMapping('', 'part_number', true,false)->localized_name = 'Manufacturer Part Number';
 	$this->addAttributeMapping('material_type','material_type',true,false)->localized_name = "Material Type";
 	$this->addAttributeMapping('included_features', 'included_features',true,false)->localized_name = 'Included Features'; //Indicates whether the product is organic, biodegradable etc.

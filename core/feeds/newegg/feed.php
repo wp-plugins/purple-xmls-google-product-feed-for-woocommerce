@@ -41,7 +41,7 @@ class PNeweggFeed extends PCSVFeedEx {
 		$this->addAttributeMapping('', 'MSRP'); //minimum advertised price
 		$this->addAttributeMapping('', 'MAP');
 		$this->addAttributeMapping('', 'CheckoutMAP'); //true or false
-		$this->addAttributeMapping('sale_price', 'Selling Price');
+		$this->addAttributeMapping('Selling Price', 'Selling Price');
 		$this->addAttributeMapping('', 'Shipping');
 		$this->addAttributeMapping('stock_quantity', 'Inventory');
 		$this->addAttributeMapping('', 'Activation Mark');

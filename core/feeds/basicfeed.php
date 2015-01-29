@@ -28,6 +28,7 @@ class PBasicFeed {
 	public $currency;
 	public $currency_shipping = ''; //(Currently uses currency_format)
 	public $currency_format = '%1.2f';
+	public $dimension_unit;
 	public $errors = array();
 	public $fileformat = 'xml';
 	public $fieldDelimiter = "\t"; //For CSVs
@@ -450,6 +451,7 @@ class PBasicFeed {
 
 		$this->feed_category = new md5y();
 		$this->weight_unit = $pfcore->weight_unit;
+		$this->dimension_unit = $pfcore->dimension_unit;
 		$this->currency = $pfcore->currency;
 
 		$this->addRule('description', 'description');

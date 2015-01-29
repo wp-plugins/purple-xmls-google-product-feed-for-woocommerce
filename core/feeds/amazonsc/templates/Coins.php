@@ -4,9 +4,9 @@
 	//2014-12
 	//********************************************************************
 //required - basic
-$this->addAttributeMapping('sku', 'item_sku', true, true)->localized_name = 'SKU';
+$this->addAttributeMapping('item_sku', 'item_sku', true, true)->localized_name = 'SKU';
 $this->addAttributeMapping('product_description', 'product_description', true, true)->localized_name = 'Product Description';
-$this->addAttributeMapping('', 'item_type', true, true)->localized_name = 'Item Type';
+$this->addAttributeMapping('item_type', 'item_type', true, true)->localized_name = 'Item Type';
 /* valid values for item type (Coins)
 collectible-coins
 collectible-gold-coins
@@ -17,7 +17,7 @@ us-mint-sealed-collectible-coins
 $this->addAttributeMapping('weight', 'item_weight', true)->localized_name = 'Total Item Weight';
 $this->addAttributeMapping('weight_unit', 'item_weight_unit_of_measure', true)->localized_name = 'Total Item Weight Unit of Measure';
 //required - offer - these attributes are required to make your item buyable for customers on the site
-$this->addAttributeMapping('', 'standard_price', true, true)->localized_name = 'Your Price';
+$this->addAttributeMapping('standard_price', 'standard_price', true, true)->localized_name = 'Your Price';
 $this->addAttributeMapping('quantity', 'quantity', true, true)->localized_name = 'Quantity';
 $this->addAttributeMapping('', 'fulfillment_latency', true, true)->localized_name = 'Handling Time';
 //required - image
