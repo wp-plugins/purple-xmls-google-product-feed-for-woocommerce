@@ -14,7 +14,7 @@ class RakutenDlg extends PBaseFeedDialog {
 	function __construct() {
 		parent::__construct();
 		$this->service_name = 'Rakuten';		
-		$this->service_name_long = 'Rakuten Inventory Listing';
+		$this->service_name_long = 'Rakuten Inventory Load Feed';
 		$this->blockCategoryList = true;
 	
 	}

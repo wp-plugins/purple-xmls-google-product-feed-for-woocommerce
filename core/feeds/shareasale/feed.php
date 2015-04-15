@@ -19,11 +19,11 @@ class PShareASaleFeed extends PCSVFeedEx {
 		$this->providerName = 'ShareASale';
 		$this->providerNameL = 'shareasale';
 		$this->fileformat = 'csv';
-		$this->fields = array("SKU","Name","URL to product","Price","Retail Price","URL to image",
-			"URL to thumbnail image","Commission","Category","SubCategory","Description",
-			"SearchTerms","Status","Your MerchantID", "Custom 1", "Custom 2", "Custom 3",
-			"Custom 4", "Custom 5","Manufacturer","PartNumber","MerchantCategory",
-			"MerchantSubcategory","ShortDescription","ISBN","UPC");
+		$this->fields = array('SKU','Name','URL to product','Price','Retail Price','URL to image',
+			'URL to thumbnail image','Commission','Category','SubCategory','Description',
+			'SearchTerms','Status','Your MerchantID', 'Custom 1', 'Custom 2', 'Custom 3',
+			'Custom 4', 'Custom 5','Manufacturer','PartNumber','MerchantCategory',
+			'MerchantSubcategory','ShortDescription','ISBN','UPC');
 		$this->fieldDelimiter = ',';
 		$this->stripHTML = true;
 
@@ -31,29 +31,31 @@ class PShareASaleFeed extends PCSVFeedEx {
 		$this->addAttributeMapping('sku', 'SKU',true,true); //1
 		$this->addAttributeMapping('title', 'Name', true,false);
 		$this->addAttributeMapping('link', 'URL', true,true);
-		$this->addAttributeMapping('regular_price', 'Price',true,true);
-		$this->addAttributeMapping('retail_price', 'Retail Price',false,false); //5
+		$this->addAttributeMapping('price', 'Price',true,true);
+		$this->addAttributeMapping('regular_price', 'Retail Price',false,false); //5
 		$this->addAttributeMapping('feature_imgurl', 'Full Image');
 		$this->addAttributeMapping('other_image_url_0', 'Thumbnail Image');
-		$this->addAttributeMapping('commission', 'Commission');
-		$this->addAttributeMapping('category', 'Category',true,true);
+		$this->addAttributeMapping('', 'Commission');
+		$this->addAttributeMapping('current_category', 'Category',true,true);
+//Missing ShareASale SubCategories
 		$this->addAttributeMapping('subcategory', 'SubCategory',true,true); //10
 		$this->addAttributeMapping('description', 'Description', true);
-		$this->addAttributeMapping('searchterms', 'SearchTerms', true);
-		$this->addAttributeMapping('status', 'Status');
+		$this->addAttributeMapping('', 'SearchTerms', true); //comma separated list
+		$this->addAttributeMapping('stock_status', 'Status');
 		$this->addAttributeMapping('merchant_id', 'Your MerchantID',true,true); 
-		$this->addAttributeMapping('custom1', 'Custom 1'); //15
-		$this->addAttributeMapping('custom2', 'Custom 2');
-		$this->addAttributeMapping('custom3', 'Custom 3');
-		$this->addAttributeMapping('custom4', 'Custom 4');
-		$this->addAttributeMapping('custom5', 'Custom 5');
+		$this->addAttributeMapping('', 'Custom 1'); //15
+		$this->addAttributeMapping('', 'Custom 2');
+		$this->addAttributeMapping('', 'Custom 3');
+		$this->addAttributeMapping('', 'Custom 4');
+		$this->addAttributeMapping('', 'Custom 5');
 		$this->addAttributeMapping('brand', 'Manufacturer'); //20
-		$this->addAttributeMapping('partnumber', 'PartNumber');
+		$this->addAttributeMapping('', 'PartNumber');
 		$this->addAttributeMapping('localCategory', 'MerchantCategory');
-		$this->addAttributeMapping('localsubcategory', 'MerchantSubcategory');
+		$this->addAttributeMapping('', 'MerchantSubcategory'); 
 		$this->addAttributeMapping('description_short', 'ShortDescription');
-		$this->addAttributeMapping('isbn', 'ISBN');
-		$this->addAttributeMapping('upc', 'UPC');
+		$this->addAttributeMapping('', 'ISBN');
+		$this->addAttributeMapping('', 'UPC');
+	// these were found from exampledatafeed csv file	
 		$this->addAttributeMapping('', 'CrossSell');
 		$this->addAttributeMapping('', 'MerchantGroup');
 		$this->addAttributeMapping('', 'MerchantSubgroup');
@@ -77,19 +79,18 @@ class PShareASaleFeed extends PCSVFeedEx {
 		$this->addAttributeMapping('', 'ReservedForFutureUse');
 		$this->addAttributeMapping('', 'ReservedForFutureUse');
 		$this->addAttributeMapping('', 'ReservedForFutureUse');
-		$this->addAttributeMapping('', 'ReservedForFutureUse');		
+		$this->addAttributeMapping('', 'ReservedForFutureUse');	
+	
+		$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
+		$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree		
+		$this->addRule('price_rounding','pricerounding'); //2 decimals	 
+		//Description and title: escape any quotes
+		$this->addRule( 'csv_standard', 'CSVStandard',array('title') ); 
+		$this->addRule( 'csv_standard', 'CSVStandard',array('description') );
+	
 	}
 
 	function formatProduct($product) {
-
-		//********************************************************************
-		//Pre-flight
-		//********************************************************************
-		if (!isset($this->merchant_id)) {
-			$this->addErrorMessage(9000, 'MerchantID not configured. Need advanced command: $merchant-id = ....', true);
-			$this->addErrorMessage(9001, 'You can find your Merchant ID in the top left corner of the ShareASale web interface for advertisers/merchants (login required)', true);
-			$this->merchant_id = '';
-		}
 
 		//********************************************************************
 		//Prepare
@@ -97,21 +98,26 @@ class PShareASaleFeed extends PCSVFeedEx {
 		$product->attributes['merchant_id'] = $this->merchant_id;
 		$product->attributes['description_short'] = $product->description_short;
 
-		$product->attributes['retail_price'] = $product->attributes['regular_price'];
-		if ($product->attributes['has_sale_price'])
-			$product->attributes['retail_price'] = $product->attributes['sale_price'];
-
 		if ($product->attributes['stock_status'] == 1)
-			$product->attributes['status'] = 'instock';
+			$product->attributes['stock_status'] = 'instock';
 		else
-			$product->attributes['status'] = 'soldout';
+			$product->attributes['stock_status'] = 'soldout';
 
 		$cat = explode(':', $this->current_category);
 		if (count($cat) < 2)
-			$product->attributes['category'] = '';
+			$product->attributes['current_category'] = '';
 		else
-			$product->attributes['category'] = (int)$cat[0];
+			$product->attributes['current_category'] = (int)$cat[0];
 
+		//********************************************************************
+		//Post-flight
+		//********************************************************************
+		if ( !isset($this->merchant_id) || strlen($product->attributes['merchant_id']) == 0 ) {
+			$this->addErrorMessage(9000, 'MerchantID not configured. Need advanced command: $merchant-id = ....', true);
+			//$this->addErrorMessage(9001, 'You can find your Merchant ID in the top left corner of the ShareASale web interface for advertisers/merchants (login required)', true);
+			$this->productCount--;
+			$this->merchant_id = '';
+		}
 		return parent::formatProduct($product);
 		
 	}

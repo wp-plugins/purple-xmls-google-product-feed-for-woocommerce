@@ -29,6 +29,9 @@ function doOutput($output) {
 require_once dirname(__FILE__) . '/../../../cart-product-wpincludes.php';
 
 do_action('load_cpf_modifiers');
+global $pfcore;
+$pfcore->trigger('cpf_init_feeds');
+
 add_action( 'get_feed_main_hook', 'get_feed_main' );
 do_action('get_feed_main_hook');
 
@@ -76,13 +79,16 @@ function get_feed_main() {
 
 	$providerFile = 'feeds/' . strtolower($requestCode) . '/feed.php';
 
-	if (!file_exists(dirname(__FILE__) . '/../../' . $providerFile)) {
-	  $output->errors = 'Error: Provider file not found.';
-		doOutput($output);
-	  return;
-	}
+	if (!file_exists(dirname(__FILE__) . '/../../' . $providerFile)) 
+		if (!class_exists('P' . $requestCode . 'Feed')) {
+			$output->errors = 'Error: Provider file not found.';
+			doOutput($output);
+			return;
+		}
 
-	require_once dirname(__FILE__) . '/../../' . $providerFile;
+	$providerFileFull = dirname(__FILE__) . '/../../' . $providerFile;
+	if (file_exists($providerFileFull))
+		require_once $providerFileFull;
 
 	//Load form data
 	$file_name = sanitize_title_with_dashes($file_name);

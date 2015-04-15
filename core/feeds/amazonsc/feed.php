@@ -1,15 +1,15 @@
 <?php
 
-	/********************************************************************
-	Version 2.0
-		An Amazon Feed (Product Ads)
-		Copyright 2014 Purple Turtle Productions. All rights reserved.
-		license	GNU General Public License version 3 or later; see GPLv3.txt
-	By: Keneto 2014-08
+/********************************************************************
+Version 2.0
+	An Amazon Feed (Product Ads)
+	Copyright 2014 Purple Turtle Productions. All rights reserved.
+	license	GNU General Public License version 3 or later; see GPLv3.txt
+By: Keneto 2014-08
 
-  ********************************************************************/
+********************************************************************/
 
-/**** Changes to categories.txt should be relfected in initializeTemplateData() ***/
+/*** Changes to categories.txt should be relfected in initializeTemplateData() ***/
 
 require_once dirname(__FILE__) . '/../basicfeed.php';
 
@@ -31,32 +31,77 @@ class PAmazonSCFeed extends PCSVFeed
 
 		$this->external_product_id_type = '';
 		$this->addRule('description', 'description', array('strict'));
-		$this->stripHTML = true;		
+		$this->stripHTML = true;	
+
+		$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
+		$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree
+		$this->addRule('price_rounding','pricerounding');	
+		$this->addRule( 'csv_standard', 'CSVStandard',array('title') ); 
+		$this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 
 	}
 
 	function loadTemplate($template) {
 
-		$this->initializeTemplateData($template);
-	//$this->addAttributeMapping($this->headerTemplateType, 'item_sku', true, true)->localized_name = 'SKU';
-		//The "All" template excludes FoodService and Inventory AND Coins 
-		if ($this->headerTemplateType != 'FoodServiceAndJanSan' 
-			&& $this->headerTemplateType != 'inventoryloader' 
-			&& $this->headerTemplateType != 'Coins'
-			&& $this->headerTemplateType != 'EntertainmentCollectibles'
+	$this->initializeTemplateData($template);
+
+	//lower case headertemplatetype to match templateType.php
+	$thisHeaderTemplateType = strtolower($this->headerTemplateType);
+
+	//load Italian templates
+	if ( strpos(strtolower($template), 'it/') !== false ) {
+
+		include dirname(__FILE__) . '/templates/it-IT/all.templates.it.php';
+
+		$files = scandir(dirname(__FILE__) . '/templates/it-IT');
+		foreach($files as $file)
+			if (strtolower($file) == $thisHeaderTemplateType.'.php')
+			//if (strpos($file, $this->headerTemplateType) !== false)
+					include_once dirname(__FILE__) . '/templates/it-IT/' . $file;
+	}
+
+	//load Amazon UK templates
+	elseif ( strpos(strtolower($template), 'uk/') !== false ) {
+		if ( $thisHeaderTemplateType != 'offer' &&
+			 $thisHeaderTemplateType != 'priceinventory' &&
+			 $thisHeaderTemplateType != 'inventoryloader')
+			include dirname(__FILE__) . '/templates/en-UK/all.templates.uk.php';
+		$files = scandir(dirname(__FILE__) . '/templates/en-UK');
+		foreach($files as $file)
+			if (strtolower($file) == $thisHeaderTemplateType.'.php')
+			//if (strpos($file, $this->headerTemplateType) !== false)
+					include_once dirname(__FILE__) . '/templates/en-UK/' . $file;
+	}
+
+	//load Amazon ES templates
+	elseif ( strpos(strtolower($template), 'es/') !== false ) {}
+
+	//load Amazon FR templates
+	elseif ( strpos(strtolower($template), 'fr/') !== false ) {}
+
+	//load Amazon DE templates
+	elseif ( strpos(strtolower($template), 'de/') !== false ) {}
+	
+	//Load US Amazon templates
+	else {
+		//load the "all.template" file (excludes some categories)
+		if ( $thisHeaderTemplateType != 'foodserviceandjansan' &&
+			 $thisHeaderTemplateType != 'inventoryloader' &&
+			 $thisHeaderTemplateType != 'coins' &&
+			 $thisHeaderTemplateType != 'entertainmentcollectibles' &&
+			 $thisHeaderTemplateType != 'offer' &&
+			 $thisHeaderTemplateType != 'priceinventory'
 			)
-			include_once dirname(__FILE__) . '/templates/all.templates.php';
+			include dirname(__FILE__) . '/templates/all.templates.php';
 
 		//Load the individual templates
 		$files = scandir(dirname(__FILE__) . '/templates');
 		foreach($files as $file)
-			if ($file == $this->headerTemplateType.'.php')
-			//if (strpos($file, $this->headerTemplateType) !== false)
+			if ( strcasecmp($file, $thisHeaderTemplateType .'.php') == 0 ) 
 				include_once dirname(__FILE__) . '/templates/' . $file;
-
+		}
 
 		//Note external_product_id_type is generated on the fly, under formatProducts function
 		//$this->addAttributeMapping('external_product_id_type', 'external_product_id_type')->localized_name = 'Product ID Type';
-	
 		//item_type: please refer to BTG
 		
 		$this->templateLoaded = true;
@@ -64,135 +109,174 @@ class PAmazonSCFeed extends PCSVFeed
 	}
 
 	function formatProduct($product) {
-
+		
+		global $pfcore; //required to set sale_date_from/to
+		
 		if (!$this->templateLoaded)
 			$this->loadTemplate();
 
-		if ( $this->headerTemplateType == 'inventoryloader')
+		//all templates require stock
+		if ( !isset($product->attributes['quantity']) )
+				$product->attributes['quantity'] = $product->attributes['stock_quantity'];
+			
+		if ( $this->headerTemplateType == 'inventoryloader' || $this->headerTemplateType == 'priceinventory' )
 		{
 			//sku auto mapped, product-id will be mapped by user
-			$product->attributes['price'] = $product->attributes['regular_price'];
-			if (isset($product->attributes['sale_price']))
-				$product->attributes['price'] = $product->attributes['sale_price'];
-			$product->attributes['quantity'] = $product->attributes['stock_quantity'];
-			$product->attributes['item-condition'] = $product->attributes['condition'];
-
+			// $product->attributes['price'] = $product->attributes['regular_price'];
+			// if (isset($product->attributes['sale_price']))
+			// 	$product->attributes['price'] = $product->attributes['sale_price'];
+			$product->attributes['leadtime_to_ship'] = $this->leadtime_to_ship;
+			
 		} //if headertemplatetype == inventoryloader
-		else { 
+		
+		else if ( $this->headerTemplateType == 'Offer') //listing loader
+		{
+			if ( !isset($product->attributes['condition']) ); 
+				$product->attributes['condition'] = 'New'; //Refurbished, UsedLikeNew, UsedVeryGood, UsedGood, UsedAcceptable
+			
+			//remove s from https
+			$product->attributes['feature_imgurl'] = str_replace('https://','http://',$product->attributes['feature_imgurl']);
+			$image_count = 1;
+			foreach($product->imgurls as $imgurl) {
+				$image_index = "other_image_url$image_count";
+				$product->attributes[$image_index] = str_replace('https://','http://',$imgurl);
+				$image_count++;
+				if ($image_count >= 9)
+					break;
+			}
+	
+			/*** sale price and sale price dates ***/			
+			if ( $product->attributes['has_sale_price'] )
+			{
+				if ( isset( $product->attributes['sale_price_dates_from'] ) && isset( $product->attributes['sale_price_dates_to'] ) ) 
+				{	
+					$product->attributes['sale_from_date'] = $pfcore->localizedDate( 'Y-m-d', $product->attributes['sale_price_dates_from'] );
+					$product->attributes['sale_end_date'] = $pfcore->localizedDate( 'Y-m-d', $product->attributes['sale_price_dates_to'] );
+				}
+				else //sale price is set, but no schedule. Amazon requires schedule.
+				{
+					$product->attributes['regular_price'] = $product->attributes['sale_price'];
+					$product->attributes['sale_price'] = '';
+				}
+			}
+
+		}// if headerTemplateType == offer (listing loader)
+		
+		else {
+			
 			//********************************************************************
 			//Prepare the product
 			//********************************************************************		
-			$product->attributes['product_description'] = str_replace('"','""',$product->attributes['description']); //Needs a rule
 			$product->attributes['category'] = $this->current_category;
 
-			//format attributes (set them manually)
-			//.. instead of mapping brand -> manufacturer, map manufacturer->manufacturer and format here
-			//...easier for user to map using advanced commands
-			$product->attributes['item_sku'] = $product->attributes['sku'];	
-			$product->attributes['item_name'] = $product->attributes['title'];
+			//sometimes templates only have one feed_product_type.
+			if (isset($this->feed_product_type))
+				if ( (strlen($this->feed_product_type) > 0) || (strlen($product->attributes['feed_product_type']) == 0) )
+					$product->attributes['feed_product_type'] = $this->feed_product_type;
 
-			if (isset($product->attributes['brand']))
-				$product->attributes['manufacturer'] = $product->attributes['brand'];
-			
-			if ( $product->attributes['stock_status'] == 1 ) {
-				if ( !empty($product->attributes['stock_quantity']) )
-					$product->attributes['quantity'] = $product->attributes['stock_quantity'];
-				}
-			else {
-			$product->attributes['quantity'] = '0';
-			}
-			
+			if (!isset($product->attributes['currency']) || (strlen($product->attributes['currency']) == 0))
+				$product->attributes['currency'] = $this->currency;
+
 			//what if regular_price is blank but sale_price is present?
-			$product->attributes['standard_price'] = $product->attributes['regular_price'];	
-			//sale price usually requires an effective date.
-			if (isset($product->attributes['sale_price']))
-				$product->attributes['standard_price'] = $product->attributes['sale_price'];	
+			//$product->attributes['standard_price'] = $product->attributes['regular_price'];	
+		
+			if ( isset($product->attributes['item_weight']) ) 
+				$product->attributes['weight'] = $product->attributes['item_weight'];		
 			
-			$product->attributes['item_weight'] = $product->attributes['weight'];			
-			$product->attributes['website-shipping-weight'] = $product->attributes['weight'];
-			$product->attributes['dimension_unit'] = $this->dimension_unit;	
-			
+			$product->attributes['weight_unit_word'] = $product->attributes['weight'];
 			//modify item weight unit to fit amazon's valid weight units. ex: convert g -> GR 
 			$valid_weight_unit = $this->weight_unit;
 			if ( $valid_weight_unit == 'kg' ) {
-				$product->attributes['item-weight-unit-of-measure'] = 'kilograms';
+				$product->attributes['weight_unit_word'] = 'kilograms';
 				$product->attributes['weight_unit'] = 'KG';
-				$product->attributes['item_weight_unit'] = 'KG';
 			}			
 			else if ( $valid_weight_unit == 'g' ) {
-				$product->attributes['item-weight-unit-of-measure'] = 'grams';
+				$product->attributes['weight_unit_word'] = 'grams';
 				$product->attributes['weight_unit'] = 'GR';
-				$product->attributes['item_weight_unit'] = 'GR';
 			}
 			else if ( $valid_weight_unit == 'lbs' ) {
-				$product->attributes['item-weight-unit-of-measure'] = 'pounds';
+				$product->attributes['weight_unit_word'] = 'pounds';
 				$product->attributes['weight_unit'] = 'LB';
-				$product->attributes['item_weight_unit'] = 'LB';
 			}
 			else {
-				$product->attributes['item-weight-unit-of-measure'] = 'ounces';
+				$product->attributes['weight_unit_word'] = 'ounces';
 				$product->attributes['weight_unit'] = 'OZ';
-				$product->attributes['item_weight_unit'] = 'OZ';
 			}
 
+			$product->attributes['dimension_unit'] = $this->dimension_unit;	
 			switch($this->dimension_unit){
 				case 'm':
-					$product->attributes['item-dimensions-unit-of-measure'] = 'meters';
+					$product->attributes['dimension_unit_word'] = 'meters';
 					break;
 				case 'cm':
-					$product->attributes['item-dimensions-unit-of-measure'] = 'centimeters';
+					$product->attributes['dimension_unit_word'] = 'centimeters';
 					break;
 				case 'mm':
-					$product->attributes['item-dimensions-unit-of-measure'] = 'millimeters';
+					$product->attributes['dimension_unit_word'] = 'millimeters';
 					break;
 				case 'in':
-					$product->attributes['item-dimensions-unit-of-measure'] = 'inches';
+					$product->attributes['dimension_unit_word'] = 'inches';
 					break;
 				case 'ft':					
-					$product->attributes['item-dimensions-unit-of-measure'] = 'feet';
+					$product->attributes['dimension_unit_word'] = 'feet';
 					break;
 				default:
-					$product->attributes['dimension_unit'] = $this->dimension_unit;
+					$product->attributes['dimension_unit_word'] = '';
 			}
 
 			//fix missing brand error (customized error)
-			if (isset($product->attributes['brand']))
-				$product->attributes['brand_name'] = $product->attributes['brand'];
-			// else
-			// 	$product->attributes['brand_name'] = $product->attributes['brand_name'];
+			//if (isset($product->attributes['brand']))
+			//	$product->attributes['brand_name'] = $product->attributes['brand'];
 
 			//default values
+			if (!isset($product->attributes['item_package_quantity'])) //The number of individiually packaged units/distinct items in a package
+				$product->attributes['item_package_quantity'] = 1;
+			if ( !isset($product->attributes['number_of_items']) )
+					$product->attributes['number_of_items'] = 1; //Number of items included in a single package labeled for individual sale
+			if ( !isset($product->attributes['handling_time']) )
+					$product->attributes['handling_time'] = 2; //Indicates the time, in days, between when you receive an order for an item and when you can ship the item.
 			if ( !isset($product->attributes['feed_product_type']) )
 			 	$product->attributes['feed_product_type'] = '- refer to Inventory Template -';
 			if ( !isset($product->attributes['item_type']) )
 				$product->attributes['item_type'] = '- refer to Template\'s BTG -';
-			if ( !isset($product->attributes['item-type-keyword']) )
-				$product->attributes['item-type-keyword'] = '- refer to Template\'s BTG -';
+			//if ( !isset($product->attributes['item-type-keyword']) )
+			//	$product->attributes['item-type-keyword'] = '- refer to Template\'s BTG -';
 			
-			//sometimes templates only have one feed_product_type.
-			if ( (strlen($this->feed_product_type) > 0) || (strlen($product->attributes['feed_product_type']) == 0) )
-				$product->attributes['feed_product_type'] = $this->feed_product_type;
-			
+			//remove s from https
+			if (strpos($product->attributes['feature_imgurl'], 'https') !== false) {
+			$product->attributes['feature_imgurl'] = str_replace('https://','http://',$product->attributes['feature_imgurl']);
+			//Warn user because server might not be listening for http connections
+			//$this->addErrorMessage(<Shopzilla Range Warning + 1>, 'Converted an https image url http ' . $product->attributes['title'] . image url);
+			}
 			$image_count = 1;
 			foreach($product->imgurls as $imgurl) {
 				$image_index = "other_image_url$image_count";
-				$product->attributes[$image_index] = $imgurl;
+				$product->attributes[$image_index] = str_replace('https://','http://',$imgurl);
 				$image_count++;
 				if ($image_count >= 9)
 					break;
 			}
 
-			if (!$product->attributes['has_sale_price'])
-				$product->attributes['sale_price'] = '';
-			if (!isset($product->attributes['currency']) || (strlen($product->attributes['currency']) == 0))
-				$product->attributes['currency'] = $this->currency;
-			if (!isset($product->attributes['item_package_quantity']))
-				$product->attributes['item_package_quantity'] = 1;
+			/*** sale price and sale price dates ***/			
+			if ( $product->attributes['has_sale_price'] )
+			{		
+				if ( isset( $product->attributes['sale_price_dates_from'] ) && isset( $product->attributes['sale_price_dates_to'] ) ) 
+				{				
+					$product->attributes['sale_from_date'] = $pfcore->localizedDate( 'Y-m-d', $product->attributes['sale_price_dates_from'] );
+					$product->attributes['sale_end_date'] = $pfcore->localizedDate( 'Y-m-d', $product->attributes['sale_price_dates_to'] );
+				}
+				else //sale price is set, but no schedule. 
+				{
+					$product->attributes['regular_price'] = $product->attributes['sale_price'];
+					$product->attributes['sale_price'] = '';
+				}
+			}
+			
 			$product->attributes['shipping_cost'] = '0.00';
 			$product->attributes['shipping_weight'] = $product->attributes['weight'];
 		
 		
-		} //else NOT inventoryloader
+		} //else NOT inventoryloader (ie category inventory file template)
 
 		//if ($product->attributes['isVariation'])
 			//$product->attributes['parent_child'] = 'Variation'; //Trying without variations for now
@@ -200,11 +284,14 @@ class PAmazonSCFeed extends PCSVFeed
 		//********************************************************************
 		//Validation checks & Error messages
 		//********************************************************************
-		if (strlen($product->attributes['product_description']) > 2000) 
+
+		if (isset($product->attributes['description']) && strlen($product->attributes['description']) > 2000) 
 		{
-			$product->attributes['product_description'] = substr($product->attributes['description'], 0, 2000);
+			$product->attributes['description'] = substr($product->attributes['description'], 0, 2000);
 			$this->addErrorMessage(8000, 'Description truncated for ' . $product->attributes['title'], true);
 		}
+		if (!isset($product->attributes['product_description']))
+			$product->attributes['product_description'] = '';
 		
 		/*if (!isset($product->attributes['brand']) || (strlen($product->attributes['brand']) == 0))
 			$this->addErrorMessage(8001, 'Brand not set for ' . $product->attributes['title'], true);
@@ -229,6 +316,10 @@ class PAmazonSCFeed extends PCSVFeed
 		$output = '';
 		foreach( $this->attributeMappings as $thisAttributeMapping ) 
 		{
+			if ( $thisAttributeMapping->usesCData )
+				$quotes = '"';
+			else
+				$quotes = '';	
 			if ($thisAttributeMapping->enabled && !$thisAttributeMapping->deleted ) 
 			{
 				//Special case: if the current attribute is external_product_id, we need to do the following
@@ -240,14 +331,18 @@ class PAmazonSCFeed extends PCSVFeed
 					if (!isset($product->attributes[$thisAttributeMapping->attributeName]))
 						$product->attributes[$thisAttributeMapping->attributeName] = ''; //Should probably warn the user there's a bad product here -KH:2014-12
 					//output external_product_id (12,13 digit code)
-					$output .= $quotes . $product->attributes[$thisAttributeMapping->attributeName] . $quotes;	
-					$output .= $this->fieldDelimiter;
+					//$output .= $quotes . $product->attributes[$thisAttributeMapping->attributeName] . $quotes;	
+					//$output .= $this->fieldDelimiter;
 					//convert digit to string and get the length. Depending on the length, product id type can be upc, ean or gcid...
 					$productId_strlen = strlen( (string)$product->attributes[$thisAttributeMapping->attributeName] );
 					switch ( $productId_strlen ) 
 					{
 						case 10:
 							$this->external_product_id_type = 'ASIN'; //10 digit Amazon number
+							break;
+						case 11:
+							$this->external_product_id_type = 'UPC'; //11 digit UPC (start with 0)
+							$product->attributes[$thisAttributeMapping->attributeName] = '0'.$product->attributes[$thisAttributeMapping->attributeName];
 							break;
 						case 12:
 							$this->external_product_id_type = 'UPC'; //12 digit UPC
@@ -264,6 +359,10 @@ class PAmazonSCFeed extends PCSVFeed
 						default:
 							$this->external_product_id_type = ''; //valid ASIN, UPC or EAN required for product id
 					}		
+
+					$output .= $quotes . $product->attributes[$thisAttributeMapping->attributeName] . $quotes;	
+					$output .= $this->fieldDelimiter;
+				
 					//output product id type with delimiter, continue to next column/attribute														
 					$output .= $quotes . $this->external_product_id_type . $quotes;
 					$output .= $this->fieldDelimiter;	
@@ -272,10 +371,6 @@ class PAmazonSCFeed extends PCSVFeed
 				//attributes are 'set' if they are formated (line 38 for example) or if there is a value associated with the attribute
 				if ( isset( $product->attributes[$thisAttributeMapping->attributeName] ) )
 				{
-					if ( $thisAttributeMapping->usesCData )
-						$quotes = '"';
-					else
-						$quotes = '';	
 					$output .= $quotes . $product->attributes[$thisAttributeMapping->attributeName] . $quotes;			
 					//$output .= 'c'.$this->fieldDelimiter;
 				}
@@ -292,13 +387,15 @@ class PAmazonSCFeed extends PCSVFeed
 				$thisDefault->postProcess($product, $output);
 
 		//Trim trailing comma
-		return substr($output, 0, -1) . "\r\n";		
+		return substr($output, 0, -1) . "\r\n";	
+
 	} //format Product
 
+//First row of txt/csv. Requires getFeedFooter otherwise attributeMappings will output twice
 	function getFeedHeader($file_name, $file_path) 
 	{
-		
-		if ( $this->headerTemplateType != 'inventoryloader' ) {
+
+		if ( $this->headerTemplateType != 'inventoryloader' && $this->headerTemplateType != 'priceinventory' ) {
 			//Amazon header line 1
 			$output = implode(
 				$this->fieldDelimiter, 
@@ -317,14 +414,15 @@ class PAmazonSCFeed extends PCSVFeed
 							//look for external_product_id... if exists add external_product_id beside it
 							if ( $thisMapping->mapTo == 'external_product_id' )
 								$localizedNames[] = 'Product ID Type';
-							if ( $thisMapping->mapTo == 'product-id-number' )
+							if ( $thisMapping->mapTo == 'product-id-number' || $thisMapping->mapTo == 'product-id' )
 								$localizedNames[] = 'product-id-type';
 						}
 						else
 							$localizedNames[] = '';
 					}
 					$output .= implode($this->fieldDelimiter, $localizedNames) .  "\r\n";		
-		}
+		} else
+			$output = ''; //InventoryLoader Output
 
 		//Amazon header line 3
 		foreach($this->attributeMappings as $thisMapping)
@@ -346,11 +444,15 @@ class PAmazonSCFeed extends PCSVFeed
 	function initializeTemplateData($template) {
 		$this->template = strtolower( $template );
 		switch ($this->template) {
-			//versions updated Jan 7, 2015
-			case 'automotive.and.powersports':
+//US template versions updated Jan 7, 2015
+			case 'automotive.and.powersports (parts.and.accessories)':
 				$this->headerTemplateType = 'AutoAccessory';
 				$this->headerTemplateVersion = '2014.0611';
-				break;			
+				break;	
+			case 'automotive.and.powersports (tires.and.wheels)':
+				$this->headerTemplateType = 'Tiresandwheels';
+				$this->headerTemplateVersion = '2014.0611';
+				break;		
 			case 'baby':
 				$this->feed_product_type = 'BabyProducts'; //this template version only has one feed_product_type
 				$this->headerTemplateType = 'Baby';
@@ -366,22 +468,21 @@ class PAmazonSCFeed extends PCSVFeed
 				$this->headerTemplateType = 'CameraAndPhoto';
 				$this->headerTemplateVersion = '2014.0616';
 				break;
-			case 'cell phones.and.accessories':
+			case 'cell phones.and.accessories (wireless)':
 				//does not require product type
 				$this->headerTemplateType = 'Wireless';
 				$this->headerTemplateVersion = '2014.0611';
 				break;
-			case 'clothing':
+			case 'clothing.and.accessories':
 				$this->headerTemplateType = 'Clothing';
-				$this->headerTemplateVersion = '2014.0409';
+				$this->headerTemplateVersion = '2014.0812'; //lite version
 				break;
 			case 'collectible coins':
 				$this->headerTemplateType = 'Coins';
-				$this->headerTemplateVersion = 'Version=2014.0807';
+				$this->headerTemplateVersion = '2014.0807';
 				break;
 			case 'computers':
-				//25 different product types
-				//$this->feed_product_type = 'Computer';
+				//25 different product types				
 				$this->headerTemplateType = 'Computers';
 				$this->headerTemplateVersion = '2014.0611';
 				break;
@@ -390,7 +491,6 @@ class PAmazonSCFeed extends PCSVFeed
 				$this->headerTemplateVersion = '2014.0612';
 				break;
 			 case 'entertainment collectibles':
-			 	//$this->feed_product_type = 'EntertainmentCollectibles';
 			 	$this->headerTemplateType = 'EntertainmentCollectibles';
 			 	$this->headerTemplateVersion = '2014.1031';
 			 	break;	
@@ -400,12 +500,11 @@ class PAmazonSCFeed extends PCSVFeed
 				$this->headerTemplateVersion = '2013.1025';
 				break;			
 			case 'grocery.and.gourmet food':
-				//food or beverages
+				//Food or Beverages
 				$this->headerTemplateType = 'FoodAndBeverages';
 				$this->headerTemplateVersion = '2014.1119';
 				break;
 			case 'health.and.personal care':
-				$this->feed_product_type = 'HealthMisc'; //two types, actually..
 				$this->headerTemplateType = 'Health';
 				$this->headerTemplateVersion = '2014.1119';
 				break;
@@ -440,13 +539,17 @@ class PAmazonSCFeed extends PCSVFeed
 			case 'industrial.and.scientific > other':
 				$this->headerTemplateType = 'Industrial';
 				$this->headerTemplateVersion = '2014.0219';
-				break;																			
+				break;	
+			case 'inventoryloader':
+				$this->headerTemplateType = 'inventoryloader';
+				break;																		
 			case 'jewelry':
 				$this->headerTemplateType = 'Jewelry';
 				$this->headerTemplateVersion = '2014.0318';
 				break;
-			case 'inventoryloader':
-				$this->headerTemplateType = 'inventoryloader';
+			case 'listingloader':
+				$this->headerTemplateType = 'Offer';
+				$this->headerTemplateVersion = '2014.0703';
 				break;
 			case 'musical instruments':
 				$this->headerTemplateType = 'MusicalInstruments';
@@ -461,6 +564,9 @@ class PAmazonSCFeed extends PCSVFeed
 				$this->feed_product_type = 'PetSuppliesMisc'; //just one feed product type :)
 				$this->headerTemplateType = 'PetSupplies';
 				$this->headerTemplateVersion = '2014.0619';
+				break;
+			case 'priceinventory':
+				$this->headerTemplateType = 'priceinventory';			
 				break;
 			case 'shoes, handbags.and.sunglasses':
 				$this->headerTemplateType = 'Shoes';
@@ -485,6 +591,142 @@ class PAmazonSCFeed extends PCSVFeed
 			case 'watches':
 				$this->headerTemplateType = 'Watches';
 				$this->headerTemplateVersion = '2014.0909';
+				break;	
+//Italian template versions updated Mar 1, 2015
+			case 'it/ luggage':
+				$this->feed_product_type = 'luggage'; //1 product type
+				$this->headerTemplateType = 'Luggage';
+				$this->headerTemplateVersion = '2014.1228';
+				break;
+//UK template versions updated Mar 1, 2015
+			case 'uk/ amazon device accessories':
+				$this->feed_product_type = 'KindleAccessories'; //1 product type
+				$this->headerTemplateType = 'KindleAccessories';
+				$this->headerTemplateVersion = '2014.1228';
+				break;
+			case 'uk/ baby':
+				$this->feed_product_type = 'BabyProducts'; //1 product type
+				$this->headerTemplateType = 'Baby';
+				$this->headerTemplateVersion = '2014.1228';
+				break;
+			case 'uk/ beauty':
+				$this->feed_product_type = 'BeautyMisc'; //1 product type
+				$this->headerTemplateType = 'Beauty';
+				$this->headerTemplateVersion = '2014.1228';
+				break;
+			case 'uk/ car and motorbike':				
+				$this->headerTemplateType = 'AutoAccessory';
+				$this->headerTemplateVersion = '2015.0210';
+				break;	
+			case 'uk/ clothing':				
+				$this->headerTemplateType = 'Clothing';
+				$this->headerTemplateVersion = '2014.1013';
+				break;
+			case 'uk/ computers.and.accessories':				
+				$this->headerTemplateType = 'Computers';
+				$this->headerTemplateVersion = '2014.1223';
+				break;
+			case 'uk/ consumer electronics':				
+				$this->headerTemplateType = 'ConsumerElectronics';
+				$this->headerTemplateVersion = '2014.1223';
+				break;
+			case 'uk/ food.and.beverages':				
+				$this->headerTemplateType = 'FoodAndBeverages';
+				$this->headerTemplateVersion = '2014.1202';
+				break;		
+			case 'uk/ health and personal care':
+				$this->feed_product_type = 'HealthMisc'; //1 product type
+				$this->headerTemplateType = 'Health';
+				$this->headerTemplateVersion = '2015.0116';
+				break;	
+			case 'uk/ home':
+				//3 product types: BedAndBath, FurnitureAndDecor, Home
+				$this->headerTemplateType = 'Home';
+				$this->headerTemplateVersion = '2014.1119';
+				break;
+			case 'uk/ home improvement':
+				//3 product types: BedAndBath, FurnitureAndDecor, Home
+				$this->headerTemplateType = 'HomeImprovement';
+				$this->headerTemplateVersion = '2013.1109';
+				break;	
+			case 'uk/ inventoryloader':
+				$this->headerTemplateType = 'inventoryloader';
+				break;
+			case 'uk/ jewelry':
+				//8 product types
+				$this->headerTemplateType = 'Jewelry';
+				$this->headerTemplateVersion = '2014.1228';
+				break;
+			case 'uk/ large appliances':				
+				$this->headerTemplateType = 'LargeAppliances';
+				$this->headerTemplateVersion = '2014.1223';
+				break;
+			case 'uk/ lawn.and.garden':				
+				$this->headerTemplateType = 'LawnAndGarden';
+				$this->headerTemplateVersion = '2014.1228';
+				break;
+			case 'uk/ lighting':				
+				$this->headerTemplateType = 'Lighting';
+				$this->headerTemplateVersion = '2014.1223';
+				break;
+			case 'uk/ listingloader':				
+				$this->headerTemplateType = 'Offer';
+				$this->headerTemplateVersion = '2014.0703';
+				break;
+			case 'uk/ luggage':	
+				$this->feed_product_type = 'Luggage'; //1 product type
+				$this->headerTemplateType = 'Luggage';
+				$this->headerTemplateVersion = '2014.1228';
+				break;
+			case 'uk/ musical instruments':				
+				$this->headerTemplateType = 'MusicalInstruments';
+				$this->headerTemplateVersion = '2014.1228';
+				break;
+			case 'uk/ office':
+				$this->headerTemplateType = 'Office';
+				$this->headerTemplateVersion = '2014.1228';
+				break;
+			case 'uk/ personal care appliances':
+				$this->feed_product_type = 'PersonalCareAppliances'; //1 product type
+				$this->headerTemplateType = 'Personalcareappliances';
+				$this->headerTemplateVersion = '2014.1228';
+				break;
+			case 'uk/ pet supplies':
+				$this->headerTemplateType = 'PetSupplies';
+				$this->headerTemplateVersion = '2014.1228';
+				break;
+			case 'uk/ priceinventory':
+				$this->headerTemplateType = 'priceinventory';			
+				break;
+			case 'uk/ shoes.and.accessories':
+				//3 product types
+				$this->headerTemplateType = 'Shoes';
+				$this->headerTemplateVersion = '2015.0226';
+				break;
+			case 'uk/ small domestic appliances (kitchen)':
+				$this->feed_product_type = 'Kitchen'; //1 product type
+				$this->headerTemplateType = 'Kitchen';
+				$this->headerTemplateVersion = '2014.1223';
+				break;
+			case 'uk/ software.and.video games':
+				//5 product types
+				$this->headerTemplateType = 'SoftwareVideoGames';
+				$this->headerTemplateVersion = '2014.1228';
+				break;	
+			case 'uk/ sports':
+				$this->feed_product_type = 'SportingGoods'; //1 product type
+				$this->headerTemplateType = 'Sports';
+				$this->headerTemplateVersion = '2014.1013';
+				break;
+			case 'uk/ watches':
+				//no feed product type
+				$this->headerTemplateType = 'Watches';
+				$this->headerTemplateVersion = '2015.0122';
+				break;
+			case 'uk/ toys':
+				$this->feed_product_type = 'ToysAndGames'; //1 product type
+				$this->headerTemplateType = 'Toys';
+				$this->headerTemplateVersion = '2014.1228';
 				break;								
 			default:
 				$this->headerTemplateType = $template;
@@ -496,9 +738,14 @@ class PAmazonSCFeed extends PCSVFeed
 	function initializeFeed( $category, $remote_category ) 
 	{
 		$this->loadTemplate($remote_category);
-
-		/*** Template: Basic - these are attributes that are important to buyers. Some are required to create an offer **/		
 	} //initialize feed
+
+	//Not safe to assume continueFeed will exist next version
+	protected function continueFeed($category, $file_name, $file_path, $remote_category) {
+		$this->loadTemplate($remote_category);
+		parent::continueFeed($category, $file_name, $file_path, $remote_category);
+	}
+
 }
 
 ?>

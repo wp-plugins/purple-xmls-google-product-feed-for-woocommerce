@@ -24,24 +24,31 @@ class PProductList {
     $sql = '
 			SELECT a.virtuemart_product_id as product_id, a.product_parent_id as parent_id, details.product_name, 
 				a.product_sku as sku, details.product_s_desc as excerpt, details.product_desc as description,
-				prices.product_price, prices.override as po, prices.product_override_price as sale_price, a.product_in_stock as stock_quantity, a.product_weight as weight, a.product_weight_uom as weight_symbol, 
-				a.product_url as url, manufacturer_details.mf_name as manufacturer,
-				media_details.file_url, categories.virtuemart_category_id as category_id, category_details.category_name,
+				prices.price_ids,
+				a.product_in_stock as stock_quantity, a.product_weight as weight, a.product_weight_uom as weight_symbol, 
+				a.product_url as url, manufacturer_details.mf_name as manufacturer, 
+				cat.categories as category_ids, cat.category_names,
 				attributes.attribute_names, attributes.attribute_values
 			FROM #__virtuemart_products a
 			LEFT JOIN #__virtuemart_products_' . $lang . ' details ON a.virtuemart_product_id = details.virtuemart_product_id
 			#Link prices
-			LEFT JOIN #__virtuemart_product_prices prices ON a.virtuemart_product_id = prices.virtuemart_product_id
-			LEFT JOIN #__virtuemart_currencies currencies ON prices.product_currency = currencies.virtuemart_currency_id
+			LEFT JOIN
+				(
+					SELECT pr.virtuemart_product_id, GROUP_CONCAT(pr.virtuemart_product_price_id) as price_ids
+					FROM #__virtuemart_product_prices pr
+					GROUP BY pr.virtuemart_product_id
+				) prices on (a.virtuemart_product_id = prices.virtuemart_product_id)
 			#Link manufacturers
 			LEFT JOIN #__virtuemart_product_manufacturers manufacturer ON a.virtuemart_product_id = manufacturer.virtuemart_product_id
 			LEFT JOIN #__virtuemart_manufacturers_' . $lang . ' manufacturer_details ON manufacturer.virtuemart_manufacturer_id = manufacturer_details.virtuemart_manufacturer_id
-			#Link media for images
-			LEFT JOIN #__virtuemart_product_medias as media ON a.virtuemart_product_id = media.virtuemart_product_id
-			LEFT JOIN #__virtuemart_medias as media_details ON media.virtuemart_media_id = media_details.virtuemart_media_id
 			#category
-			LEFT JOIN #__virtuemart_product_categories as categories ON a.virtuemart_product_id = categories.virtuemart_product_id
-			LEFT JOIN #__virtuemart_categories_' . $lang . ' as category_details ON categories.virtuemart_category_id = category_details.virtuemart_category_id
+			LEFT JOIN 
+				(
+					SELECT categories.virtuemart_product_id, GROUP_CONCAT(categories.virtuemart_category_id) as categories, GROUP_CONCAT(category_details.category_name) as category_names
+					FROM #__virtuemart_product_categories as categories
+					LEFT JOIN #__virtuemart_categories_' . $lang . ' as category_details ON categories.virtuemart_category_id = category_details.virtuemart_category_id
+					GROUP BY categories.virtuemart_product_id
+				) cat on (cat.virtuemart_product_id = a.virtuemart_product_id)
 			#attributes
 			LEFT JOIN
 				(
@@ -53,7 +60,6 @@ class PProductList {
 			WHERE a.published = 1';
 
 		$db->setQuery($sql);
-		$db->query();
 		$this->products = $db->loadObjectList();
 	}
 
@@ -64,6 +70,8 @@ class PProductList {
 		$parent->logActivity('Retrieving product list from database');
 		if ($this->products == null)
 			$this->loadProducts($parent);
+
+		$db = JFactory::getDBO();
 
 		//********************************************************************
 		//Convert the WP_Product List into a Cart-Product Master List (ListItems)
@@ -80,13 +88,24 @@ class PProductList {
 				foreach ($this->products as $potential_parent)
 					if ($potential_parent->product_id == $prod->parent_id) {
 						$my_parent = $potential_parent;
-						$prod->category_id = $potential_parent->category_id;
+						//$prod->category_id = $potential_parent->category_id;
 						break;
 					}
 			}
 
-			if (!$parent->categories->containsCategory($prod->category_id))
+			//if skip product with non-matching category
+			$category_ids = explode(',', $prod->category_ids);
+			$skip = true;
+			foreach($category_ids as $id)
+				if ($parent->categories->containsCategory($id) ) {
+					$skip = false;
+					break;
+				}
+			if ($parent->force_all_categories)
+				$skip = false;
+			if ($skip)
 				continue;
+			$category_names = explode(',', $prod->category_names);
 
 			$item = new PAProduct();
 	  
@@ -109,20 +128,57 @@ class PProductList {
 
 			$item->attributes['category'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
 			$item->attributes['product_type'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
-			$item->attributes['localCategory'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $prod->category_name));
+
+			if (count($category_names) ==0)
+				$item->attributes['localCategory'] = '';
+			else {
+				$item->attributes['localCategory'] = $category_names[0];
+				foreach($category_names as $catIndex => $category_name)
+					if ($catIndex > 0)
+						$item->attributes['localCategory_' . $catIndex] = $category_name;
+			}
+			$item->attributes['localCategory'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $item->attributes['localCategory']));
 			$item->attributes['localCategory'] = str_replace("|", ">", $item->attributes['localCategory']);
 			$item->attributes['link'] = $pfcore->siteHost . 'index.php?option=com_virtuemart&view=productdetails&virtuemart_product_id=' . $prod->product_id;
-			$item->attributes['feature_imgurl'] =  $pfcore->siteHost . $prod->file_url;
 			$item->attributes['condition'] = 'New';
-			$item->attributes['regular_price'] = $prod->product_price;
-			$item->attributes['has_sale_price'] = false;
-			if ($prod->po == 1) {
-				$item->attributes['has_sale_price'] = true;
-				$item->attributes['sale_price'] = $prod->sale_price;
-			}
+
 			$item->attributes['sku'] = $prod->sku;
 			$item->attributes['weight'] = $prod->weight;
 			$item->attributes['brand'] = $prod->manufacturer;
+			$item->attributes['manufacturer'] = $prod->manufacturer;
+
+			//Prices
+			$item->attributes['regular_price'] = 0;
+			$item->attributes['has_sale_price'] = false;
+			$db->setQuery('
+				SELECT prices.product_price, prices.override as po, prices.product_override_price as sale_price, currencies.currency_code_3 as currency_name, currencies.currency_symbol
+				FROM #__virtuemart_product_prices prices
+				LEFT JOIN #__virtuemart_currencies currencies ON prices.product_currency = currencies.virtuemart_currency_id
+				WHERE prices.virtuemart_product_price_id in (' . $prod->price_ids . ')'
+			);
+			$prices = $db->loadObjectList();
+			foreach($prices as $priceIndex => $price) {
+				if ($priceIndex == 0) {
+					$item->attributes['regular_price'] = $price->product_price;
+					$item->attributes['currency'] = $price->currency_symbol;
+					$item->attributes['currency_name'] = $price->currency_name;
+					$item->attributes['has_sale_price'] = false;
+					if ($price->po == 1) {
+						$item->attributes['has_sale_price'] = true;
+						$item->attributes['sale_price'] = $price->sale_price;
+					}
+				} else {
+					$item->attributes['regular_price_' . $priceIndex] = $price->product_price;
+					$item->attributes['currency_' . $priceIndex] = $price->currency_symbol;
+					$item->attributes['currency_name_' . $priceIndex] = $price->currency_name;
+					$item->attributes['has_sale_price_' . $priceIndex] = false;
+					if ($price->po == 1) {
+						$item->attributes['has_sale_price_' . $priceIndex] = true;
+						$item->attributes['sale_price_' . $priceIndex] = $price->sale_price;
+					}
+				}
+			}
+
 	  
 			//If this has a parent, use the parent's attributes if necessary
 			//one day we need to figure out how to know if attributes are blank
@@ -132,6 +188,23 @@ class PProductList {
 					$prod->attribute_names = $my_parent->attribute_names;
 					$prod->attribute_values = $my_parent->attribute_values;
 				}
+
+			//Images
+			$db->setQuery('
+				SELECT media_details.file_url
+				FROM #__virtuemart_product_medias as media
+				LEFT JOIN #__virtuemart_medias as media_details ON media.virtuemart_media_id = media_details.virtuemart_media_id
+				WHERE media.virtuemart_product_id = ' . $prod->product_id
+			);
+
+			$media = $db->loadObjectList();
+			$item->imgurls = array();
+			if ($media) {
+				$item->attributes['feature_imgurl'] =  $pfcore->siteHost . $media[0]->file_url;
+				foreach ($media as $fileIndex => $file)
+					if ($fileIndex > 0)
+						$item->imgurls[] = $file->file_url;
+			}
 
 			//Attributes
 			$attribute_names = explode(',', $prod->attribute_names);

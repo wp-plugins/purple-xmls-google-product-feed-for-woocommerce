@@ -9,5 +9,5 @@
 	
 	//Use this to specify the target audience for your product. Example: Amphibians. Refer to BTG
 	for ($i = 1; $i <= 3; $i++)
-		$this->addAttributeMapping('target_audience_keywords' . $i, 'target_audience_keywords' . $i, true)->localized_name = 'Target Audience' . $i;
+		$this->addAttributeMapping('', 'target_audience_keywords' . $i, true)->localized_name = 'Target Audience' . $i;
 ?>

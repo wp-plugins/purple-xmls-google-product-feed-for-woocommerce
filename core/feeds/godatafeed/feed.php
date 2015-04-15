@@ -25,7 +25,8 @@ class PGoDataFeedFeed extends PBasicFeed {
 		$this->addAttributeMapping('title', 'Name', true,true); //product name (15-70 chars)
 		$this->addAttributeMapping('description', 'Description', true,true);
 		$this->addAttributeMapping('regular_price', 'Price', true,true);
-		$this->addAttributeMapping('localCategory', 'MerchantCategory', true,true);
+		$this->addAttributeMapping('local_category', 'MerchantCategory', true,true);
+			$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree
 		$this->addAttributeMapping('link', 'URL', true,true);
 		$this->addAttributeMapping('feature_imgurl', 'ImageURL', true,true);
 		$this->addAttributeMapping('', 'Manufacturer', true,true);
@@ -33,10 +34,11 @@ class PGoDataFeedFeed extends PBasicFeed {
 		$this->addAttributeMapping('brand', 'Brand', true,true);
 		$this->addAttributeMapping('', 'Keywords', true);
 		//$this->addAttributeMapping('stock_status', 'StockStatus', true);
-		$this->addAttributeMapping('', 'Shipping Price', true);
+		$this->addAttributeMapping('', 'ShippingPrice', true);
 		$this->addAttributeMapping('stock_quantity', 'Quantity', true);
 		$this->addAttributeMapping('weight', 'Weight', true);
 		$this->addAttributeMapping('condition', 'Condition', true);
+		$this->addAttributeMapping('', 'UPC', true);
 		$this->addAttributeMapping('sale_price', 'SalePrice', true);
 	}
   
@@ -108,7 +110,7 @@ class PGoDataFeedFeed extends PBasicFeed {
 
 	}
 
-	function getFeedFooter( ) {   
+	function getFeedFooter($file_name, $file_path) {   
     	$output = '
   </Products>
 </GoDataFeed>';

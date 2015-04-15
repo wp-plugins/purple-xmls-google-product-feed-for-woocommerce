@@ -35,7 +35,11 @@ class AggXmlDlg extends PBaseFeedDialog {
 	}
 
 	public function loadFeedsJS() {
-		$this->feedsAll = array();
+		$db = JFactory::getDbo();
+		$user = JFactory::getUser();
+		$shops = new PShopList($user->id);
+		$db->setQuery('SELECT id,type,filename,product_count FROM #__cartproductfeed_feeds WHERE state=1 AND shop_id in (' . $shops->asIDList() . ')');
+		$this->feedsAll = $db->loadObjectList();
 	}
 
 	public function loadFeedsW() {

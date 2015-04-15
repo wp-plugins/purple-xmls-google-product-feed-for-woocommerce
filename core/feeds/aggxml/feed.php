@@ -10,14 +10,23 @@
 
 require_once dirname(__FILE__) . '/../basicfeed.php';
 
-class PAggXmlFeed extends PBasicFeed {
+class PAggXmlFeed extends PAggregateFeed {
 
-	function __construct () {
+	public $shopID = 0;
+
+	function __construct ($saved_feed = null) {
+
 		parent::__construct();
+
 		$this->providerName = 'AggXml';
 		$this->providerNameL = 'aggxml';
 		$this->fileformat = 'xml';
 		$this->providerType = 1;
+
+		global $pfcore;
+		$loadInitialSettings = 'loadInitialSettings' . $pfcore->callSuffix;
+		$this->$loadInitialSettings($saved_feed);
+
 	}
 
 	function getFeedData($category, $remote_category, $file_name, $saved_feed = null) {
@@ -53,18 +62,6 @@ class PAggXmlFeed extends PBasicFeed {
 		$this->filename = $file_url;
 		$this->productCount = 0;
 
-		/*foreach ($this->feeds as $index => $thisFeed) {
-			$sourceFile = PFeedFolder::uploadFolder() . $thisFeed->type . '/' . $thisFeed->filename . '.' . $providers->getFileFormatByType($thisFeed->type);
-			$sourceContent = file_get_contents($sourceFile);
-			if ($index > 0) {
-				$firstLine = strpos($sourceContent, "\n");
-				$sourceContent = substr($sourceContent, $firstLine + 1);
-				file_put_contents($this->filename, $sourceContent, FILE_APPEND);
-			} else
-				file_put_contents($this->filename, $sourceContent);
-			$this->productCount += $thisFeed->product_count;
-		}*/
-
 		$content = '<?xml version="1.0" encoding="UTF-8" ?>
 			<messages>
 				<message>Place-Holder File</message>
@@ -93,6 +90,10 @@ class PAggXmlFeed extends PBasicFeed {
 		$content = '
   </products>';
 		file_put_contents($this->filename, $content, FILE_APPEND);
+		global $pfcore;
+		if ($this->shopID > 0)
+			$pfcore->shopID = $this->shopID;
+
 		PFeedActivityLog::updateFeedList('n/a', 'n/a', $this->file_name_short, $this->file_url, $this->providerName, $this->productCount);
   }
 
@@ -103,41 +104,76 @@ class PAggXmlFeed extends PBasicFeed {
 			$this->productCount++;
 		}
 	}
-  
+
   function initializeAggregateFeed($id, $file_name) {
-		$this->filename = PFeedFolder::uploadFolder() . $this->providerName . '/' . $file_name . '.' . $this->fileformat;
-		$this->file_url = PFeedFolder::uploadURL() . $this->providerName . '/' . $file_name . '.' . $this->fileformat;
-		$this->productCount = 0;
-		$this->file_name_short = $file_name;
+
+		parent::initializeAggregateFeed($id, $file_name);
 
 		$content = '<?xml version="1.0" encoding="UTF-8" ?>
   <products>';
 		file_put_contents($this->filename, $content);
 
-		global $pfcore;
-		$data = $pfcore->settingGet('cpf_aggrfeedlist_' . $id);
-		$data = explode(',', $data);
-		$this->feeds = array();
-		foreach($data as $datum)
-			$this->feeds[$datum] = true;
   }
 
-	/*public function loadFeedsJ() {
+	function loadInitialSettingsJ($saved_feed) {
+	}
+
+	function loadInitialSettingsJS($saved_feed) {
+
+		global $pfcore;
+
+		//Check if the feed_list is available from input
+		$input = JFactory::getApplication()->input;
+		$this->feed_list = $input->get('feed_ids', array(), 'array');
+		$db = JFactory::getDBO();
+
+		//Convert feed_list into feeds (array of boolean)
 		$this->feeds = array();
+
+		//If we received a feedlist, assign the shop as the first shop in the feedlist
+		if (count($this->feed_list) > 0) {
+			$db->setQuery('SELECT shop_id FROM #__cartproductfeed_feeds WHERE id = ' . (int) $this->feed_list[0]);
+			$pfcore->shopID = $db->loadResult();
+			$this->shopID = $pfcore->shopID;
+		}
+
+		//if (count($this->feeds) == 0) {
+		if ($saved_feed != null) {
+			//By-pass settingGet since shopID not known
+			//$data = $pfcore->settingGet('cpf_aggrfeedlist_' . $saved_feed->id);
+			$db->setQuery('SELECT value, shop_id FROM #__cartproductfeed_options WHERE name = ' . $db->quote('cpf_aggrfeedlist_' . $saved_feed->id ) );
+			$result = $db->loadObject();
+			$data = explode(',', $result->value);
+			foreach($data as $datum)
+				$this->feeds[$datum] = true;
+			//Save shopID for later
+			$this->shopID = $result->shop_id;
+		}
+
+	}
+
+	function loadInitialSettingsW($saved_feed) {
+	}
+
+	function loadInitialSettingsWe($saved_feed) {
+	}
+
+	/*public function loadFeedsJ() {
+		$this->feed_list = array();
 	}
 
 	public function loadFeedsJS() {
-		$this->feeds = array();
+		$this->feed_list = array();
 	}
 
 	public function loadFeedsW() {
 		global $wpdb;
 		$feed_table = $wpdb->prefix . 'cp_feeds';
-		$feeds = implode(',', $this->feed_list);
+		$feed_list = implode(',', $this->feed_list);
 		$sql = "
 			SELECT id,type,filename,product_count 
 			FROM $feed_table
-			WHERE id in ($feeds)";
+			WHERE id in ($feed_list)";
 		$this->feeds = $wpdb->get_results($sql);
 	}
 

@@ -31,13 +31,13 @@ class PSearsFeed extends PBasicFeedXls {
 		$this->addAttributeMapping('sale_end_date', 'Sale End Date');
 		$this->addAttributeMapping('sku', 'UPC');
 		$this->addAttributeMapping('feature_imgurl', 'Image URL');
-		$this->addAttributeMapping('mature_content', 'Mature Content');
+		$this->addAttributeMapping('', 'Mature Content');
 		$this->addAttributeMapping('description_short', 'Short Description');
-		$this->addAttributeMapping('manufacturer_model_number', 'Manufacturer Model #');
-		$this->addAttributeMapping('shipping_cost', 'Shipping Cost');
-		$this->addAttributeMapping('promotional_text', 'Promotional Text');
+		$this->addAttributeMapping('', 'Manufacturer Model #');
+		$this->addAttributeMapping('', 'Shipping Cost');
+		$this->addAttributeMapping('', 'Promotional Text');
 		$this->addAttributeMapping('brand', 'Brand');
-		$this->addAttributeMapping('action_flag', 'Action Flag');
+		$this->addAttributeMapping('', 'Action Flag');
 
 	}
   

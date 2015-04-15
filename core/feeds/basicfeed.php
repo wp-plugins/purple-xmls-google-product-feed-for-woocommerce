@@ -17,13 +17,18 @@ class PBasicFeed {
 	public $aggregateProviders = array();
 	public $allow_additional_images = true;
 	public $allow_attributes = true;
+	public $allow_attribute_details = false; //old style attribute detection = source of minor hitches
 	public $allow_variationPermutations = false;
 	public $allowRelatedData = true;
 	public $attributeAssignments = array();
 	public $attributeDefaults = array();
 	public $attributeDefaultStages = array(0, 0, 0, 0, 0, 0);
+	public $attribute_granularity = 5; //0=basic feed(future) 1..4=minimal_postmeta_conversion 5=all_postmeta
 	public $attributeMappings = array();
+	public $auto_free = true; //Allow descendants to retain productlist
+	public $auto_update_feedlist = true;
 	public $categories;
+	public $create_attribute_slugs = false;
 	public $current_category; //This is the active category while in formatProduct()
 	public $currency;
 	public $currency_shipping = ''; //(Currently uses currency_format)
@@ -36,10 +41,16 @@ class PBasicFeed {
 	public $feed_category;
 	public $feedOverrides;
 	public $forceCData = false; //Applies to ProductListXML only
+	public $force_all_categories = false;
 	public $force_currency = false;
+	public $force_wc_api = false;
 	public $get_wc_shipping_attributes = false;
+	public $get_wc_shipping_class = false;
+	public $get_tax_rates = false;
 	public $gmc_enabled = false; //Allow Google merchant centre woothemes extension (WordPress)
 	public $gmc_attributes = array(); //If anything added in here, restrict GMC list to these
+	public $has_header = true;
+	public $has_footer = true;
 	public $has_product_range = false;
 	public $ignoreDuplicates = true; //useful when products are assigned multiple categories and insufficient identifiers to distinguish them
 	public $max_description_length = 10000;
@@ -56,6 +67,7 @@ class PBasicFeed {
 	//public $sellerName = ''; //Required Bing attribute - Merchant/Store that provides this product
 	public $success = false;
 	public $stripHTML = false;
+	public $updateObject = null;
 	public $utf8encode = false; //Temporary until a better encoding system can be engineered
 	public $timeout = 0; //If >0 try to override max_execution time
 	public $weight_unit;
@@ -77,10 +89,11 @@ class PBasicFeed {
 		}
 		$this->attributeDefaults[] = $thisDefault;
 		$this->attributeDefaultStages[$thisDefault->stage] += 1;
+		$thisDefault->initialize();
 		return $thisDefault;
 	}
 
-	public function addAttributeMapping($attributeName, $mapTo, $usesCData = false, $isRequired = false) {
+	public function addAttributeMapping($attributeName, $mapTo, $usesCData = false, $isRequired = false, $isMapped = false) {
 
 		$thisMapping = new stdClass();
 		$thisMapping->attributeName = $attributeName;
@@ -90,6 +103,7 @@ class PBasicFeed {
 		$thisMapping->usesCData = $usesCData;
 		$thisMapping->isRequired = $isRequired;
 		$thisMapping->systemDefined = false;
+		$thisMapping->isMapped = $isMapped;
 		$this->attributeMappings[] = $thisMapping;
 
 		//Auto-delete any system defined Mappings with matching mapTo
@@ -116,8 +130,10 @@ class PBasicFeed {
 
 	public function addRule($ruleName, $ruleClass, $parameters = array(), $order = 0 ) {
 		$className = 'PFeedRule' . ucwords(strtolower($ruleClass));
-		if (!class_exists($className))
+		if (!class_exists($className)) {
+			$this->addErrorMessage(5, 'Rule "' . $ruleClass . '" not found. Reconfigure Advanced Commands to resolve.');
 			return null;
+		}
 		$thisRule = new $className();
 		$thisRule->name = $ruleName;
 		$thisRule->parameters = $parameters;
@@ -160,12 +176,42 @@ class PBasicFeed {
 		return false;
 	}
 
+	protected function continueFeed($category, $file_name, $file_path, $remote_category) {
+		//Note: protected function because it will be deleted in some future version -KH
+		$mode = "a";
+		if ($this->updateObject->startValue == 0)
+			$mode = "w";
+		$this->fileHandle = fopen($this->filename, $mode);
+		if ($this->has_header && $this->updateObject->startValue == 0)
+			fwrite($this->fileHandle, $this->getFeedHeader($file_name, $file_path));
+		$this->productList->productStart = $this->updateObject->startValue;
+		$this->productList->getProductList($this, $remote_category);
+		$done = false;
+		if ($this->productList->products == null || count($this->productList->products) < 50000)
+			$done = true;
+		if (isset($this->productList->products)) {
+			$this->updateObject->startValue += count($this->productList->products);
+			if (!isset($this->updateObject->productCount))
+				$this->updateObject->productCount = 0;
+			$this->updateObject->productCount += $this->productCount;
+		}
+		if ($this->has_footer && $done) {
+			$this->updateObject->finished = true;
+			fwrite($this->fileHandle, $this->getFeedFooter($file_name, $file_path));
+			$this->productCount = $this->updateObject->productCount;
+			PFeedActivityLog::updateFeedList($category, $remote_category, $file_name, $file_path, $this->providerName, $this->productCount);
+		}
+		fclose($this->fileHandle);
+	}
+
 	protected function createFeed($file_name, $file_path, $remote_category) {
 		//$file_name is (incorrectly) a url due to an unfortunate nomenclature left over from v2.x
 		$this->fileHandle = fopen($this->filename, "w");
-		fwrite($this->fileHandle, $this->getFeedHeader($file_name, $file_path));
-		$this->getFeedData_internal($remote_category);
-		fwrite($this->fileHandle, $this->getFeedFooter());
+		if ($this->has_header)
+			fwrite($this->fileHandle, $this->getFeedHeader($file_name, $file_path));
+		$this->productList->getProductList($this, $remote_category);
+		if ($this->has_footer)
+			fwrite($this->fileHandle, $this->getFeedFooter($file_name, $file_path));
 		fclose($this->fileHandle);
 	}
 
@@ -194,7 +240,7 @@ class PBasicFeed {
 
 		//UTF8Encode is guaranteed to create garbled text because we don't know the source encoding type
 		//However, it will create a feed that will process, so it's a good temporary measure
-		if ($this->utf8encode) {
+		if ($this->utf8encode || $this->utf8encode == 1) {
 			$value = utf8_encode($value);
 			$attribute = utf8_encode($attribute);
 		}
@@ -202,6 +248,9 @@ class PBasicFeed {
 		//if not CData, don't allow '&'
 		if (!$cdata)
 			$value = htmlentities($value, ENT_QUOTES,'UTF-8');
+
+		if (gettype($value) == 'array')
+			$value = json_encode($value);
 
 		//Done
 		return '
@@ -227,8 +276,129 @@ class PBasicFeed {
 		return $this->message . $error_messages;
 	}
   
-	function getFeedData_internal($remote_category) {
-		$this->productList->getProductList($this, $remote_category);
+	function getFeedData($category, $remote_category, $file_name, $saved_feed = null) {
+
+		$this->logActivity('Initializing...');
+
+		global $message;
+		global $pfcore;
+
+		$x = new PLicense();
+		$this->loadAttributeUserMap();
+
+		if ($this->updateObject == null)
+			$this->initializeFeed($category, $remote_category);
+		else
+			$this->resumeFeed($category, $remote_category, $this->updateObject);
+
+		$this->logActivity('Loading paths...');
+		if (!$this->checkFolders())
+			return;
+
+		$file_url = PFeedFolder::uploadFolder() . $this->providerName . '/' . $file_name . '.' . $this->fileformat;
+		$file_path = PFeedFolder::uploadURL() . $this->providerName . '/' . $file_name . '.' . $this->fileformat;
+			
+		//Special (WordPress): where admin is https and site is http, path to wp-uploads works out incorrectly as https
+		//  we check the content_url() for https... if not present, patch the file_path
+		if (($pfcore->cmsName == 'WordPress') && (strpos($file_path, 'https://') !== false) && (strpos(content_url(), 'https') === false))
+			$file_path = str_replace('https://', 'http://', $file_path);
+		$this->file_path = $file_path;
+
+		//Shipping and Taxation systems
+		$this->shipping = new PShippingData($this);
+		$this->taxData = new PTaxationData($this);
+
+		$this->logActivity('Initializing categories...');
+
+		//Figure out what categories the user wants to export
+		$this->categories = new PProductCategories($category);
+
+		//Get the ProductList ready
+		if ($this->productList == null)
+			$this->productList = new PProductList();
+
+		//Initialize some useful data 
+		//(must occur before overrides)
+		$this->current_category = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
+
+		$this->initializeOverrides($saved_feed);
+
+		//Reorder the rules
+		usort($this->rules, 'sort_rule_func');
+
+		//Load relations into ProductList
+		//Note: if relation exists, we don't overwrite
+		foreach($this->relatedData as $relatedData)
+			if (!isset($this->productList->relatedData[$relatedData[1]]))
+				$this->productList->relatedData[$relatedData[1]] = new PProductSupplementalData($relatedData[0]);
+
+		//Trying to change max_execution_time will throw privilege errors on some installs
+		//so it's been left as an option
+		if ($this->timeout > 0)
+			ini_set('max_execution_time', $this->timeout);
+
+		//Add the space in pricestandard rules
+		//if (strlen($this->currency) > 0)
+		//	$this->currency = ' '.$this->currency;
+		
+		//Create the Feed
+		$this->logActivity('Creating feed data');
+		$this->filename = $file_url;
+		if ($this->updateObject == null)
+			$this->createFeed($file_name, $file_path, $remote_category);
+		else
+			$this->continueFeed($category, $file_name, $file_path, $remote_category);
+
+		$this->logActivity('Updating Feed List');
+		if ($this->auto_update_feedlist)
+			PFeedActivityLog::updateFeedList($category, $remote_category, $file_name, $file_path, $this->providerName, $this->productCount);
+
+		if ($this->auto_free) {
+			//Free the Attribute defaults
+			for($i = 0; $i < count($this->attributeDefaults); $i++)
+				unset($this->attributeDefaults[$i]);
+			//Free the Attribute Mapping Objects
+			for($i = 0; $i < count($this->attributeMappings); $i++)
+				unset($this->attributeMappings[$i]);
+			//De-allocate the overrides object to prevent chain dependency that made the core unload too early
+			unset($this->feedOverrides);
+		}
+
+		if ($this->productCount == 0) {
+			$this->message .= '<br>No products returned';
+			return;
+		}
+
+		$this->success = true;
+  }
+
+  function getFeedFooter($file_name, $file_path) {
+    return '';
+  }
+  
+  function getFeedHeader($file_name, $file_path) {
+    return '';
+  }
+
+	function getMapping($name) {
+		foreach($this->attributeMappings as $thisAttributeMapping)
+			if ($thisAttributeMapping->attributeName == $name)
+				return $thisAttributeMapping;
+		return null;
+	}
+
+	function getMappingByMapto($name) {
+		foreach($this->attributeMappings as $thisAttributeMapping)
+			if ($thisAttributeMapping->mapTo == $name)
+				return $thisAttributeMapping;
+		return null;
+	}
+
+	function getRuleByName($name) {
+		foreach($this->rules as $rule)
+			if ($rule->name == $name)
+				return $rule;
+		return null;
 	}
 
 	public function handleProduct($this_product) {
@@ -272,119 +442,6 @@ class PBasicFeed {
 		fwrite($this->fileHandle, $product_text);
 	}
 
-	function getFeedData($category, $remote_category, $file_name, $saved_feed = null) {
-
-		$this->logActivity('Initializing...');
-
-		global $message;
-		global $pfcore;
-
-		$x = new PLicense();
-		$this->loadAttributeUserMap();
-		$this->initializeFeed($category, $remote_category);
-
-		$this->logActivity('Loading paths...');
-		if (!$this->checkFolders())
-			return;
-
-		$file_url = PFeedFolder::uploadFolder() . $this->providerName . '/' . $file_name . '.' . $this->fileformat;
-		$file_path = PFeedFolder::uploadURL() . $this->providerName . '/' . $file_name . '.' . $this->fileformat;
-			
-		//Special (WordPress): where admin is https and site is http, path to wp-uploads works out incorrectly as https
-		//  we check the content_url() for https... if not present, patch the file_path
-		if (($pfcore->cmsName == 'WordPress') && (strpos($file_path, 'https://') !== false) && (strpos(content_url(), 'https') === false))
-			$file_path = str_replace('https://', 'http://', $file_path);
-
-		//Shipping and Taxation systems
-		$this->shipping = new PShippingData($this);
-		$this->taxData = new PTaxationData($this);
-
-		$this->logActivity('Initializing categories...');
-
-		//Figure out what categories the user wants to export
-		$this->categories = new PProductCategories($category);
-
-		//Get the ProductList ready
-		if ($this->productList == null)
-			$this->productList = new PProductList();
-
-		//Initialize some useful data 
-		//(must occur before overrides)
-		$this->current_category = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
-
-		$this->initializeOverrides($saved_feed);
-
-		//Reorder the rules
-		usort($this->rules, 'sort_rule_func');
-
-		//Load relations into ProductList
-		//Note: if relation exists, we don't overwrite
-		foreach($this->relatedData as $relatedData)
-			if (!isset($this->productList->relatedData[$relatedData[1]]))
-				$this->productList->relatedData[$relatedData[1]] = new PProductSupplementalData($relatedData[0]);
-
-		//Trying to change max_execution_time will throw privilege errors on some installs
-		//so it's been left as an option
-		if ($this->timeout > 0)
-			ini_set('max_execution_time', $this->timeout);
-
-		if (strlen($this->currency) > 0)
-			$this->currency = ' ' . $this->currency;
-		
-		//Create the Feed
-		$this->logActivity('Creating feed data');
-		$this->filename = $file_url;
-		$this->createFeed($file_name, $file_path, $remote_category);
-
-		$this->logActivity('Updating Feed List');
-		PFeedActivityLog::updateFeedList($category, $remote_category, $file_name, $file_path, $this->providerName, $this->productCount);
-
-		//Free the Attribute defaults
-		for($i = 0; $i < count($this->attributeDefaults); $i++)
-			unset($this->attributeDefaults[$i]);
-		//Free the Attribute Mapping Objects
-		for($i = 0; $i < count($this->attributeMappings); $i++)
-			unset($this->attributeMappings[$i]);
-		//De-allocate the overrides object to prevent chain dependency that made the core unload too early
-		unset($this->feedOverrides);
-
-		if ($this->productCount == 0) {
-			$this->message .= '<br>No products returned';
-			return;
-		}
-
-		$this->success = true;
-  }
-
-  function getFeedFooter() {
-    return '';
-  }
-  
-  function getFeedHeader($file_name, $file_path) {
-    return '';
-  }
-
-	function getMapping($name) {
-		foreach($this->attributeMappings as $thisAttributeMapping)
-			if ($thisAttributeMapping->attributeName == $name)
-				return $thisAttributeMapping;
-		return null;
-	}
-
-	function getMappingByMapto($name) {
-		foreach($this->attributeMappings as $thisAttributeMapping)
-			if ($thisAttributeMapping->mapTo == $name)
-				return $thisAttributeMapping;
-		return null;
-	}
-
-	function getRuleByName($name) {
-		foreach($this->rules as $rule)
-			if ($rule->name == $name)
-				return $rule;
-		return null;
-	}
-
 	function initializeFeed($category, $remote_category) {
 		//Allow descendant to perform initialization based on category/remote category
 	}
@@ -416,13 +473,21 @@ class PBasicFeed {
 		$this->fields = $new_array;
 	}
 
+	function leaveFeed($updateObject) {
+		//The system is abandoning this feed.
+		//updateObject will be saved in JSON format and provided again in resumeFeed() at some point in the future
+	}
+
 	function loadAttributeUserMap() {
 		//Called during feed initialization to map the Attributes
 		global $pfcore;
 		$map_string = $pfcore->settingGet('cpf_attribute_user_map_' . $this->providerName);
-
+		if ( $map_string == '[]') { //if map_string is not object //temp fix for backwards compatibility... true fix below
+		 		$pfcore->settingSet('cpf_attribute_user_map_' . $this->providerName, '');
+		 		$map_string = '';
+		 }
 		if (strlen($map_string) == 0)
-			$map = array();
+			$map = new stdClass(); //Was array(); *true fix -K
 		else {
 			$map = json_decode($map_string);
 			$map = get_object_vars($map);
@@ -444,8 +509,14 @@ class PBasicFeed {
 		//true means exit when feed complete so the browser page will remain in place (WordPress)
 		return true;
 	}
+
+	function resumeFeed($category, $remote_category, $updateObject) {
+		//Allow descendant to perform initialization based on category/remote category
+		//upon resuming a Feed. Note that previously saved data is available in updateObject
+		$this->auto_update_feedlist = false;
+	}
   
-	function __construct () {
+	function __construct ($saved_feed = null) {
 
 		global $pfcore;
 
@@ -504,7 +575,7 @@ class PXMLFeed extends PBasicFeed {
 
 	}
 
-  function getFeedFooter() {   
+  function getFeedFooter($file_name, $file_path) {   
     $output = '
 </' . $this->topLevelElement . '>';
 	return $output;
@@ -672,7 +743,7 @@ class PCSVFeedEx extends PBasicFeed {
 		return ''; //Skip header - We'll do it later
   }
 
-  function getFeedFooter() {
+  function getFeedFooter($file_name, $file_path) {
 
 		//Now we finally write the headers! Start by creating them
 		$headers = array();
@@ -683,6 +754,10 @@ class PCSVFeedEx extends PBasicFeed {
 
 		$savedData = file_get_contents($this->filename);
 		file_put_contents($this->filename, $headerString . "\r\n" .$savedData);
+
+		//Write the footer as a header in the aggregate
+		foreach($this->aggregateProviders as $thisProvider)
+			$thisProvider->aggregateHeaderWrite($this->savedFeedID, $headerString);
 
     return '';
 
@@ -702,6 +777,38 @@ class PCSVFeedEx extends PBasicFeed {
 		}*/
 
 	}
+
+}
+
+//********************************************************************
+// PAggregateFeed
+//********************************************************************
+
+class PAggregateFeed extends PBasicFeed {
+
+	function __construct () {
+		parent::__construct();
+	}
+
+	function aggregateHeaderWrite($id, $headerString) {
+		//Do nothing. This is used only by AggCSV
+	}
+
+  function initializeAggregateFeed($id, $file_name) {
+
+		$this->filename = PFeedFolder::uploadFolder() . $this->providerName . '/' . $file_name . '.' . $this->fileformat;
+		$this->file_url = PFeedFolder::uploadURL() . $this->providerName . '/' . $file_name . '.' . $this->fileformat;
+		$this->productCount = 0;
+		$this->file_name_short = $file_name;
+
+		global $pfcore;
+		$data = $pfcore->settingGet('cpf_aggrfeedlist_' . $id);
+		$data = explode(',', $data);
+		$this->feeds = array();
+		foreach($data as $datum)
+			$this->feeds[$datum] = true;
+
+  }
 
 }
 

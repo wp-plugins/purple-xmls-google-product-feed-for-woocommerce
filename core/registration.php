@@ -69,8 +69,8 @@ class PLicense {
 	function checkLicense( $licensekey, $localkey = '' ) 
 	{
 		//initial values
-			//$whmcsurl = 'https://www.purpleturtle.pro/'; //Old
-			$whmcsurl = 'https://shop.shoppingcartproductfeed.com/';
+		//$whmcsurl = 'https://www.purpleturtle.pro/'; //Old
+		$whmcsurl = 'https://shop.shoppingcartproductfeed.com/';
 	    $licensing_secret_key = '437682532'; # Unique value, should match what is set in the product configuration for MD5 Hash Verification
 	    $check_token = time() . md5(mt_rand(1000000000, 9999999999) . $licensekey);
 	    $checkdate = date('Ymd'); # Current date
@@ -112,6 +112,7 @@ class PLicense {
 			//it is not enough to disable CURLOPT_SSL_VERIFYPEER
 			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			//curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 			$data = curl_exec($ch);
 			//echo curl_error($ch); //debug
 

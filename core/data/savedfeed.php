@@ -83,6 +83,7 @@ class PSavedFeed {
 			$this->own_overrides = false;
 			$this->feed_overrides = '';
 			$this->title = '';
+			return;
 		}
 
 		$this->id = $id;

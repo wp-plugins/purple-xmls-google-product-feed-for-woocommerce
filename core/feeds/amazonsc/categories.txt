@@ -1,9 +1,10 @@
-Automotive & Powersports
+Automotive & Powersports (Parts & Accessories)
+Automotive & Powersports (Tires & Wheels)
 Baby
 Beauty
 Camera & Photo
-Cell Phones & Accessories
-Clothing
+Cell Phones & Accessories (Wireless)
+Clothing & Accessories
 Collectible Coins
 Computers
 Consumer Electronics
@@ -21,12 +22,46 @@ Industrial & Scientific > Raw Materials
 Industrial & Scientific > Other
 InventoryLoader
 Jewelry
+ListingLoader
 Musical Instruments
 Office Products
 Pet Supplies
+PriceInventory
 Shoes, Handbags & Sunglasses
 Software & Video Games
 Sports & Outdoors
 Sports Collectibles
 Toys & Games
 Watches
+
+IT/ InventoryLoader
+IT/ Luggage
+
+UK/ Amazon Device Accessories
+UK/ Baby
+UK/ Beauty
+UK/ Car and Motorbike
+UK/ Clothing
+UK/ Computers & Accessories
+UK/ Consumer Electronics
+UK/ Food & Beverages
+UK/ Health and Personal Care
+UK/ Home
+UK/ Home Improvement
+UK/ Jewelry
+UK/ Large Appliances
+UK/ Lawn & Garden
+UK/ ListingLoader
+UK/ Lighting
+UK/ Luggage
+UK/ Musical Instruments
+UK/ Office
+UK/ Personal Care Appliances
+UK/ Pet Supplies
+UK/ PriceInventory
+UK/ Shoes & Accessories
+UK/ Small Domestic Appliances (Kitchen)
+UK/ Software & Video Games
+UK/ Sports
+UK/ Toys
+UK/ Watches

@@ -5,7 +5,7 @@
   Plugin URI: www.shoppingcartproductfeed.com
   Description: WooCommerce Shopping Cart Export :: <a target="_blank" href="http://shoppingcartproductfeed.com/tos/">How-To Click Here</a>
   Author: ShoppingCartProductFeed.com
-  Version: 3.1.0.12
+  Version: 3.1.1.10
   Author URI: www.shoppingcartproductfeed.com
   Authors: Haris, Keneto (May2014)
   Note: The "core" folder is shared to the Joomla component.
@@ -150,7 +150,7 @@ function update_all_cart_feeds_step_2() {
 	$aggregateProviders = array();
 	foreach ($feed_ids as $this_feed_id) {
 
-		if ($this_feed_id->type == 'AggXml') {
+		if ($this_feed_id->type == 'AggXml' || $this_feed_id->type == 'AggCsv' || $this_feed_id->type == 'AggTxt') {
 			$providerName = $this_feed_id->type;
 			$providerFile = 'core/feeds/' . strtolower($providerName) . '/feed.php';
 			if (!file_exists(dirname(__FILE__) . '/' . $providerFile))
@@ -175,7 +175,7 @@ function update_all_cart_feeds_step_2() {
 		$providerName = $saved_feed->provider;
 
 		//Skip any Aggregate Types
-		if ($providerName == 'AggXml')
+		if ($providerName == 'AggXml' || $providerName == 'AggCsv' || $providerName == 'AggTxt')
 			continue;
 
 		//Make sure someone exists in the core who can provide the feed

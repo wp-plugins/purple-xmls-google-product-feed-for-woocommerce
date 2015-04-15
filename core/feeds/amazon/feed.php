@@ -25,7 +25,7 @@ class PAmazonFeed extends PCSVFeedEx
 
 		//Create some attributes (Mapping 3.0)
 		//Required
-		$this->addAttributeMapping('category', 'Category',true,true);
+		$this->addAttributeMapping('current_category', 'Category',true,true);
 		$this->addAttributeMapping('title', 'Title',true,true);
 		$this->addAttributeMapping('link', 'Link',true,true);
 		$this->addAttributeMapping('sku', 'SKU',true,true);
@@ -33,7 +33,7 @@ class PAmazonFeed extends PCSVFeedEx
 		//Strongly Recommended Fields
 		$this->addAttributeMapping('brand', 'Brand',false);
 		$this->addAttributeMapping('department', 'Department',false);
-		$this->addAttributeMapping('upc', 'UPC',false);		
+		$this->addAttributeMapping('', 'UPC',false);		
 		$this->addAttributeMapping('feature_imgurl', 'Image',true);
 		$this->addAttributeMapping('description', 'Description', true,false);		
 		$this->addAttributeMapping('manufacturer', 'Manufacturer',false,false);
@@ -42,7 +42,7 @@ class PAmazonFeed extends PCSVFeedEx
 		//Recommended Fields
 		$this->addAttributeMapping('', 'Age');
 		//$this->addAttributeMapping('', 'Band'); //jewelry
-				for ($i = 1; $i < 6; $i++)
+		for ($i = 1; $i < 6; $i++)
 			$this->addAttributeMapping("bullet_point$i", "Bullet point$i");
 		$this->addAttributeMapping('color', 'Color');
 		$this->addAttributeMapping('', 'Color and finish');
@@ -52,8 +52,8 @@ class PAmazonFeed extends PCSVFeedEx
 		$this->addAttributeMapping('', 'Display size');
 		$this->addAttributeMapping('', 'Display technology');
 		$this->addAttributeMapping('', 'Flash drive Size');
-		$this->addAttributeMapping('flavor', 'Flavor');
-		$this->addAttributeMapping('gender', 'Gender');
+		$this->addAttributeMapping('', 'Flavor');
+		$this->addAttributeMapping('', 'Gender');
 		$this->addAttributeMapping('', 'Hard disk size');
 		$this->addAttributeMapping('height', 'Height'); //15,3 FT
 		$this->addAttributeMapping('', 'Included RAM size');
@@ -62,7 +62,7 @@ class PAmazonFeed extends PCSVFeedEx
 			$this->addAttributeMapping("keywords$i", "Keywords$i");	
 		$this->addAttributeMapping('', 'League and Team');		
 		$this->addAttributeMapping('length', 'Length');
-		$this->addAttributeMapping('material', 'Material');	
+		$this->addAttributeMapping('', 'Material');	
 		$this->addAttributeMapping('', 'Maximum Age');
 		$this->addAttributeMapping('', 'Memory Card type');
 		$this->addAttributeMapping('', 'Minimum Age');
@@ -75,13 +75,13 @@ class PAmazonFeed extends PCSVFeedEx
 		$this->addAttributeMapping('', 'Ring size');
 		$this->addAttributeMapping('', 'Scent');	
 		$this->addAttributeMapping('', 'Screen Resolution');
-		$this->addAttributeMapping('shipping_weight', 'Shipping Weight');
+		$this->addAttributeMapping('weight', 'Shipping Weight');
 		$this->addAttributeMapping('size', 'Size');
 		$this->addAttributeMapping('', 'Size per Pearl'); //Indicates the size per pearl (note that unit of measure is millimeter).
 		$this->addAttributeMapping('', 'Theme HPC'); //Health & Personal Care
 		$this->addAttributeMapping('', 'Total Diamond Weight');
 		$this->addAttributeMapping('', 'Watch movement');
-		$this->addAttributeMapping('weight', 'Weight');
+		$this->addAttributeMapping('', 'Weight');
 		$this->addAttributeMapping('width', 'Width');
 
 		/* deprecated attributes?
@@ -114,9 +114,9 @@ class PAmazonFeed extends PCSVFeedEx
 		//$product->attributes['id'] = $product->attributes['id'] . $variantUPC; //Not used in original code
 		//$product->attributes['mfr_part_number'] = $product->attributes['id'] . $variantMfr;
 
-		$image_count = 0;
+		$image_count = 1;
 		foreach($product->imgurls as $imgurl) {
-			$image_index = "other_image_url_$image_count";
+			$image_index = "other_image_url$image_count";
 			$product->attributes[$image_index] = $imgurl;
 			$image_count++;
 			if ($image_count >= 9)
@@ -128,8 +128,13 @@ class PAmazonFeed extends PCSVFeedEx
 			$product->attributes['price'] = $product->attributes['sale_price'];
 
 		//$product->attributes['shipping_cost'] = '0.00 ';
-		$product->attributes['shipping_weight'] = $product->attributes['weight'];
-		$product->attributes['weight'] = $product->attributes['weight'] . $this->weight_unit;
+		if (isset($product->attributes['weight'])) {
+			$product->attributes['shipping_weight'] = $product->attributes['weight'];
+		 } 
+		//else {
+		// 	$product->attributes['shipping_weight'] = '0 kg';
+		// 	$product->attributes['weight'] = '0 kg';
+		// }
 
 		return parent::formatProduct($product);
 	}

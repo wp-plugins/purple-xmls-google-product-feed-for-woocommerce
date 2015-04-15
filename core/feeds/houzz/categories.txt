@@ -1,0 +1,291 @@
+2001 : kitchen products
+10001 : aprons
+10003 : dish racks
+10004 : cookware and bakeware
+10005 : dishtowels
+10006 : food containers and storage
+10007 : kitchen faucets
+10008 : kitchen sinks
+10010 : kitchen cabinets
+10011 : kitchen countertops
+10013 : knives and chopping boards
+10014 : major kitchen appliances
+10015 : refrigerators and freezers
+10016 : kitchen hoods and vents
+10017 : microwave
+10018 : dishwashers
+10019 : ovens
+10020 : cooktops
+10035 : gas ranges and electric ranges
+10022 : pantry
+10024 : pot racks
+10025 : small kitchen appliances
+10026 : toasters
+10027 : blenders and food processors
+10029 : coffee makers and tea kettles
+10030 : kitchen trash cans
+10031 : wine racks
+10032 : kitchen islands and kitchen carts
+10033 : kitchen tools
+10034 : kitchen tile
+10036 : cabinet and drawer organizers
+10037 : oven mitts and pot holders
+
+2002 : tabletop
+11005 : dinnerware
+11100 : dinnerware sets
+11101 : plates
+11102 : bowls
+11103 : chargers
+11006 : flatware
+11007 : cups and glassware
+11200 : wine glasses
+11201 : everyday glassware
+11202 : mugs
+11008 : table linens
+11400 : tablecloths
+11401 : napkins
+11402 : placemats
+11009 : napkin rings
+11011 : serveware
+11300 : serving bowls
+11301 : platters
+11302 : serving utensils
+11012 : barware
+ : 
+2003 : bath products
+12001 : bathroom mirrors
+12002 : shower curtains
+12003 : towel bars and hooks
+12004 : towels
+12005 : bath and spa accessories
+12006 : toilet accessories
+12007 : bath mats
+12008 : bathroom faucets
+12009 : bathroom sinks
+12010 : bathtubs
+12011 : showers
+12012 : toilets
+12013 : bathroom vanities and sink consoles
+12014 : bathroom tile
+12015 : bathroom countertops
+12016 : shower caddies
+12017 : bathroom storage
+
+2004 : accessories and decor
+13001 : candles and candle holders
+13002 : clocks
+13003 : fireplace accessories
+13004 : indoor fountains
+13005 : frames
+13006 : holiday decorations
+13007 : mirrors
+13009 : pet accessories
+13010 : pillows
+13011 : indoor pots and planters
+13012 : rugs
+13013 : throws
+13014 : vases
+13015 : wallpaper
+13016 : books
+13017 : waste baskets
+13018 : home fragrance
+13019 : artwork
+13028 : originals and limited editions
+13029 : prints and posters
+13020 : home electronics
+13021 : magazine racks
+13022 : decals
+13023 : screens and wall dividers
+13024 : plants
+13030 : artificial flowers
+13025 : stencils
+13026 : paints stains and glazes
+13027 : fireplaces
+ 
+2005 : furniture
+10002 : bar stools and counter stools
+14001 : sectional sofas
+14002 : love seats
+14003 : armchairs
+14004 : day beds and chaises
+14005 : ottomans and cubes
+14006 : coffee tables
+14007 : side tables and accent tables
+14008 : chairs
+14009 : benches
+14010 : sofas
+14011 : bar tables
+14012 : bar carts
+14013 : dining tables
+14014 : dining chairs and benches
+14015 : dining chair cushions
+14016 : buffets and sideboards
+14018 : rocking chairs
+14020 : dining sets
+14021 : dining chairs
+14022 : dining benches
+ 
+2006 : bedroom products
+15001 : makeup mirrors
+15002 : bedding
+15003 : duvet covers
+15004 : quilts
+15005 : sheets
+15006 : bed pillows and pillowcases
+15007 : bedskirts
+15014 : shams
+15008 : beds
+15009 : bedroom benches
+15010 : headboards
+15011 : nightstands and bedside tables
+15012 : dressers chests and bedroom armoires
+15013 : sofa beds
+
+2007 : kids products
+16001 : cribs
+16002 : changing tables
+16003 : crib accessories
+16004 : kids beds
+16005 : baby bedding
+16006 : baby toys
+16007 : highchairs
+16008 : kids bedding
+16009 : kids toys
+16010 : kids tables
+16011 : kids chairs
+16012 : kids decor
+16013 : children lighting
+16014 : rocking chairs and gliders
+16015 : baby swings and bouncers
+16016 : toy storage
+16017 : kids rugs
+16018 : nursery decor
+16019 : kids dressers
+16020 : mobiles
+
+2008 : home office products
+17001 : desks
+17002 : task chairs
+17003 : cable management
+17004 : desk accessories
+17005 : filing cabinets and carts
+17007 : bulletin board
+
+2010 : floors
+19001 : wood flooring
+19002 : laminate flooring
+19003 : carpet flooring
+19004 : floor tiles
+19005 : vinyl flooring
+
+2011 : lighting
+20001 : bathroom lighting and vanity lighting
+20002 : ceiling lighting
+20003 : chandeliers
+20004 : floor lamps
+20005 : lamp shades
+20006 : light bulbs
+20007 : pendant lighting
+20008 : kitchen lighting and cabinet lighting
+20009 : recessed lighting
+20010 : table lamps
+20011 : track lighting
+20012 : wall sconces
+20013 : ceiling fans
+
+2012 : window treatments
+21001 : curtains
+21002 : window blinds
+21003 : vertical blinds
+21004 : roller blinds
+21005 : venetian blinds
+21006 : cellular shades
+21007 : roman blinds
+21008 : curtain poles
+ 
+2013 : storage and organization
+22001 : bookcases cabinets and computer armoires
+22002 : coat stands and umbrella stands
+22004 : closet organizers
+22005 : clothes and shoes organizers
+22006 : clothes racks
+22007 : hooks and hangers
+22008 : media storage
+22009 : medicine cabinets
+22010 : shoeracks
+22011 : wall shelves
+22012 : baskets
+22013 : storage boxes
+22014 : hall trees
+
+2014 : outdoor products
+23001 : grills
+23002 : patio furniture and outdoor furniture
+23033 : outdoor tables
+23034 : outdoor sofas
+23035 : outdoor chairs
+23036 : outdoor stools and benches
+23037 : outdoor chaise lounges
+23003 : outdoor pillows
+23004 : outdoor umbrellas
+23005 : outdoor playsets
+23006 : outdoor swingsets
+23007 : firepits
+23008 : gazebos
+23009 : sheds
+23010 : prefab studios
+23011 : greenhouses
+23012 : fencing
+23013 : irrigation equipment
+23014 : retainer walls
+23015 : swimming pools and spas
+23016 : gardening tools
+23017 : outdoor lighting
+23018 : outdoor decor
+23019 : house numbers
+23020 : mailboxes
+23021 : holiday outdoor decorations
+23022 : outdoor fountains
+23023 : outdoor planters
+23027 : doormats
+23028 : bird feeders
+23029 : bird baths
+23030 : birdhouses
+23031 : garden sculptures
+23025 : outdoor rugs
+23032 : hammocks
+
+2015 : hardware
+24001 : handles
+24002 : knobs
+24003 : pulls
+24004 : switchplates
+24005 : brackets
+ 
+2016 : windows and doors
+25001 : garage doors
+25002 : front doors
+25003 : interior doors
+25004 : screen doors
+25005 : skylights
+25006 : windows
+ 
+2017 : fabric
+26001 : upholstery fabric
+26002 : outdoor fabric
+
+2018 : housekeeping
+27001 : cleaning supplies
+27002 : mops brooms and dustpans
+27003 : vacuum cleaners
+27004 : laundry products
+18001 : laundry room appliances
+18002 : ironing boards
+18003 : irons
+18004 : clothesline
+18005 : dryer racks
+18006 : hampers
+18007 : ironing board covers
+18008 : utility tubs
+27005 : ladders and step stools

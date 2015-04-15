@@ -117,13 +117,12 @@ class PFeedActivityLog {
 	}
 
 	private static function feedDataToIDJ($file_name, $providerName) {
+
 		$db = JFactory::getDBO();
-		$query = "
+		$db->setQuery('
 			SELECT id
 			FROM #__cartproductfeed_feeds
-			WHERE filename='$file_name' AND type='$providerName'";
-		$db->setQuery($query);
-		$db->query();
+			WHERE (filename=' . $db->quote($file_name) . ') AND (type=' . $db->quote($providerName) . ')');
 		$result = $db->loadObject();
 		if (!$result)
 			return -1;
@@ -190,6 +189,27 @@ class PFeedActivityLog {
 
 	private static function updateFeedDataJ($id, $category, $remote_category, $file_name, $file_path, $providerName, $productCount) {
 
+		$date	= JFactory::getDate();
+		$user	= JFactory::getUser();
+		$db = JFactory::getDBO();
+
+		$newData = new stdClass();
+		$newData->id = $id;
+		$newData->category = $category;
+		$newData->remote_category = $remote_category;
+		$newData->filename = $file_name;
+		$newData->url = $file_path;
+		$newData->type = $providerName;
+		$newData->product_count = $productCount;
+		$newData->modified = $date->toSql();
+		$newData->modified_by = $user->get('id');
+
+		//$productCount
+		$db->updateObject('#__cartproductfeed_feeds', $newData, 'id');
+	}
+
+	private static function updateFeedDataJS($id, $category, $remote_category, $file_name, $file_path, $providerName, $productCount) {
+
 		global $pfcore;
 		$shopID = $pfcore->shopID;
 
@@ -208,26 +228,6 @@ class PFeedActivityLog {
 		$newData->modified = $date->toSql();
 		$newData->modified_by = $user->get('id');
 		$newData->shop_id = $shopID;
-		//$productCount
-		$db->updateObject('#__cartproductfeed_feeds', $newData, 'id');
-	}
-
-	private static function updateFeedDataJS($id, $category, $remote_category, $file_name, $file_path, $providerName, $productCount) {
-
-		$date	= JFactory::getDate();
-		$user	= JFactory::getUser();
-		$db = JFactory::getDBO();
-
-		$newData = new stdClass();
-		$newData->id = $id;
-		$newData->category = $category;
-		$newData->remote_category = $remote_category;
-		$newData->filename = $file_name;
-		$newData->url = $file_path;
-		$newData->type = $providerName;
-		$newData->product_count = $productCount;
-		$newData->modified = $date->toSql();
-		$newData->modified_by = $user->get('id');
 		//$productCount
 
 		$db->updateObject('#__cartproductfeed_feeds', $newData, 'id');

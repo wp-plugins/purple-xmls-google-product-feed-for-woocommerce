@@ -36,7 +36,9 @@ class PFeedCore {
 				$this->isJoomla = true;
 				$this->siteHost = JURI::root(false);
 				$this->siteHostAdmin = $this->siteHost;
+				$this->timezone = JFactory::getConfig()->getValue('offset');
 				$this->weight_unit = 'kg'; //!Should not be hard-coded
+				$this->dimension_unit = 'm';
 			} elseif (file_exists(JPATH_ADMINISTRATOR . '/components/com_rapidcart')) {
 				$this->callSuffix = 'JS';
 				$this->cmsName = 'Joomla!';
@@ -46,7 +48,9 @@ class PFeedCore {
 				$this->isJoomla = true;
 				$this->siteHost = JURI::root(false);
 				$this->siteHostAdmin = $this->siteHost;
+				$this->timezone = JFactory::getConfig()->get('config.offset');
 				$this->weight_unit = 'kg';
+				$this->dimension_unit = 'm';
 			} elseif (file_exists(JPATH_ADMINISTRATOR . '/components/com_hikashop'))  {
 				$this->callSuffix = 'JH';
 				$this->cmsName = 'Joomla!';
@@ -56,7 +60,10 @@ class PFeedCore {
 				$this->isJoomla = true;
 				$this->siteHost = JURI::root(false);
 				$this->siteHostAdmin = $this->siteHost;
+				//$this->timezone = JFactory::getConfig()->getValue('offset'); //J2
+				$this->timezone = JFactory::getConfig()->get('config.offset');
 				$this->weight_unit = 'kg';
+				$this->dimension_unit = 'm';
 			}
 		} else {
 			/********************************************************************
@@ -68,7 +75,7 @@ class PFeedCore {
 			$pluginName = 'WooCommerce';
 			$all_plugins = get_plugins();
 			foreach($all_plugins as $index => $this_plugin)
-				if ($this_plugin['Name'] == 'WP e-Commerce') {
+				if ($this_plugin['Name'] == 'WP e-Commerce' || $this_plugin['Name'] == 'WP eCommerce') {
 					$pluginName = 'WP e-Commerce';
 					break;
 				}
@@ -87,7 +94,7 @@ class PFeedCore {
 					$this->siteHost = site_url();
 					$this->siteHostAdmin = admin_url();
 					$this->weight_unit = esc_attr(get_option('woocommerce_weight_unit'));
-					$this->dimension_unit =  esc_attr(get_option( 'woocommerce_dimension_unit' )); //cm
+					$this->dimension_unit = esc_attr(get_option( 'woocommerce_dimension_unit' )); //cm
 					$this->manage_stock = strtolower(get_option('woocommerce_manage_stock')) == 'yes';
 					$this->hide_outofstock = strtolower(get_option('woocommerce_hide_out_of_stock_items')) == 'yes';
 					break;
@@ -118,6 +125,38 @@ class PFeedCore {
 			FROM #__rapidcart_shops
 			' . $where);
 		return $db->loadObjectList();
+	}
+
+	public function loadRequires($name) {
+
+		//Allow external plugins to load a particular Feed object (Intended for WordPress)
+		require_once dirname(__FILE__) . '/../classes/dialogbasefeed.php';
+		require_once dirname(__FILE__) . '/../feeds/' . $name . '/feed.php';
+		require_once dirname(__FILE__) . '/../feeds/' . $name . '/dialognew.php';
+
+	}
+
+	function localizedDate($format, $data) {
+		$getListCall = 'localizedDate' . $this->callSuffix;
+		return $this->$getListCall($format, $data);
+	}
+
+	function localizedDateJ($format, $data) {
+		$this_date = new JDate($data, $this->timezone);
+		return $this_date->format($format, false, false);
+	}
+
+	function localizedDateJS($format, $data) {
+		$this_date = new JDate($data, $this->timezone);
+		return $this_date->format($format, false, false);
+	}
+
+	function localizedDateW($format, $data) {
+		return date_i18n($format, $data);
+	}
+
+	function localizedDateWE($format, $data) {
+		return date_i18n($format, $data);
 	}
 
 	function settingDelete($settingName) {
@@ -323,6 +362,25 @@ class PFeedCore {
 
 	private function triggerWE($eventname) {
 		do_action($eventname);
+	}
+
+	public function triggerFilter($eventname, $param1 = null, $param2 = null, $param3 = null) {
+		$getListCall = 'triggerFilter' . $this->callSuffix;
+		return $this->$getListCall($eventname, $param1, $param2, $param3);
+	}
+
+	private function triggerFilterJ($eventname, $param1, $param2, $param3) {
+	}
+
+	private function triggerFilterJS($eventname, $param1, $param2, $param3) {
+	}
+
+	private function triggerFilterW($eventname, $param1, $param2, $param3) {
+		return apply_filters($eventname, $param1, $param2, $param3);
+	}
+
+	private function triggerFilterWE($eventname, $param1, $param2, $param3) {
+		return apply_filters($eventname, $param1, $param2, $param3);
 	}
 
 }

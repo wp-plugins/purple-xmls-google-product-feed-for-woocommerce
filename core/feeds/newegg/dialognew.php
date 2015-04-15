@@ -14,15 +14,8 @@ class NeweggDlg extends PBaseFeedDialog {
   function __construct() {
     parent::__construct();
     $this->service_name = 'Newegg';
-    $this->service_name_long = 'Newegg Products XML Export';
-	  $this->options = array(
-        'Item Length',
-        'Item Width',
-        'Item Height',
-        'Item Condition',
-        'Shipping',
-        'Inventory'
-	  );
+    $this->service_name_long = 'Newegg Products CSV Export';
+	  $this->options = array();
   }
 
 }

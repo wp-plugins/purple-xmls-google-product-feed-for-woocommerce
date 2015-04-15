@@ -22,8 +22,8 @@ WritingInstruments
 */
 	$this->addAttributeMapping('feed_product_type', 'feed_product_type',true,true)->localized_name = 'Product Type';
 	
-	$this->addAttributeMapping('gtin_exemption_reason', 'gtin_exemption_reason')->localized_name = 'Product Exemption Reason'; 
-	$this->addAttributeMapping('related_product_id', 'related_product_id')->localized_name = 'Related Product Identifier'; 
-	$this->addAttributeMapping('related_product_id_type', 'related_product_id_type')->localized_name = 'Related Product Identifier Type'; 
+	$this->addAttributeMapping('', 'gtin_exemption_reason')->localized_name = 'Product Exemption Reason'; 
+	$this->addAttributeMapping('', 'related_product_id')->localized_name = 'Related Product Identifier'; 
+	$this->addAttributeMapping('', 'related_product_id_type')->localized_name = 'Related Product Identifier Type'; 
 
 ?>

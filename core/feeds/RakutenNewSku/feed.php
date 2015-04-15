@@ -23,24 +23,33 @@ class PRakutenNewSkuFeed extends PCSVFeedEx {
 		$this->fields = array();
 		//$this->fields = array('Seller-id', 'gtin', 'mfg-name', 'mfg-part-number', 'Seller-sku', 'title', 'description', 'main-image', 'additional-images', 'weight', 'category-id', 'product-set-id', 'listing-price');
 
-		$this->addAttributeMapping('', 'seller-id',true,true); //assigned by Rakuten.com Shopping
-		$this->addAttributeMapping('', 'gtin',true,true);
-		$this->addAttributeMapping('isbn', 'isbn');
-		$this->addAttributeMapping('', 'mfg-name',true,true);
-		$this->addAttributeMapping('', 'mfg-part-number',true,true); 
+		$this->addAttributeMapping('seller_id', 'seller-id',true,true); //assigned by Rakuten.com Shopping
+		$this->addAttributeMapping('', 'gtin',true,true); //upc or ean
+		$this->addAttributeMapping('', 'isbn');
+		$this->addAttributeMapping('brand', 'mfg-name',true,true);
+		$this->addAttributeMapping('', 'mfg-part-number',true,true); //may selet id or sku
 		$this->addAttributeMapping('', 'asin');
 		$this->addAttributeMapping('sku', 'seller-sku',true,true); //seller-sku must be unique in the feed
 		$this->addAttributeMapping('title', 'title',true,true);
 		$this->addAttributeMapping('description', 'description', true,true);
 		$this->addAttributeMapping('feature_imgurl', 'main-image',true,true);
-		$this->addAttributeMapping('', 'additional-images');
+		$this->addAttributeMapping('additional-images', 'additional-images');
 		$this->addAttributeMapping('weight', 'weight',true,true);
-		$this->addAttributeMapping('features', 'features',true);
-		$this->addAttributeMapping('listing-price', 'listing-price',true,true);
-		$this->addAttributeMapping('', 'msrp');
-		$this->addAttributeMapping('category-id', 'category-id');
-		$this->addAttributeMapping('', 'keywords');
-		$this->addAttributeMapping('', 'product-set-id');
+		$this->addAttributeMapping('', 'features',true);
+		$this->addAttributeMapping('price', 'listing-price',true,true);
+		$this->addAttributeMapping('price', 'msrp',true);
+		$this->addAttributeMapping('current_category', 'category-id',true);
+		$this->addAttributeMapping('', 'keywords',true); //separated by |
+		$this->addAttributeMapping('item_group_id', 'product-set-id');
+		//user may add more attributes via mapAttribute attLocal to attributeName	
+
+		$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
+		$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree
+		$this->addRule('price_rounding','pricerounding'); //2 decimals
+		$this->addRule( 'description', 'description',array('max_length=8000','strict') ); 
+		$this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 
+		$this->addRule( 'csv_standard', 'CSVStandard',array('title','100') ); //title char limit
+
 	}
 	
 	function getFeedHeader($file_name, $file_path) 
@@ -56,11 +65,31 @@ class PRakutenNewSkuFeed extends PCSVFeedEx {
 	    return substr($output, 0, -1) .  "\r\n";
 	}
 
-	function getFeedFooter() {
+	function getFeedFooter($file_name, $file_path) {
 		//Override parent and do nothing
 	}
 
 	function formatProduct($product) {
+		
+//if product weight is in ounces, convert to lbs
+		if ($this->weight_unit == 'oz' || $this->weight_unit == 'ounces') {
+			$product_weight_in_lbs = $product->attributes['weight']*0.0625;
+			$product->attributes['weight'] = sprintf('%0.2f', $product_weight_in_lbs);
+		}
+//additional-images
+	 	if ( $this->allow_additional_images && (count($product->imgurls) > 0) )
+	 		$product->attributes['additional-images'] = implode('|', $product->imgurls); 
+//category-id
+	 	$product->attributes['current_category'] = explode("\t", $product->attributes['current_category'])[0];
+//seller id	
+		$product->attributes['seller_id'] = $this->seller_id;			
+//result code notificaitons		
+		if ( !isset($this->seller_id) || strlen($product->attributes['seller_id']) == 0 ) {
+			$this->addErrorMessage(1000, 'seller-id not configured. Add advanced command: $seller-id = ....', true);
+			$this->productCount--; //Make sure the parent class knows we failed to make a product
+			$this->merchant_id = '';
+			return '';
+		}
 
 		// if (!isset($this->seller_id) && !isset($product->attributes['seller-id'])) {
 		// 	$this->addErrorMessage(1000, 'Seller ID not configured. Need advanced command: $seller-id = ....');
@@ -68,45 +97,14 @@ class PRakutenNewSkuFeed extends PCSVFeedEx {
 		// 	$this->productCount--; //Make sure the parent class knows we failed to make a product
 		// 	return '';
 		// }
-		//cheat: Remap these	
-		
-		$rakuten_description = (strlen($product->attributes['description']) > 8000) ? substr($product->attributes['description'],0,8000) : $product->attributes['description'];
-		$rakuten_description = str_replace('"','""',$rakuten_description);		
-		$product->attributes['description'] = $rakuten_description;	
-	
-		if (strlen($product->attributes['listing-price']) == 0)
-			$rakuten_price = '0.00';
-		if ($product->attributes['has_sale_price'])
-			$rakuten_price = $product->attributes['sale_price'];
-		else
-			$rakuten_price = $product->attributes['regular_price'];
-		$product->attributes['listing-price'] = $rakuten_price;
-
-		//if product weight is in ounces, conver to lbs
-		if ($this->weight_unit == 'oz' || $this->weight_unit == 'ounces') {
-			$product_weight_in_lbs = $product->attributes['weight']*0.0625;
-			$product->attributes['weight'] = sprintf('%0.2f', $product_weight_in_lbs);
-		}
-
-		$category = explode(" ", $product->attributes['current_category']);
-		if (isset($category[0]))
-			$product->attributes['category-id'] = $category[0];
-		else
-			$product->attributes['category-id'] = '';
-		
 		//Prepare input (New Rakuten SKU Feed)
 		// if (isset($this->seller_id))
 		// 	$product->attributes['seller-id'] = $this->seller_id;
 		// 		$product->attributes['gtin'] = $product->attributes['sku'];
 		// while (strlen($product->attributes['gtin']) < 12)
-		// 	$product->attributes['gtin'] = '0' . $product->attributes['gtin'];
-		// if ( $this->allow_additional_images && (count($product->imgurls) > 0) )
-		// 	$product->attributes['additional_images'] = implode('|', $product->imgurls);
-		// $product->attributes['category_id'] = explode("\t", $this->current_category)[0];
-		// if (isset($product->item_group_id))
-		// 	$product->attributes['product_set_id'] = $product->item_group_id;
+		// 	$product->attributes['gtin'] = '0' . $product->attributes['gtin']; 	 
 		// $product->attributes['listing_price'] = sprintf($this->currency_format, $product->attributes['regular_price']);
-		
+
 		return parent::formatProduct($product);
 	}
 

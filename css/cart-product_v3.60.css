@@ -531,3 +531,13 @@ label.attributes-label:hover {
     float:right;
     margin:14px 0;
 }
+.amazon-template-table table {
+    border-collapse: collapse;
+    font-size:14px;
+    margin-top:10px;
+}
+.amazon-template-table th, .amazon-template-table td {
+    padding: 7px;
+    text-align: center;
+    border: 1px solid gray;
+}

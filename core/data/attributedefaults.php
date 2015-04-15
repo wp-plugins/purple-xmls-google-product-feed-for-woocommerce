@@ -15,15 +15,18 @@
 //Only Title and ID exist at this moment
 class PAttributeDefault {
 
-		public $attributeName;
-		public $enabled = true;
-		public $isRuled = false;
-		public $parent_feed = null; //points to feed provider that owns this mapping
-		public $stage = 0;
-		public $value;
+	public $attributeName;
+	public $enabled = true;
+	public $isRuled = false;
+	public $parent_feed = null; //points to feed provider that owns this mapping
+	public $stage = 0;
+	public $value;
 
 	function __destruct() {
 		unset($this->parent_feed);
+	}
+
+	public function initialize() {
 	}
 
 	public function getValue($item) {
@@ -81,9 +84,18 @@ class PActionAfterFeed extends PAttributeDefault {
 //Built-in Feed Modifiers
 //********************************************************************
 
+//Category Tree: display the full category for an item.
+
 class PCategoryTree extends PActionBeforeFeed {
 
 	public function getValue($item) {
+
+		global $pfcore;
+		if ($pfcore->callSuffix != 'W') {
+			return $item->attributes['localCategory'];
+		}
+			
+
 		$category = $this->parent_feed->categories->idToCategory($item->attributes['category_id']);
 		$output = '';
 		while ($category != null) {
@@ -96,22 +108,34 @@ class PCategoryTree extends PActionBeforeFeed {
 			else
 				break;
 		}
+		//Case: exporting a child category when products have been categorized into parent AND child categories (will return parent category)
+		//otherwise modifier may return blank
+		if (strlen($output) == 0)
+			$output = $item->attributes['localCategory']; 
 		return $output;
 	}
 
 }
 
+//ex: setAttributeDefault xVar as 17 PCatVar -- removes variations for category ID: 17
 class PCatVar extends PActionAfterHarmonize {
 
 	public function getValue($item) {
 
 		//Any product containing value in its list of category_ids is not variable
 		$catIDs = $item->attributes['category_ids'];
-		if (in_array($this->value, $catIDs))
-			$item->attributes['isVariable'] = false;
+		if ($this->attributeName == 'allcat') {
+			foreach ( $catIDs as $allCatIds ) {
+				$item->attributes['isVariable'] = false;
+			}
+		}
+		else {
+			if ( in_array($this->value, $catIDs) )
+				$item->attributes['isVariable'] = false;
+		}
 	}
-
 }
+
 
 class PConvertSpecialCharacters extends PActionAfterFeed {
 
@@ -165,6 +189,21 @@ class PFirstFoundColor extends PAttributeDefault {
 
 }
 
+//GraziaShop Business rule
+//setAttributeDefualt business-attribute as none PGraziaBusinessRule
+class PGraziaBusinessRule extends PActionBeforeFeed {
+
+	public function getValue($item){
+
+		if ( strlen($item->attributes[$this->attributeName]) > 0 ) {
+			if ( strtolower( $item->attributes[str_replace('"','',$this->attributeName)] ) == 'no' ) 
+				$item->attributes['stock'] = 0;
+		}
+		return '';
+	}
+
+}
+
 class PGoogleAdditionalImages extends PActionAfterFeed {
 
 	public function postProcess($product, &$output) {
@@ -211,6 +250,23 @@ class PGoogleTax extends PActionAfterFeed {
 
 	}
 
+}
+
+/** PMergeFields
+* Merges attributeName with value
+* example: setAttributeDefault screen-size as size PMergeFields
+* woocommerce attributes takes precedence & depends on order of commands
+*/
+class PMergeFields extends PActionBeforeFeed {
+
+	public function getValue($item) {
+
+		if ( strlen($item->attributes[$this->attributeName]) > 0 )
+			if ( strlen($item->attributes[$this->value]) == 0 ) //if this attribute has value, don't override
+				$item->attributes[$this->value] = $item->attributes[$this->attributeName];
+
+		return '';
+	}
 }
 
 class PSalePriceIfDefined extends PActionBeforeFeed {

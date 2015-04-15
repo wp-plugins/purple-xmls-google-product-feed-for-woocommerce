@@ -22,42 +22,43 @@ class PBingFeed extends PCSVFeedEx
 		parent::__construct();
 		$this->providerName = 'Bing';
 		$this->providerNameL = 'bing';
-		$this->fileformat = 'csv';
+		$this->fileformat = 'txt';
 		$this->fields = array();
-		$this->fieldDelimiter = ",";
-		$this->stripHTML = true;	
+		$this->fieldDelimiter = "\t";
+		$this->stripHTML = true;
 		//Create some attributes (Mapping 3.0)
 
 		//required
-		$this->addAttributeMapping('id', 'MPID',true,true);
-		$this->addAttributeMapping('title', 'Title', true, true);
-		$this->addAttributeMapping('brand', 'Brand',true,true);
-		$this->addAttributeMapping('link', 'Link',true,true);
-		$this->addAttributeMapping('regular_price', 'Price'); //base price
+		$this->addAttributeMapping('id', 'MPID',false,true);
+		$this->addAttributeMapping('title', 'Title', true,true);
+		$this->addAttributeMapping('brand', 'Brand',false,true);
+		$this->addAttributeMapping('link', 'Link',false,true);
+		$this->addAttributeMapping('regular_price', 'Price',false,true); //base price
 		$this->addAttributeMapping('description', 'Description',true,true);
-		$this->addAttributeMapping('feature_imgurl', 'Image_link',true,true);
-		
-		//optional - offer identification
-		$this->addAttributeMapping('SellerName', 'SellerName');
-		$this->addAttributeMapping('mpn', 'MPN');
-		$this->addAttributeMapping('isbn', 'ISBN');
+		$this->addAttributeMapping('feature_imgurl', 'Image_link',false,true);
+		$this->addAttributeMapping('', 'SellerName',false,false); //Only required for aggregators - not accepted from direct merchants
+		//optional - offer identification		
+		$this->addAttributeMapping('', 'MPN');
+		$this->addAttributeMapping('', 'UPC');
+		$this->addAttributeMapping('', 'ISBN');
 		$this->addAttributeMapping('sku', 'SKU');
-		$this->addAttributeMapping('gtin', 'GTIN');
+		$this->addAttributeMapping('', 'GTIN');
 		//optional - item identification
 		$this->addAttributeMapping('availability', 'Availability');
-		$this->addAttributeMapping('current_category', 'B_Category',true); //desired bing category
+		$this->addAttributeMapping('current_category', 'B_Category'); //desired bing category
 		$this->addAttributeMapping('condition', 'Condition');
-		$this->addAttributeMapping('multipack', 'Multippack');
-		$this->addAttributeMapping('product_type', 'Product_type');
+		$this->addAttributeMapping('', 'Expiration_date');
+		$this->addAttributeMapping('', 'Multippack');
+		$this->addAttributeMapping('', 'Product_type');
 		//optional - apparel products
-		$this->addAttributeMapping('gender', 'Gender');
-		$this->addAttributeMapping('age_group', 'Age_group'); //valid values: Newborn, Infant, Toddler, Kid, Adult
+		$this->addAttributeMapping('', 'Gender');
+		$this->addAttributeMapping('', 'Age_group'); //valid values: Newborn, Infant, Toddler, Kid, Adult
 		$this->addAttributeMapping('color', 'Color');
 		$this->addAttributeMapping('size', 'Size');
 		//optional - product variants
 		$this->addAttributeMapping('item_group_id', 'Item_group_id');
-		$this->addAttributeMapping('material', 'Material');
-		$this->addAttributeMapping('pattern', 'Pattern');
+		$this->addAttributeMapping('', 'Material');
+		$this->addAttributeMapping('', 'Pattern');
 		//optional - bing attributes
 		$this->addAttributeMapping('', 'Bingads_grouping');
 		$this->addAttributeMapping('', 'Bingads_label');
@@ -65,7 +66,11 @@ class PBingFeed extends PCSVFeedEx
 		//optional - sales and promotions
 		//if ($this->bingForcePriceDiscount)
 		$this->addAttributeMapping('sale_price', 'Sale_price');
-		$this->addAttributeMapping('', 'Sale_price_effective_date');		
+		$this->addAttributeMapping('', 'Sale_price_effective_date');
+		
+		$this->addRule( 'description', 'description',array('max_length=5000','strict') );
+		$this->addRule( 'csv_standard', 'CSVStandard',array('title','150') );
+		$this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 		
 	}
 
   function formatProduct($product) {
@@ -75,8 +80,7 @@ class PBingFeed extends PCSVFeedEx
 		//********************************************************************
 
 		//if ($product->attributes['isVariation'])
-		//'Item Group ID' => $product->item_group_id;
-
+		//'Item Group ID' => $product->item_group_id;	
 		if (strlen($product->attributes['regular_price']) == 0)
 			$product->attributes['regular_price'] = '0.00';
 

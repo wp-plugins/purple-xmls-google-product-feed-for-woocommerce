@@ -74,14 +74,12 @@ function cart_product_admin_menu() {
 	);
 
 }
-add_action( 'admin_menu', 'cart_product_admin_menu' );
 
-//include_once('cart-product-version-check.php');
-/**
- * Create news feed page
- */
-function cart_product_feed_admin_page() 
-{
+add_action( 'admin_menu', 'cart_product_admin_menu' );
+add_action( 'cpf_init_pageview', 'cart_product_feed_admin_page_action' );
+
+function cart_product_feed_admin_page() {
+
 	require_once 'cart-product-wpincludes.php';
 	require_once 'core/classes/dialoglicensekey.php';
 	include_once 'core/classes/dialogfeedpage.php';
@@ -89,6 +87,17 @@ function cart_product_feed_admin_page()
 
 	global $pfcore;
 	$pfcore->trigger('cpf_init_feeds');
+
+	do_action('cpf_init_pageview');
+}
+
+//include_once('cart-product-version-check.php');
+/**
+ * Create news feed page
+ */
+function cart_product_feed_admin_page_action() 
+{
+
 
 	echo 	"<div class='wrap'>";
 	//echo 	"<div class='cpf-header'>";
@@ -194,24 +203,36 @@ function cart_product_feed_admin_page()
 	if ( !$reg->valid ) {
 	  //echo PLicenseKeyDialog::large_registration_dialog( '' );
 	}
+
 }
 
 /**
  * Display the manage feed page
  *
  */
+
+add_action( 'cpf_init_pageview_manage', 'cart_product_feed_manage_page_action' );
+
 function cart_product_feed_manage_page() {
 
 	require_once 'cart-product-wpincludes.php';
 	require_once 'core/classes/dialoglicensekey.php';
 	include_once 'core/classes/dialogfeedpage.php';
 
-  $reg = new PLicense();
+	global $pfcore;
+	$pfcore->trigger('cpf_init_feeds');
 
-  require_once 'cart-product-manage-feeds.php';
+	do_action('cpf_init_pageview_manage');
 
-  if ( !$reg->valid ) {
-	 //echo PLicenseKeyDialog::large_registration_dialog( '' );
-  }
+}
+
+function cart_product_feed_manage_page_action() {
+
+	$reg = new PLicense();
+
+	require_once 'cart-product-manage-feeds.php';
+
+	//if ( !$reg->valid )
+		//echo PLicenseKeyDialog::large_registration_dialog( '' );
 
 }

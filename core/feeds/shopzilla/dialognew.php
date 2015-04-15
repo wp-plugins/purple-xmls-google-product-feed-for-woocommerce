@@ -14,12 +14,12 @@ class ShopzillaDlg extends PBaseFeedDialog {
   function __construct() {
     parent::__construct();
     $this->service_name = 'Shopzilla';
-    $this->service_name_long = 'Shopzilla Products XML Export';
-	$this->options = array(
+    $this->service_name_long = 'Shopzilla Export';
+	  $this->options = array(
         'Manufacturer',
         'Bid',
-        'Promotional Code'
-	);
+        'Promotional Code',
+	  );
   }
 
 }

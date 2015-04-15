@@ -17,82 +17,78 @@ class PShopzillaFeed extends PCSVFeedEx {
 		parent::__construct();
 		$this->providerName = 'Shopzilla';
 		$this->providerNameL = 'shopzilla';
-		$this->fileformat = 'txt';
-		$this->fieldDelimiter = "\t";
+		$this->fileformat = 'csv';
+		$this->fieldDelimiter = ",";
 		$this->fields = array();
 
 //required
 		$this->addAttributeMapping('id', 'Unique ID',true,true);
 		$this->addAttributeMapping('title', 'Title',true,true);
 		$this->addAttributeMapping('description', 'Description', true,true);
-		$this->addAttributeMapping('category', 'Category', true,true);
+		$this->addAttributeMapping('curent_category', 'Category', true,true);
 		$this->addAttributeMapping('link', 'Product URL',true,true);
 		$this->addAttributeMapping('feature_imgurl', 'Image URL',true,true);
 		$this->addAttributeMapping('condition', 'Condition',true,true);
-		$this->addAttributeMapping('availability', 'Availability',true,true);
-		$this->addAttributeMapping('current_price', 'Current Price',true,true);
+		$this->addAttributeMapping('stock_status', 'Availability',true,true);
+		$this->addAttributeMapping('price', 'Current Price',true,true);
 //optional
-		$this->addAttributeMapping('additional_images', 'Additional Image URL');
+		$this->addAttributeMapping('additional_images', 'Additional Image URL',true);
 		$this->addAttributeMapping('item_group_id', 'Item Group ID');
-		$this->addAttributeMapping('original_price', 'Original Price');
+		$this->addAttributeMapping('regular_price', 'Original Price',true);
 		$this->addAttributeMapping('weight', 'Ship Weight');
-
-		$this->addAttributeMapping('', 'Brand');
-		$this->addAttributeMapping('', 'GTIN');
-		$this->addAttributeMapping('', 'MPN');
-		$this->addAttributeMapping('', 'Gender');
-		$this->addAttributeMapping('', 'Age Group');
-		$this->addAttributeMapping('', 'Size');
-		$this->addAttributeMapping('', 'Color');
-		$this->addAttributeMapping('', 'Material');
-		$this->addAttributeMapping('', 'Pattern');
-		$this->addAttributeMapping('', 'Bid');
-		$this->addAttributeMapping('', 'Promo Text');
+		$this->addAttributeMapping('brand', 'Brand',true);
+		$this->addAttributeMapping('', 'GTIN',true);
+		$this->addAttributeMapping('', 'MPN',true);
+		$this->addAttributeMapping('', 'Gender',true);
+		$this->addAttributeMapping('', 'Age Group',true);
+		$this->addAttributeMapping('', 'Size',true);
+		$this->addAttributeMapping('', 'Color',true);
+		$this->addAttributeMapping('', 'Material',true);
+		$this->addAttributeMapping('', 'Pattern',true);
+		$this->addAttributeMapping('', 'Bid',true);
+		$this->addAttributeMapping('', 'Promo Text',true);
+		
+		$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
+		$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree
+		$this->addRule('price_rounding','pricerounding'); //2 decimals
+//Description and title: escape any quotes
+		$this->addRule( 'csv_standard', 'CSVStandard',array('title') ); 
+		$this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 	
 	}
-
+		
   function formatProduct($product) {
 
+//Category: ShopZilla accepts breadcrumbs (text)
 		$category = explode(";", $this->current_category);
-  	if (isset($category[1]))
-			$product->attributes['category'] = trim($category[1]);
+	  	if (isset($category[0]))
+			$product->attributes['curent_category'] = trim($category[0]);
 		else
-			$product->attributes['category'] = "0,000,001"; //Other miscellaneous category id
-		
-		$productDescription = str_replace('"','""',$product->attributes['description']);		
-		$product->attributes['description'] = $productDescription;	
+			$product->attributes['curent_category'] = "0,000,001"; //Other miscellaneous category id
+		$product->attributes['curent_category'] = str_replace(',', '', $product->attributes['curent_category']);
 
-		//prepare
-		$product->attributes['category'] = str_replace(',', '', $product->attributes['category']);
-
-		//Max 9 Additional Images
-		$product->attributes['additional_images'] = '';
-		$image_count = 0;
-		foreach($product->imgurls as $imgurl) {
-			$product->attributes['additional_images'] .= $imgurl . ',';
-			$image_count++;
-			if ($image_count >= 9)
-				break;
+		if (strpos($product->attributes['feature_imgurl'], 'https') !== false) {
+			$product->attributes['feature_imgurl'] = str_replace('https://','http://',$product->attributes['feature_imgurl']);
+			//Warn user because server might not be listening for http connections
+			//$this->addErrorMessage(<Shopzilla Range Warning + 1>, 'Converted an https image url http ' . $product->attributes['title'] . image url);
 		}
-		if (strlen($product->attributes['additional_images']) > 0)
-			$product->attributes['additional_images'] = substr($product->attributes['additional_images'], 0, -1);
 
+		//Images: Max 9 Additional Images
+		if ( $this->allow_additional_images && (count($product->imgurls) > 0) ) {
+			$product->attributes['additional_images'] = implode(',', $product->imgurls); 
+			$product->attributes['additional_images'] = str_replace('https://','http://',$product->attributes['additional_images']);
+			//$this->addErrorMessage(<Shopzilla Range Warning + 2>, 'Converted an https additional image to http ' . $product->attributes['title'] . image url);
+		}
+		
+//Availability
 		if ($product->attributes['stock_status'] == 1)
-			$product->attributes['availability'] = 'In Stock';
+			$product->attributes['stock_status'] = 'In Stock';
 		else
-			$product->attributes['availability'] = 'Out of Stock';
-	
-		if (strlen($product->attributes['regular_price']) == 0)
-			$product->attributes['regular_price'] = '0.00';
+			$product->attributes['stock_status'] = 'Out of Stock';
 
-		$product->attributes['current_price'] = $product->attributes['regular_price'];
-		$product->attributes['original_price'] = $product->attributes['regular_price'];
-		if ($product->attributes['has_sale_price'])
-			$product->attributes['current_price'] = $product->attributes['sale_price'];
-
-		return parent::formatProduct($product);
-
-  }
+//result code notificaitons		
+		//if (!isset($product->attributes['brand']) || (strlen($product->attributes['brand']) == 0))
+		//	$this->addErrorMessage(13000, 'Missing brand for ' . $product->attributes['title']);
+		return parent::formatProduct($product);		
+  }  
 
 }
-
-?>

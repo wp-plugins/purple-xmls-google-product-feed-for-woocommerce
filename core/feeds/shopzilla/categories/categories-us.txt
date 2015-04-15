@@ -1,0 +1,1017 @@
+Air Conditioners ; 1,31,10,101
+Accent & End Tables ; 8,308
+Accent Furniture ; 10,00,01,290
+Account & Record Books ; 10,00,01,617
+Action & Adventure DVDs & Videos ; 5,101
+Action Figures ; 1,40,10,100
+Adult Costumes ; 8,222
+Adult Games ; 2,30,00,100
+Adult Novelty ; 2,30,01,000
+Air Conditioner Accessories ; 10,00,01,258
+Air Purifier Accessories ; 10,00,01,244
+Air Purifiers ; 1,30,50,810
+Animal & Nature Books ; 8,081
+Antiques & Collectibles Books ; 8,009
+Architecture Books ; 8,010
+Arm Chairs & Recliners ; 8,258
+Armoires & Wardrobes ; 8,348
+Art Books ; 8,011
+Art Supplies ; 1,36,00,100
+Arts & Entertainment Books ; 8,062
+Audio & Video Accessories ; 1,15,10,905
+Audio / Video Cables & Adapters ; 1,15,10,901
+Audio/Video Media ; 1,15,10,902
+Automotive Accessories ; 2,20,00,400
+Automotive Care ; 2,20,00,100
+Automotive Parts ; 2,20,00,200
+Automotive Tires ; 2,20,00,700
+Baby & Kids' Dresses / Skirts ; 10,00,01,746
+Baby & Kids' Furniture ; 1,30,60,100
+Baby & Kids' Hats ; 10,00,00,683
+Baby & Kids' Jeans ; 10,00,01,745
+Baby & Kids' Outerwear ; 10,00,01,747
+Baby & Kids' Pants ; 10,00,01,743
+Baby & Kids' Sets ; 9,793
+Baby & Kids' Shoes ; 10,00,01,755
+Baby & Kids' Shorts ; 10,00,01,744
+Baby & Kids' Sleepwear ; 10,00,01,752
+Baby & Kids' Socks ; 10,00,01,753
+Baby & Kids' Suits ; 10,00,01,756
+Baby & Kids' Sweaters ; 10,00,01,749
+Baby & Kids' Swimwear ; 10,00,01,750
+Baby & Kids' Tops ; 10,00,01,748
+Baby & Toddler Safety ; 1,30,90,210
+Baby Bath ; 10,00,01,489
+Baby Bedding ; 1,30,60,203
+Baby Bibs & Burp Cloths ; 9,794
+Baby Bouncers & Rockers ; 1,30,90,203
+Baby Carriers ; 10,00,01,336
+Baby Costumes ; 8,306
+Baby Feeding ; 1,30,90,209
+Baby Jumpers & Swings ; 1,30,90,204
+Baby Monitors ; 10,00,01,481
+Baby Musical Toys ; 1,40,10,904
+Baby Play Yards ; 1,30,90,206
+Baby Rattles & Teethers ; 1,40,10,908
+Baby Walkers & Entertainers ; 1,30,90,205
+Backpacks ; 1,00,10,100
+Badminton Equipment ; 9,741
+Baker Racks ; 10,00,01,434
+Bakeware ; 10,00,01,663
+Bar & Cocktail Glasses ; 293
+Bar Shakers & Tools ; 1,30,40,303
+Barcode Scanners ; 1,10,00,100
+Basketball Equipment ; 1,20,30,300
+Bath & Water Toys ; 1,40,10,901
+Bath Rugs ; 10,00,01,313
+Bath Towels ; 1,30,30,400
+Bathroom & Vanity Lighting ; 8,502
+Bathroom Accessories & Sets ; 10,00,01,301
+Bathroom Fixtures ; 10,00,01,302
+Bathroom Furniture ; 10,00,01,299
+Bathtubs ; 8,655
+Bean Bags ; 8,272
+Bedding Sets ; 370
+Bedroom Furniture ;
+Bedroom Sets ; 8,342
+Bedroom Vanities ; 8,344
+Beds ; 8,340
+Bedskirts ; 453
+Bedspreads ; 374
+Benches & Bleachers ; 9,971
+Beverage Service ; 288
+Bicycle Parts & Accessories ; 10,00,01,449
+Bicycles ; 10,00,01,448
+Billiards Equipment ; 9,968
+Binder Pockets & Index Dividers ; 10,00,01,591
+Binder Rings ; 10,00,01,588
+Binders ; 1,304
+Binding Machines ; 1,308
+Binoculars & Telescopes ; 1,21,80,000
+Biography Books ; 8,012
+Bird Supplies ; 3,10,00,100
+Blank Computer Media ; 438
+Blankets & Throws ; 364
+Blenders ; 1,30,50,809
+Blood Pressure Monitors ; 10,00,01,721
+Blues Music ; 5,201
+Blu-Ray Disc Players ; 10,00,01,400
+Boats, Kayaks & Boating Equipment ; 1,21,80,101
+Body Jewelry ; 3,00,10,108
+Body, Mind & Spirit Books ; 8,034
+Bookcases ; 2,50,10,200
+Boomboxes ; 1,16,60,000
+Bowling Equipment ; 1,20,00,100
+Bowls ; 299
+Boxing Equipment & Martial Arts Supplies ; 1,21,50,105
+Bracelets ; 3,00,10,101
+Brass Instruments ; 10,00,01,579
+Breadmakers ; 1,30,50,801
+Breakroom Supplies ; 4,601
+Bridges & Routers ; 467
+Briefcases ; 1,00,10,200
+Building Sets ; 10,00,00,804
+Building Supplies ; 2,50,01,000
+Bulletin Boards ; 10,00,00,114
+Bunk Beds ; 10,00,01,771
+Business & Economics Books ; 8,013
+Business Forms & Record Keeping ;
+Butcher Blocks ; 10,00,01,431
+Butter Dishes ; 347
+Cable & DSL Modems ; 9,328
+Cajun Music ; 5,222
+Cakes & Pies ; 1,60,30,103
+Calculators ; 209
+Calendars ; 1,201
+Call Bells ; 10,00,01,639
+Camcorder Accessories ; 1,15,10,300
+Camcorders ; 1,11,40,000
+Camera Accessory Kits ; 10,00,00,495
+Camera Battery Grips ; 10,00,01,508
+Camera Cases ; 9,036
+Camera Flashes ; 9,034
+Camera Lens Caps ; 9,033
+Camera Lens Filters ; 9,030
+Camera Lenses ; 9,027
+Camera Underwater Housings ; 9,035
+Cameras ; 197
+Camping & Hiking Gear ; 1,20,40,100
+Can Openers ; 1,30,50,811
+Candle & Oil Lamps ; 8,572
+Candle Accessories ; 8,574
+Candle Holders ; 8,573
+Candles ; 8,571
+Candy ; 1,60,30,102
+Capes & Cloaks ; 8,214
+Car Alarms ; 20,100
+Car Amplifiers ; 1,18,20,000
+Car Audio / Video Accessories ; 1,19,50,000
+Car Cassette Players ; 1,18,30,000
+Car CD Changers ; 1,18,40,000
+Car CD/MP3 Players ; 1,18,50,000
+Car Crossovers ; 1,18,60,000
+Car DVD Players ; 1,18,80,000
+Car Equalizers ; 1,18,70,000
+Car Monitors ; 1,18,90,000
+Car Seat Accessories ; 10,00,01,396
+Car Seats ; 1,30,90,208
+Car Speakers ; 1,19,30,000
+Car Subwoofers ; 1,19,40,000
+Cardio Equipment Accessories ; 9,526
+Carry-On Bags ; 10,00,00,869
+Cash Registers & POS Equipment ; 1,11,00,900
+Cassette Decks ; 1,17,20,000
+Cat Supplies ; 3,10,00,200
+CD & DVD Drives ; 406
+CD & DVD Storage ; 8,264
+CD Duplicators ; 1,10,00,200
+CD Players ; 1,10,80,000
+Ceiling Fans ; 8,444
+Ceiling Medallions ; 9,792
+Cell Phone Accessories ; 1,15,10,600
+Cell Phones ; 1,15,80,100
+Chafers ; 290
+Chair Cushions ; 10,00,01,339
+Chair Mats ; 10,00,00,054
+Chandeliers ; 8,275
+Character Studies Books ; 8,073
+Charms ; 3,00,00,200
+Cheerleading Gear ; 9,963
+Cheese ; 1,60,31,100
+Children's DVDs & Videos ; 5,102
+Children's Fiction Books ; 8,027
+Children's Healthcare ; 22,003
+Children's Music ; 5,202
+Children's Non-fiction Books ; 8,055
+Chocolate ; 1,60,30,101
+Christian & Gospel Music ; 5,207
+Christmas & Holiday Ornaments ; 474
+Christmas Decor ; 469
+Christmas Lights ; 477
+Christmas Trees & Accessories ; 473
+Classical Music ; 10,00,00,852
+Cleaning Supplies ; 1,30,90,100
+Clipboards ; 10,00,00,055
+Clock Radios ; 1,15,10,700
+Clocks ; 1,30,20,209
+Coffee & Cocktail Tables ; 8,250
+Coffee & Tea ; 1,60,30,700
+Coffee Grinders ; 1,30,50,812
+Coffee Maker Accessories ; 1,30,50,813
+Coffee Makers ; 1,30,50,802
+Coffee Pots ; 324
+Collectibles ; 1,60,11,700
+Comedy ; 5,203
+Comedy DVDs & Videos ; 5,103
+Comforters ; 372
+Comic Books ; 8,099
+Commercial Blenders ; 10,00,01,384
+Commercial Coffee Grinders ; 10,00,01,386
+Commercial Coffee Makers ; 10,00,01,375
+Commercial Deep Fryers ; 10,00,01,377
+Commercial Dishwashers ; 10,00,01,376
+Commercial Espresso Machines ; 10,00,01,387
+Commercial Food Storage ; 10,00,01,463
+Commercial Freezers ; 10,00,01,355
+Commercial Mixers ; 10,00,01,353
+Commercial Ovens & Ranges ; 10,00,01,356
+Commercial Refrigerators ; 10,00,01,354
+Commercial Sinks ; 10,00,01,417
+Commercial Toaster Ovens ; 10,00,01,385
+Compact & Handheld Mirrors ; 8,205
+Computer Bags ; 1,00,10,300
+Computer Books ; 8,015
+Computer Game Controllers ; 492
+Computer Gaming Software ; 303
+Computer Keyboards ; 493
+Computer Monitors ; 416
+Computer Power Supplies ; 9,044
+Computer Speakers ; 483
+Computer Towers ; 9,416
+Condiments, Seasoning & Sauces ; 1,60,31,200
+Condoms & Dental Dams ; 2,30,00,700
+Conflicts & Dualities Books ; 8,063
+Console Tables ; 8,310
+Cookies & Brownies ; 1,60,30,104
+Cooking Books ; 8,014
+Cooktops ; 1,30,50,814
+Cookware ; 10,00,01,661
+Copiers ; 1,18,10,000
+Cosmetics ; 95
+Costume Armor & Weapons ; 8,219
+Costume Footwear & Accessories ; 8,216
+Costume Gloves ; 8,215
+Costume Hands & Feet ; 8,211
+Costume Hats & Headbands ; 8,208
+Costume Masks ; 8,210
+Costume Wigs & Facial Hair ; 8,213
+Cotton Balls & Swabs ; 10,00,01,731
+Countertops ; 10,00,01,884
+Country Music ; 5,204
+CPUs & Computer Processor Upgrades ; 403
+Craft Supplies ; 1,36,00,200
+Crafts & Hobbies Books ; 8,016
+Creamers & Sugar Bowls ; 295
+Crib & Stroller Toys ; 1,40,10,902
+Cricket Equipment ; 9,964
+Crock Pots & Slow Cookers ; 1,30,50,822
+Crowns & Tiaras ; 8,209
+Cuff Links ; 3,00,10,103
+Cups & Saucers ; 326
+Current Events Books ; 8,054
+Curtain Rods & Accessories ; 358
+Curtains & Drapes ; 1,30,20,301
+Cutlery L3 ; 10,00,01,439
+Cycling Apparel ; 10,00,01,450
+Decanters & Pitchers ; 317
+Decorative Pillows ; 440
+Decorative Wall Letters ; 9,807
+Decorative Wall Tiles ; 9,806
+Deep Fryers ; 1,30,50,815
+Dehumidifiers ; 1,30,50,816
+Dental Appliance Accessories ; 22,007
+Dental Supplies ; 376
+Desk Lamps ; 8,506
+Desk Sets ; 1,30,80,201
+Desks ; 2,50,10,400
+Desktop Computer Cleaning Supplies ; 9,300
+Desktop Computers ; 461
+Diamonds ; 3,00,10,107
+Diaper Bags ; 1,02,50,400
+Diapering ; 10,00,01,482
+Digital Book Reader Accessories ; 10,00,02,003
+Digital Book Readers ; 10,00,00,808
+Digital Camera Cables ; 9,038
+Digital Camera Chargers ; 9,032
+Digital Cameras ; 402
+Digital Picture Frames ; 385
+Dining Room Chairs ; 10,00,01,283
+Dining Room Sets ; 10,00,01,282
+Dining Room Tables ; 8,309
+Dinnerware Sets ; 315
+Disasters Books ; 8,064
+Dishwasher Accessories ; 10,00,01,240
+Dishwashers ; 1,30,50,906
+Disk Drives ; 9,184
+DJ Equipment ; 5,21,904
+Dog Supplies ; 3,10,00,300
+Dolls ; 1,40,10,600
+Drain Hardware ; 8,657
+Drama Books ; 8,017
+Drama DVDs & Videos ; 5,104
+Dreamcast Accessories ; 1,50,10,201
+Dreamcast Consoles ; 1,50,10,301
+Dressers & Nightstands ; 8,338
+Drinks & Juices ; 1,60,31,300
+Drums / Percussion ; 5,21,902
+Duvet & Comforter Covers ; 389
+DVD Players ; 1,15,30,000
+DVD/VCR Combos ; 1,19,90,000
+DVR ; 1,15,40,000
+Earrings ; 3,00,10,102
+Easy Listening Music ; 5,205
+Education Books ; 8,018
+Educational Fiction Books ; 8,065
+Educational Software ; 302
+Egg Cookers ; 1,80,04,400
+Electric Irons ; 1,31,10,103
+Electric Knife Sharpeners ; 1,80,05,400
+Electric Knives ; 1,80,05,300
+Electric Skillets & Woks ; 1,30,50,823
+Electric Toothbrushes ; 241
+Electrical Supplies ; 2,50,00,700
+Electronic Music ; 5,223
+Electronic Toys ; 1,40,10,213
+Electronics Cases & Bags ; 1,15,10,500
+Elliptical & Cross Trainer Machines ; 8,618
+Environmental Music ; 5,224
+Equestrian Clothing & Equipment ; 1,20,00,700
+Erotic Art, Books, and Videos ; 2,30,00,400
+Erotic Lingerie ; 2,30,00,300
+Erotica Books ; 8,067
+Espresso Machines ; 1,30,50,803
+Exercise Bikes ; 8,624
+Extended Warranty Agreements ; 10,00,01,563
+Family & Friendship Books ; 8,068
+Family & Relationships Books ; 8,019
+Fans ; 1,31,10,104
+Faucets & Sprayers ; 8,656
+Fax Machines ; 1,13,80,000
+Featherbeds & Covers ; 455
+Feminine Hygiene ; 10,00,01,727
+Fertilizers ; 1,30,10,700
+Fever Thermometers ; 10,00,01,719
+Figurines ; 1,30,20,213
+File Cabinets ; 2,50,10,500
+File Folders ; 21,201
+Fireplace Parts & Accessories ; 442
+Fireplaces & Mantels ; 418
+Fish Supplies ; 3,10,00,400
+Fishing Gear ; 1,21,20,100
+Fitness Monitors ; 10,00,01,718
+Flatware ; 1,30,40,205
+Floor Cleaners ; 10,00,01,538
+Floor Lamps ; 8,504
+Flooring Supplies ; 2,50,00,900
+Flowers & Plants ; 1,60,10,400
+Flush Mounts ; 8,446
+Folk Music ; 5,225
+Food & Snacks ; 1,60,30,600
+Food Dehydrators ; 1,80,04,600
+Food Display ; 10,00,01,415
+Food Processor Accessories ; 10,00,01,242
+Food Processors ; 1,30,50,808
+Food Slicers ; 1,80,04,900
+Food Wrap ; 10,00,01,665
+Football Equipment ; 1,20,60,200
+Foreign DVDs & Videos ; 5,106
+Foreign Language Study Books ; 8,020
+Free Weight Equipment ; 8,607
+Freezers ; 1,30,50,909
+Fruits & Vegetables ; 1,60,31,500
+Futons & Futon Frames ; 8,247
+Game Boy Advance Accessories ; 1,50,10,207
+Game Boy Advance Consoles ; 1,50,10,307
+Game Boy Micro Accessories ; 1,50,10,206
+Game Boy Micro Consoles ; 1,50,10,306
+Game Tables ; 1,20,00,400
+GameCube Accessories ; 9,612
+GameCube Consoles ; 9,607
+Games & Puzzles ; 1,40,10,700
+Games Books ; 8,021
+Garbage Disposals ; 8,681
+Garden Tools ; 1,30,10,200
+Gardening Books ; 8,022
+Garment Bags ; 10,00,00,868
+Garment Steamers ; 1,80,05,500
+Gift Baskets ; 1,60,10,600
+Gift Cards ; 10,00,00,043
+Gift Registries ; 1,60,11,500
+Glucose Monitors & Tests ; 10,00,01,722
+Glue ; 21,202
+Golf Accessories ; 8,317
+Golf Bags ; 8,421
+Golf Carts ; 8,425
+Golf Club Headcovers ; 8,319
+Golf Clubs ; 8,409
+Golf Gloves ; 8,396
+GPS ; 1,12,10,000
+GPS Accessories ; 1,11,00,600
+Graphics Cards ; 405
+Gravy Boats & Tureens ; 322
+Greeting Cards ; 1,60,10,700
+Guest Check Forms ; 10,00,01,614
+Guitar / Bass ; 5,21,900
+Gymnastics Equipment ; 9,765
+Gyms & Playmats ; 1,40,10,903
+Hair Accessories ; 10,00,00,501
+Hair Care Appliances ; 22,015
+Hair Conditioner ; 10,00,00,497
+Hair Loss Treatment ; 10,00,00,544
+Hair Relaxers ; 10,00,00,522
+Hair Shampoo ; 10,00,00,496
+Hair Shears ; 10,00,00,504
+Hair Styling Products ; 10,00,00,500
+Hair Treatment ; 10,00,00,498
+Halloween Decor ; 8,304
+Halloween Jewelry ; 8,218
+Halloween Makeup & Prosthetics ; 8,217
+Halloween Props & Effects ; 8,220
+Hammocks & Stands ; 10,00,01,548
+Hand Tools ; 2,50,00,500
+Handbags & Totes ; 1,00,10,600
+Hard Drive Cases ; 9,417
+Hard Drives ; 410
+Hardcore & Punk Music ; 5,226
+Headphones ; 9,213
+Headsets & Microphones ; 482
+Health & Fitness Books ; 8,023
+Health Care & Medical Books ; 8,078
+Heater Accessories ; 10,00,01,243
+Heaters ; 1,31,10,108
+Heavy Metal Music ; 5,227
+Herbal Sex Enhancers ; 2,30,00,500
+High Chairs / Boosters ; 1,30,90,202
+Historical Fiction Books ; 8,070
+Historical Personages Books ; 8,094
+History Books ; 8,024
+Hobbies & Activities Books ; 8,087
+Hobbies & Home Software ; 304
+Hole Reinforcements ; 10,00,01,589
+Holidays Books ; 8,093
+Holocaust Books ; 8,071
+Home Bars ; 10,00,01,880
+Home Diagnostic Tests ; 10,00,01,726
+Home Fragrance ; 8,575
+Home Gym Attachments & Accessories ; 8,641
+Home Gyms ; 8,639
+Home Hardware ; 2,50,00,300
+Home Heating Stoves ; 427
+Home Lighting Accessories ; 8,449
+Home Security ; 1,15,10,904
+Home Theater Systems ; 1,11,20,000
+Horror / Suspense DVDs & Videos ; 5,107
+Horror Books ; 8,057
+House & Home Books ; 8,025
+Human Qualities & Behavior Books ; 8,072
+Humidifier Accessories ; 10,00,01,260
+Humidifiers ; 1,31,10,102
+Humor Books ; 8,026
+Humorous Fiction Books ; 8,074
+Hunting & Archery Equipment ; 1,21,50,125
+Ice Cream Makers ; 1,30,50,817
+Ice Skating Equipment ; 9,742
+Incontinence Supplies ; 10,00,01,732
+Indoor Grills ; 1,30,50,818
+Industrial Air Conditioners ; 10,00,01,358
+Industrial Fans ; 10,00,01,357
+Infant Bodysuits ; 1,00,30,400
+Ink, Toner & Inkjet Cartridges ; 444
+Inline & Roller Skate Equipment ; 1,21,30,500
+Instrument Strings ; 5,21,912
+Instrumental Music ; 5,228
+Integrated Amplifiers ; 1,19,70,000
+International Music ; 5,208
+Internet & Network Software ; 305
+IO Controllers ; 480
+Janitorial Supplies ; 4,600
+Jazz Instrumental Music ; 5,209
+Jazz Vocal Music ; 5,229
+Jewelry Boxes ; 3,00,10,110
+Jewelry Sets ; 3,00,10,112
+Juicers ; 1,30,50,804
+Karaoke Equipment ; 1,11,00,700
+Karaoke Media ; 2,10,00,100
+Keyboard Trays ; 9,390
+Keyboards/Midi ; 5,21,903
+Kids' Arts & Crafts Supplies ; 1,40,10,300
+Kids' Bedding ; 1,30,60,202
+Kids' Belts ; 10,00,00,051
+Kids' Costumes ; 8,223
+Kids' Gloves & Mittens ; 10,00,00,682
+Kids' Scarves ; 10,00,00,684
+Kids' Ties ; 10,00,00,050
+Kids' Underwear ; 10,00,01,754
+Kitchen & Housekeeping Toys ; 1,40,10,212
+Kitchen Aprons ; 10,00,01,666
+Kitchen Carts ; 10,00,01,435
+Kitchen Pantries & Cabinets ; 10,00,01,881
+Kitchenettes ; 10,00,01,883
+Lab Supplies & Equipment ; 10,00,01,221
+Labels & Tags ; 21,203
+Lacrosse Equipment ; 1,20,00,600
+Laminating Machines ; 1,309
+Lamp Shades & Bases ; 8,507
+Landscape Lighting & Accessories ; 8,461
+Landscape Supplies ; 1,30,11,000
+Language Arts Books ; 8,028
+Laptop Computers ; 462
+Laptop Coolers ; 9,260
+Laptop Power Adapters ; 9,177
+Laptop Stands ; 9,259
+Law Books ; 8,029
+Lawn Mowers & Tractors ; 10,00,01,773
+Lawn Tractor Attachments ; 10,00,01,811
+Learning Toys ; 1,40,11,000
+Legal & Courtroom Books ; 8,075
+Letter Openers ; 10,00,00,060
+Lingerie Sets ; 10,00,00,044
+Liquor, Spirits & Beers ; 1,60,60,000
+Literary Criticism Books ; 8,030
+Literature Books ; 8,066
+Loose Gemstones ; 9,959
+Love Seats ; 8,245
+Love, Relationships & Sex Books ; 8,077
+Lubricants ; 2,30,00,600
+Luggage ;
+Luggage Accessories ; 10,00,00,866
+Luggage Sets ; 10,00,00,867
+Lunch Boxes & Bags ; 10,00,00,863
+Magazines & Newspapers ; 8,005
+Mailing & Shipping Supplies ; 10
+Marine Electronics ; 1,10,00,400
+Massage Chairs ; 8,260
+Massagers ; 22,009
+Maternity Bottoms ; 1,01,40,600
+Maternity Dresses / Skirts ; 1,01,40,100
+Maternity Intimate Apparel ; 1,01,40,300
+Maternity Swimwear ; 10,00,01,475
+Maternity Tops ; 1,01,40,800
+Mathematics Books ; 8,031
+Mattress Pads ; 425
+Mattresses & Boxsprings ; 8,346
+Mature DVDs & Videos ; 5,117
+Meat Grinders ; 1,80,04,500
+Media Converters ; 9,324
+Media Hubs ; 424
+Medical & Orthopedic Supplies ; 22,005
+Medical Books ; 8,032
+Memory Card Readers ; 46,009
+Memory Cards ; 465
+Men's Activewear ; 1,00,50,000
+Men's Belts / Suspenders ; 1,01,20,100
+Men's Gloves & Mittens ; 1,01,20,400
+Men's Handkerchiefs ; 9,772
+Men's Hats ; 1,01,20,500
+Men's Jackets & Coats ; 1,00,60,300
+Men's Jeans ; 1,00,60,200
+Men's Pajamas & Loungewear ; 10,00,01,181
+Men's Pants ; 1,00,60,400
+Men's Robes ; 10,00,01,180
+Men's Scarves ; 9,773
+Men's Shirts ; 1,00,60,500
+Men's Shoes ; 1,01,50,000
+Men's Shorts ; 1,00,60,600
+Men's Socks ; 1,01,20,700
+Men's Sportcoats & Blazers ; 10,00,01,170
+Men's Suits ; 10,00,01,171
+Men's Sweaters / Vests ; 1,00,60,800
+Men's Swimwear ; 1,00,61,000
+Men's Ties ; 1,01,20,800
+Men's T-Shirts ; 1,00,60,900
+Men's Underwear L3 ; 10,00,01,185
+Messenger Bags ; 10,00,00,864
+Microwave Ovens ; 1,30,50,902
+Military Fiction Books ; 8,091
+Mini-systems ; 1,16,10,000
+Misc. Health & Beauty ; 220
+Miscellaneous ; 2,00,00,001
+Miscellaneous Appliances ; 1,31,10,107
+Miscellaneous Books ; 8,098
+Miscellaneous DVDs & Videos ; 5,114
+Miscellaneous Fiction Books ; 8,095
+Miscellaneous Gifts, Flowers & Food ; 1,60,11,300
+Miscellaneous Home & Garden ; 1,31,30,000
+Miscellaneous Home Decor ; 1,30,20,210
+Miscellaneous Jewelry ; 3,00,10,105
+Miscellaneous Men's Accessories ; 1,01,21,000
+Miscellaneous Music ; 5,220
+Miscellaneous Non-Fiction Books ; 8,096
+Miscellaneous Office & School Supplies ; 47
+Miscellaneous Toys & Games ; 337
+Miscellaneous Women's Accessories ; 1,01,30,900
+Mixer Accessories ; 10,00,01,254
+Mixers ; 1,30,50,805
+Mixers/Multi Track Recorders ; 5,21,908
+Mobiles ; 1,40,10,910
+Models & Model Kits ; 10,00,00,785
+Money & Finance Books ; 8,080
+Monitor Accessories ; 46,018
+More Pet Supplies ; 3,10,00,600
+More Sports Equipment ; 1,21,50,100
+Motherboards ; 419
+Motorcycle Apparel ; 9,975
+Motorcycle Parts ; 9,976
+Mountain Climbing Gear ; 1,21,50,106
+Mouse Pads ; 9,302
+MP3 & Media Players ; 499
+MP3 Player Accessories ; 46,015
+MP3s ; 5,218
+Mugs ; 329
+Multimedia Software ; 301
+Music & Musicals DVDs & Videos ; 5,108
+Music Books ; 8,053
+Musical Instrument Accessories L3 ; 10,00,01,574
+Musical Instrument Amplifiers ; 5,21,905
+Musical Instrument Cables ; 5,21,911
+Musical Instrument Cases / Racks ; 5,21,907
+Musical Instrument Effects / Processors ; 5,21,910
+Musical Instrument Lighting Equipment ; 5,21,906
+Musical Instrument Microphones ; 5,21,909
+Musical Instrument Monitors / Speakers ; 5,21,915
+Musical Instrument Software / Sample CDs ; 5,21,916
+Musical Toys ; 1,40,10,206
+Mystery & Crime Books ; 8,058
+Nature Books ; 8,033
+Nebulizers & Inhalers ; 10,00,01,730
+Necklaces & Pendants ; 3,00,10,104
+Neon Signs ; 9,791
+Network Hubs ; 9,318
+Network Switches ; 9,320
+Network Transceivers ; 9,326
+New Age Music ; 5,230
+NIC ; 497
+Night Lights ; 9,424
+Nintendo Accessories ; 1,50,10,205
+Nintendo Consoles ; 1,50,10,305
+Nintendo DS ; 1,50,10,309
+Nintendo DS Accessories ; 1,50,10,209
+Notebooks & Pads ; 21,200
+Nuts ; 1,60,31,700
+Obsolete Pointing Devices ; 9,749
+Office Chairs ; 2,50,10,300
+Office Footrests ; 10,00,00,080
+Office Partitions & Panels ; 10,00,00,081
+Office Stamps ; 10,00,00,056
+Office, Tax & Accounting Software ; 308
+Oldies Music ; 5,211
+Operating Systems ; 307
+Oral Irrigators ; 243
+Organizers & Planners ;
+Organizers, Etc. ; 1,30,80,202
+Original Cast Music ; 5,231
+Original Computer Cables & Adapters ; 9,469
+Other Camera Accessories ; 9,043
+Other Commercial Kitchen Appliances ; 10,00,01,359
+Other Costume Accessories ; 8,207
+Other Desktop Computer Accessories ; 9,301
+Other Fitness Equipment ; 8,566
+Other Holiday Decor ; 8,203
+Other Laptop Accessories ; 9,258
+Other Networking Products ; 9,323
+Other Plumbing Supplies ; 8,673
+Ottomans ; 8,266
+Outdoor Benches ; 10,00,01,547
+Outdoor Canopies ; 10,00,01,546
+Outdoor Cooking ; 1,30,10,600
+Outdoor Cushions ; 10,00,01,544
+Outdoor Decor ; 1,30,10,100
+Outdoor Furniture Covers ; 10,00,01,565
+Outdoor Games & Fun ; 1,40,10,800
+Outdoor Power Equipment ; 10,00,01,772
+Outdoor Wall & Ceiling Lighting ; 8,463
+Ovens ; 1,30,50,904
+Paint & Wall Covering Supplies ; 2,50,00,200
+Paintball Gear ; 1,21,50,135
+Paper ; 21,217
+Paper Fasteners ; 10,00,00,058
+Paper Folding Machines ; 10,00,01,638
+Paper Shredder Waste Bags ; 10,00,00,756
+Paper Shredders ; 10,00,00,062
+Paper Trimmers & Blades ; 10,00,00,059
+Paperweights ; 9,809
+Party Supplies ; 1,60,10,900
+Pasta Makers ; 1,30,50,824
+Patio Furniture ; 10,00,01,549
+Patio Umbrellas ; 10,00,01,545
+Patriotic Decor ; 479
+PDA & Handheld Computers ; 435
+PDA Accessories L3 ; 9,196
+PDA Software ; 46,020
+PDA Sync Cables ; 9,113
+Pencils ; 21,214
+Pendant Lighting ; 8,445
+Pens ; 21,213
+Peoples & Cultures Books ; 8,083
+Performing Arts Books ; 8,035
+Perfume & Cologne ; 88
+Perms ; 10,00,00,523
+Personal Scales ; 10,00,01,720
+Pest Control ; 1,30,11,200
+Pet Costumes ; 8,221
+Pets Books ; 8,036
+Philosophical Fiction Books ; 8,082
+Philosophy Books ; 8,037
+Phones ; 1,15,90,000
+Photo Albums ; 378
+Photography / Darkroom Equipment ; 1,11,00,800
+Photography Books ; 8,038
+Picnic Tables ; 10,00,01,550
+Picture Frames ; 1,30,20,203
+Pillowcases & Pillow Shams ; 409
+Pillows ; 431
+Pins & Brooches ; 3,00,10,109
+Planners, Organizers & Address Books ; 10,00,01,598
+Plaques ; 429
+Plates ; 356
+Platters ; 330
+Play Tents & Tunnels ; 10,00,00,047
+Playsets & Figures ; 10,00,00,046
+PlayStation 2 Accessories ; 1,50,10,203
+PlayStation 2 Consoles ; 1,50,10,303
+PlayStation 3 Accessories ; 9,610
+PlayStation 3 Consoles ; 9,609
+PlayStation Accessories ; 1,50,10,202
+PlayStation Consoles ; 1,50,10,302
+Plumbing Pipes & Fittings ; 8,659
+Plush Toys & Stuffed Animals ; 247
+Poetry Books ; 8,039
+Political Science Books ; 8,040
+Politics Books ; 8,084
+Pop Vocal Music ; 5,212
+Popcorn Makers ; 1,30,50,825
+Port Replicators ; 9,261
+Portable Cassette Players ; 1,16,30,000
+Portable Radios ; 1,16,50,000
+Portable Tape & Digital Recorders ; 1,17,30,000
+Posters & Prints ; 412
+Potty Training ; 10,00,01,490
+Power Tools ; 2,50,00,600
+Prep Tables ; 10,00,01,416
+Print Servers ; 9,325
+Printer Accessories L3 ; 9,190
+Printers ; 420
+Professional Salon & Spa Equipment ; 10,00,01,442
+Programming Software ; 309
+Projector Accessories ; 46,013
+Projectors ; 456
+PSP Accessories ; 9,611
+PSP Consoles ; 9,608
+Psychology Books ; 8,041
+Pub Furniture ; 8,311
+Puppets & Puppet Theater ; 245
+Purchase Order Forms ; 10,00,01,613
+Push & Pull Toys ; 1,40,10,906
+Quilts ; 381
+R&B, Hip Hop & Rap Music ; 5,213
+Radar Detectors & Jammers ; 1,19,10,000
+RAM & Memory Upgrades ; 407
+Range & Oven Accessories ; 10,00,01,239
+Range Hood Accessories ; 10,00,01,241
+Range Hoods ; 1,30,50,819
+Ranges ; 1,30,50,903
+Receipt Books ; 10,00,01,615
+Receivers ; 1,10,70,000
+Recessed Lighting ; 8,448
+Rechargeable & Replacement Batteries ; 1,15,10,200
+Reference Books ; 8,042
+Refrigerator Accessories ; 10,00,01,238
+Refrigerators ; 1,30,50,901
+Reggae Music ; 5,214
+Religion Books ; 8,043
+Religions & Spirituality Books ; 8,076
+Religious DVDs & Videos ; 5,109
+Religious Goods ; 22,011
+Remote Controls ; 1,18,00,000
+Reptile Supplies ; 3,10,00,500
+Rice Cookers & Steamers ; 1,30,50,826
+Rings ; 3,00,10,106
+Robotic & Radio Control Toys ; 1,40,11,200
+Rock & Pop Music ; 5,215
+Rocking Chairs & Gliders ; 8,262
+Role Playing Toys ; 1,40,10,204
+Roller & Ice Hockey Equipment ; 1,20,80,100
+Romance Books ; 8,059
+Room Dividers & Privacy Screens ; 8,270
+Rotisseries ; 1,80,05,700
+Rowing Machines ; 9,525
+Rugby Equipment ; 9,962
+Rugs ; 1,30,20,207
+Rulers ; 10,00,00,061
+Safety & Security ; 2,50,00,400
+Sandwich Makers ; 1,80,04,800
+Satellite Receivers ; 1,17,40,000
+Saunas ; 22,014
+Scanner Accessories ; 46,014
+Scanners ; 422
+Science & Technology Books ; 8,086
+Science Books ; 8,044
+Science Fiction & Fantasy Books ; 8,060
+Sci-Fi DVDs & Videos ; 5,110
+Scissors ; 21,207
+Scooters & ATV Accessories ; 9,983
+Scooters & ATVs ; 9,984
+Scuba Diving & Snorkeling Equipment ; 1,21,80,102
+Sculptures ; 401
+Sectionals ; 8,248
+Security Lighting ; 8,465
+Seeds & Bulbs ; 1,30,10,300
+Self Help Books ; 8,045
+Server Appliances ; 9,327
+Server Racks ; 9,418
+Serving Flatware ; 350
+Settings Books ; 8,069
+Sewing Machines ; 1,31,10,105
+Sex Toys ; 2,30,00,200
+Shaving Appliances ; 22,010
+Sheds & Outdoor Storage Containers ; 10,00,01,944
+Sheet Lifters ; 10,00,01,590
+Sheet Music ; 10,00,02,031
+Sheet Protectors ; 10,00,01,592
+Sheets ; 397
+Shower Curtain Hooks & Rods ; 10,00,01,297
+Shower Curtains ; 10,00,01,298
+Shower Enclosures ; 8,658
+Shower Heads ; 8,675
+Shower Mats ; 10,00,01,295
+Sinks ; 8,660
+Skateboarding Equipment ; 1,21,30,400
+Skiing Equipment ; 1,21,40,200
+Skin Care Appliances ; 22,016
+Skin Care Products ; 92
+Slipcovers ; 8,249
+Small Pet Supplies ; 9,799
+Snow Cone & Ice Shavers ; 1,80,05,800
+Snowboarding Equipment ; 1,20,90,100
+Soccer Equipment ; 1,21,00,200
+Social Science Books ; 8,046
+Society & Social Issues Books ; 8,085
+Sofa Beds & Sleepers ; 8,246
+Sofas ; 8,244
+Softball & Baseball Equipment ; 1,20,20,300
+Sort & Stack Toys ; 1,40,10,909
+Sound Cards ; 463
+Sound Effects ; 5,232
+Sound Therapy Machines ; 10,00,01,728
+Special Interest DVDs & Videos ; 5,105
+Specialty Apparel / Accessories ; 1,01,60,500
+Spoken Word ; 5,233
+Sports & Fitness DVDs & Videos ; 5,111
+Sports & Games Books ; 8,088
+Sports & Recreation Books ; 8,047
+Sports Bags ; 1,00,10,900
+Squash & Racquetball Equipment ; 1,20,00,200
+Stages of Life Books ; 8,089
+Stained Art Glass ; 10,00,01,510
+Stair Climbers & Steppers ; 8,622
+Stamp Pads ; 10,00,00,057
+Stands & Serving Trays ; 345
+Staplers ; 21,210
+Staples ; 21,209
+Stereo Speakers ; 1,15,60,000
+Strength & Fitness Training ; 8,669
+String Instruments ; 10,00,01,578
+String Lights ; 8,459
+Stroller Accessories ; 10,00,01,335
+Strollers / Joggers ; 1,30,90,201
+Study Aids Books ; 8,048
+Suitcases ; 10,00,00,865
+Sunglasses ; 1,00,70,000
+Surf & Body Boarding Equipment ; 1,21,80,103
+Surge Protectors ; 9,277
+Swimming Pools & Spas ; 1,21,80,104
+System Cooling ; 491
+Table Lamps ; 8,505
+Table Linens ; 1,30,40,400
+Table Tennis Equipment ; 9,740
+Tablet Computers ; 9,257
+Tanning Beds ; 22,012
+Tape ; 21,211
+Tape Drives ; 9,183
+Tapestries ; 434
+Tax Forms ; 10,00,01,618
+Tea Kettles ; 1,30,50,820
+Teapots & Tea Sets ; 332
+Technology Books ; 8,049
+Telephone Accessories ; 1,15,10,903
+Temp Garden Organization & Storage ; 10,00,01,953
+Temp Home Organization ; 10,00,01,723
+Temp Kitchen Supplies & Utensils ; 10,00,01,664
+Temp Medicine & Remedies ; 10,00,01,725
+Temp Miscellaneous Software ; 10,00,01,562
+Temp Women's Jackets & Coats ; 10,00,00,601
+Tennis Accessories ; 10,00,02,026
+Tennis Apparel ; 10,00,02,025
+Tennis Racquets ; 10,00,02,024
+Therapy Lights ; 10,00,01,729
+Thrillers Books ; 8,056
+Tin Signs ; 449
+Toaster Ovens ; 1,30,50,827
+Toasters ; 1,30,50,806
+Tobacco Products ; 1,60,10,300
+Toilet Parts ; 8,731
+Toilet Seats ; 8,679
+Toilets ; 8,678
+Towel Stands & Warmers ; 10,00,01,300
+Toy Vehicles & Planes ; 1,40,11,500
+Track & Field Equipment ; 1,20,00,800
+Track Lights ; 8,447
+Transportation Books ; 8,050
+Trash Compactors ; 1,80,05,000
+Travel Accessories ; 1,00,10,800
+Travel Books ; 8,052
+Travel Fiction Books ; 8,090
+Treadmills ; 8,620
+Trimmers ; 22,013
+Tripods & Monopods ; 9,028
+Trivets & Coasters ; 354
+True Crime Books ; 8,051
+Turntables ; 1,19,60,000
+TV ; 1,15,20,000
+TV & Entertainment Stands ; 8,268
+TV & Movie Soundtracks ; 5,216
+TV-Mounts ; 1,11,00,809
+Two-Way Radios ; 1,15,80,300
+Typewriters ; 10,00,00,063
+UPSs ; 9,313
+USB & Firewire Hubs ; 9,322
+Utility Software ; 9,240
+utomotive Repair Tools ; 2,20,00,500
+Vacuum Accessories ; 10,00,01,264
+Vacuum Food Sealers ; 1,80,04,700
+Vacuums ; 1,31,10,106
+Vanity & Table Mirrors ; 451
+Vases ; 1,30,20,208
+VCRs ; 1,19,80,000
+Video Editing / Capture Cards ; 423
+Video Game Chairs ; 9,800
+Video Games ; 1,50,10,100
+Vision Care ; 145
+Vitamins & Nutrition ; 150
+Volleyball Equipment ; 1,20,00,300
+Waffle Makers ; 1,30,50,821
+Wakeboarding Equipment ; 1,21,80,105
+Wall & Floor Mirrors ; 8,201
+Wall Mounts & Picture Lighting ; 8,501
+Wall Sculptures & Masks ; 445
+Wallets ; 1,00,11,200
+Warming Drawers L3 ; 10,00,01,465
+Washer & Dryer Accessories ; 10,00,01,256
+Washers & Dryers ; 1,30,50,907
+Watch Accessories ; 10,00,01,539
+Watches ; 3,00,20,100
+Water & Juice Glasses ; 306
+Water Dispensers ; 1,80,05,600
+Water Filters ; 1,80,04,300
+Water Garden & Irrigation Supplies ; 1,30,11,300
+Water Skiing Equipment ; 1,21,80,106
+Weather Instruments ; 10,00,00,065
+WebCams ; 404
+Weight Machines ; 8,630
+Westerns Books ; 8,061
+Westerns DVDs & Videos ; 5,116
+Wetsuits ; 10,00,02,037
+Wigs & Hairpieces ; 10,00,00,503
+Wii Accessories ; 9,613
+Wii Consoles ; 9,606
+Wind Instruments ; 10,00,01,577
+Window Blinds ; 351
+Window Shades ; 334
+Window Shutters ; 319
+Window Valances ; 343
+Wine ; 1,60,11,100
+Wine Cellars ; 1,80,05,100
+Wine Glasses & Champagne Flutes ; 313
+Wine Racks ; 10,00,01,882
+Wings & Halos ; 8,212
+Winter Recreation ; 1,20,00,500
+Women's Activewear ; 1,00,80,000
+Women's Belts ; 1,01,30,800
+Women's Bras ; 1,01,00,300
+Women's Camisoles ; 1,01,00,500
+Women's Cardigans ; 10,00,01,163
+Women's Chemises ; 10,00,01,186
+Women's Cover-Ups ; 10,00,01,198
+Women's Dresses ; 1,00,90,100
+Women's Gloves & Mittens ; 1,01,30,200
+Women's Handkerchiefs ; 9,541
+Women's Hats ; 1,01,30,300
+Women's Jeans ; 10,00,00,942
+Women's Nightgowns ; 10,00,01,188
+Women's One-Piece Swimwear ; 10,00,01,200
+Women's Pajamas ; 1,01,01,100
+Women's Panties ; 1,01,00,900
+Women's Pants ; 1,00,90,500
+Women's Robes ; 1,01,01,000
+Women's Scarves / Shawls ; 1,01,30,500
+Women's Shirts & Tops ; 8,726
+Women's Shoes ; 1,01,10,000
+Women's Shorts ; 1,00,91,100
+Women's Skirts ; 1,00,90,700
+Women's Slimmers / Shapers ; 1,01,01,200
+Women's Socks / Hosiery ; 1,01,30,400
+Women's Suits ; 10,00,01,176
+Women's Sweater Vests ; 10,00,01,164
+Women's Sweaters ; 10,00,01,162
+Women's T-Shirts ; 1,00,91,000
+Women's Two-Piece Swimwear ; 10,00,01,199
+Women's Vests ; 10,00,00,594
+Work & the Workplace Books ; 8,092
+Workbenches ; 10,00,01,712
+Wreaths & Garlands ; 471
+Wrist Rests ; 9,303
+Xbox Accessories ; 1,50,10,204
+Xbox Consoles ; 1,50,10,304
+XM & Sirius Satellite Radios ; 1,19,20,000
+Yoga & Pilates Equipment ; 8,683
+Yogurt Makers ; 1,80,04,200

@@ -19,28 +19,16 @@ class PFeedPageDialogs {
 				&nbsp;
 			</div>';
 
-    $reg = new PLicense();
-		if ($reg->valid) {
-			// $notice = '
-			// <div style="float:left; width: 200px;">
-			// 	<a class="multi-line-button blue" type="submit" value="" id="submit" name="submit" href="http://shoppingcartproductfeed.com/" target="_blank">Thank you for supporting the project</a>
-			// </div>';
-			$lic = '<div style="position:absolute; left:300px; top:60px">
-		     <a class="button-primary" type="submit" value="" id="submit" name="submit" href="http://shoppingcartproductfeed.com/" target="_blank">Thank You For Supporting The Project</a>
-		      </div>';
-		} else {
-			// $notice = '
-			// <div style="float:left; width: 200px;">
-			// 	<a class="multi-line-button blue" type="submit" value="" id="submit" name="submit" href="http://shoppingcartproductfeed.com/" target="_blank" style="height:50px">You are using the free version - Limited to 10 items</a>
-			// </div>' . $gap . '
-			// <div style="float:left; width: 200px;">
-			// 	<a class="multi-line-button blue" type="submit" value="" id="submit" name="submit" href="https://www.purpleturtle.pro/cart.php?gid=8" target="_blank" style="height:50px">Purchase full or 5-day trial<br> Learn more</a>
-			// </div>';
-			$lic = PLicenseKeyDialog::small_registration_dialog('');
-		}
-
-		if (!$pfcore->banner)
-			$notice = '';
+		if ($pfcore->cmsName == 'WordPress') {
+			$reg = new PLicense();
+			if ($reg->valid)
+				$lic = '<div style="position:absolute; left:300px; top:60px">
+					 <a class="button-primary" type="submit" value="" id="submit" name="submit" href="http://shoppingcartproductfeed.com/" target="_blank">Thank You For Supporting The Project</a>
+						</div>';
+			else
+				$lic = PLicenseKeyDialog::small_registration_dialog('');
+		} else
+			$lic = '';
 
 		$providers = new PProviderList();
 
@@ -49,7 +37,7 @@ class PFeedPageDialogs {
 				<div class="inside-export-target">
 					<div style="position:absolute;">
 						<h4>Select Merchant Type</h4>
-						<select id="selectFeedType" onchange="doSelectFeed()">
+						<select id="selectFeedType" onchange="doSelectFeed();">
 						<option></option>' . 
 							$providers->asOptionList() . '
 						</select>
@@ -58,7 +46,9 @@ class PFeedPageDialogs {
 				</div>
 			</div>
 			<div class="clear"></div>';
+
 		return $output;
+
   }
 
   public static function pageBody()

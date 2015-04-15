@@ -21,41 +21,43 @@ class PNeweggFeed extends PCSVFeedEx {
 		$this->fieldDelimiter = ",";
 		$this->fields = array();
 
-		//basic item info (includes required and optional fields)
+		//item identification fields
 		$this->addAttributeMapping('sku', 'Seller Part #',true,true);
-		$this->addAttributeMapping('', 'Manufacturer',true,true);
-		$this->addAttributeMapping('', 'Manufacturer Part # / ISBN',true,true);
+		$this->addAttributeMapping('brand', 'Manufacturer',true,true);
+		$this->addAttributeMapping('', 'Manufacturer Part #/ISBN',true,true);
 		$this->addAttributeMapping('', 'UPC',true,true);
-		$this->addAttributeMapping('', 'Manufacturer Item URL');
-		$this->addAttributeMapping('', 'Related Seller Part#');
-		$this->addAttributeMapping('title', 'Website Short Title', true,true);
-		$this->addAttributeMapping('', 'Website Long Title', true);
-		$this->addAttributeMapping('description', 'Product Description', true,true);
+		//required fields
+		$this->addAttributeMapping('Action', 'Action'); //"Create Item", "Update Item","Update Item Price and Inventory", "Update/Append Image", and "Replace Image"
+		$this->addAttributeMapping('stock_quantity', 'Inventory',true,true);
+		$this->addAttributeMapping('item_images', 'Item Images',true); //separate by commas
 		$this->addAttributeMapping('length', 'Item Length', true,true); //inches
 		$this->addAttributeMapping('width', 'Item Width', true,true); //inches
 		$this->addAttributeMapping('height', 'Item Height', true,true); //inches
 		$this->addAttributeMapping('weight', 'Item Weight', true,true); //lbs
-		$this->addAttributeMapping('condition', 'Item Condition');
-		$this->addAttributeMapping('', 'Shipping Restriction');
-		$this->addAttributeMapping('currency', 'Currency');
-		$this->addAttributeMapping('', 'MSRP'); //minimum advertised price
-		$this->addAttributeMapping('', 'MAP');
-		$this->addAttributeMapping('', 'CheckoutMAP'); //true or false
-		$this->addAttributeMapping('Selling Price', 'Selling Price');
-		$this->addAttributeMapping('', 'Shipping');
-		$this->addAttributeMapping('stock_quantity', 'Inventory');
-		$this->addAttributeMapping('', 'Activation Mark');
-		$this->addAttributeMapping('', 'Action'); //"Create Item", "Update Item","Update Item Price and Inventory", "Update/Append Image", and "Replace Image"
-		$this->addAttributeMapping('feature_imgurl', 'Item Images'); //separate by commas
-		$this->addAttributeMapping('', 'Prop 65'); //Yes or No
-		$this->addAttributeMapping('', 'Prop 65 - Motherboard'); //Yes or No
-		$this->addAttributeMapping('', 'Country Of Origin');
+		$this->addAttributeMapping('description', 'Product Description', true,true);
+		$this->addAttributeMapping('price', 'Selling Price',true,true);
+		$this->addAttributeMapping('shipping', 'Shipping',true,true);
+		$this->addAttributeMapping('title', 'Website Short Title', true,true);
+		//optional
+		$this->addAttributeMapping('', 'Activation Mark'); //true / false
 		$this->addAttributeMapping('', 'Age 18+ Verification');
+		$this->addAttributeMapping('', 'CheckoutMAP'); //true or false
 		$this->addAttributeMapping('', 'Choking Hazard 1');
 		$this->addAttributeMapping('', 'Choking Hazard 2');
-		$this->addAttributeMapping('', 'Choking Hazard 3');
-		$this->addAttributeMapping('', 'Choking Hazard 4');
-		$this->addAttributeMapping('', 'GroupBundle');
+		$this->addAttributeMapping('currency', 'Currency'); //default USD
+		$this->addAttributeMapping('condition', 'Item Condition');
+		$this->addAttributeMapping('', 'Item Package'); //retail (default) or OEM
+		$this->addAttributeMapping('', 'Manufacturer Item URL');
+		$this->addAttributeMapping('', 'MAP'); //minimum advertised price
+		$this->addAttributeMapping('', 'MSRP'); 
+		$this->addAttributeMapping('', 'Prop 65'); //Yes or No
+		$this->addAttributeMapping('item_group_id', 'Related Seller Part #');
+		$this->addAttributeMapping('', 'Shipping Restriction');
+		$this->addAttributeMapping('', 'Website Long Title', true);		
+			
+		//$this->addAttributeMapping('', 'Prop 65 - Motherboard'); //Yes or No
+		//$this->addAttributeMapping('', 'Country Of Origin');	
+		//$this->addAttributeMapping('', 'GroupBundle');
 
 		//MW fields specific to unlocked cell phones category
 		/*
@@ -98,8 +100,13 @@ class PNeweggFeed extends PCSVFeedEx {
 		$this->addAttributeMapping('MWOperatingSystem', 'MWOperatingSystem');
 		*/		
 
-		$this->newegg_combo_title = false;
-
+		$this->newegg_combo_title = false;		
+		$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
+		$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree
+		$this->addRule( 'description', 'description',array('max_length=500','strict') );
+		$this->addRule('csv_standard_title', 'CSVStandard',array('title')); 
+		$this->addRule('csv_standard', 'CSVStandard',array('description')); 
+		//$this->addRule('quantity','SetQty');
 	}
 
 	function getFeedHeader($file_name, $file_path) 
@@ -122,34 +129,36 @@ class PNeweggFeed extends PCSVFeedEx {
 	    return substr($output, 0, -1) .  "\r\n";
 	}
 
-	function getFeedFooter() {
+	function getFeedFooter($file_name, $file_path) {
 		//Override parent and do nothing
 	}
 
     function formatProduct($product) {
 
-		//cheat: Remap these
-  		$productDescription = str_replace('"','""',$product->attributes['description']);		
-		$product->attributes['description'] = trim($productDescription);	
-		
+		//cheat: Remap these		
 		//Max 6 Additional Images
-		// $product->attributes['additional_images'] = '';
-		// $image_count = 0;
-		// foreach($product->imgurls as $imgurl) {
-		// 	$product->attributes['additional_images'] .= $imgurl . ',';
-		// 	$image_count++;
-		// 	if ($image_count >= 9)
-		// 		break;
-		// }
+		$product->attributes['item_images'] = $product->attributes['feature_imgurl'];
+			if ( $this->allow_additional_images && (count($product->imgurls) > 0) ) {
+				$image_count = 1;
+				foreach($product->imgurls as $imgurl) {
+					$product->attributes['additional_images'] .= ',' . $imgurl;
+					$image_count++;
+					if ($image_count >= 7)
+						break;
+				}
+				$product->attributes['item_images'] .= $product->attributes['additional_images'];
+			}
+	
 		//if (strlen($product->attributes['additional_images']) > 0)
 		//	$product->attributes['additional_images'] = substr($product->attributes['additional_images'], 0, -1);
 
+		$product->attributes['currency'] = $this->currency;
 		if ( $this->newegg_combo_title )
 		{
 			$title_dash = " - ";
 			$title_combo = "";
 			//Modify Website Short Title to include Brand - Title - Flavour (if exists) - Size (if exists)		
-			$title_combo = $product->attributes['Manufacturer'].$title_dash.$product->attributes['title'];
+			$title_combo = $product->attributes['brand'].$title_dash.$product->attributes['title'];
 			if ( !empty($product->attributes['flavour']) ) {
 				$title_combo = $title_combo.$title_dash.$product->attributes['flavour'];
 			}
@@ -159,39 +168,18 @@ class PNeweggFeed extends PCSVFeedEx {
 			$product->attributes['title'] = $title_combo;
 		}
 
-		// if ($product->attributes['stock_status'] == 1) {
-		// 	if ( isset($product->attributes['stock_quantity']) )
-		// 		$product->attributes['Inventory'] = $product->attributes['stock_quantity'];
-		// 	else
-		// 		$product->attributes['Inventory'] = $product->attributes['Inventory'];
-		// }
-		// else {
-		// 	$product->attributes['Inventory'] = '0';
-		// }
-	
-		if (strlen($product->attributes['Selling Price']) == 0)
-			$product->attributes['Selling Price'] = '0.00';
+		$product->attributes['shipping'] = $this->newegg_shipping;
 
-		$product->attributes['Selling Price'] = $product->attributes['regular_price'];
-		if ($product->attributes['has_sale_price'])
-			$product->attributes['Selling Price'] = $product->attributes['sale_price'];
+		if ( !isset($this->newegg_shipping) || strlen((string)$product->attributes['shipping']) == 0 ) {
+			$this->addErrorMessage(17000, 'Shipping not configured. Need advanced command: $newegg_shipping = ....', true);
+			//$this->addErrorMessage(9001, 'You can find your Merchant ID in the top left corner of the ShareASale web interface for advertisers/merchants (login required)', true);
+			$this->productCount--;
+			$this->merchant_id = '';
+		}
 
 		return parent::formatProduct($product);
-
   }
-
-  function truncate_string($string,$length,$append="&hellip;")
-  {
-	$string = trim($string);
-
-	if(strlen($string) > $length) {
-	$string = wordwrap($string, $length);
-	$string = explode("\n", $string, 2);
-	$string = $string[0] . $append;
-	}
-	return $string;
-  }
-
+ 
 }
 
 ?>

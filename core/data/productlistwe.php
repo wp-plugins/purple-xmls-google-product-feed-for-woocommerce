@@ -39,8 +39,8 @@ class PProductList {
 				#metadata_main.meta_value as metadata_main, metadata_var.meta_value as metadata_var
 				category.term_id as category_id, category.name as category_name,
 				attributes.attribute_names as attribute_names, attributes.attribute_values as attribute_values,
-				images.image_link,
-				custom_fields.cfnames, custom_fields.cfvalues
+				images.image_link
+				#custom_fields.cfnames, custom_fields.cfvalues
 			FROM wp_posts posts
 			#Link Variations
 			LEFT JOIN 
@@ -151,13 +151,13 @@ class PProductList {
 					GROUP BY a.post_parent
 				) as images ON images.post_parent = posts.id
 			#Custom Fields
-			LEFT JOIN
-				(
-					SELECT post_id, GROUP_CONCAT(meta_key) as cfnames, GROUP_CONCAT(meta_value) as cfvalues
-					FROM wp_postmeta 
-					WHERE meta_key NOT LIKE '\_%'
-					GROUP BY post_id
-				) as custom_fields ON custom_fields.post_id = posts.id
+			#LEFT JOIN
+			#	(
+			#		SELECT post_id, GROUP_CONCAT(meta_key) as cfnames, GROUP_CONCAT(meta_value) as cfvalues
+			#		FROM wp_postmeta 
+			#		WHERE meta_key NOT LIKE '\_%'
+			#		GROUP BY post_id
+			#	) as custom_fields ON custom_fields.post_id = posts.id
 			WHERE (posts.post_type = 'wpsc-product') AND (posts.post_status = 'publish')";
 
 		$this->products = $wpdb->get_results($sql);
@@ -176,6 +176,8 @@ class PProductList {
 		if ($this->products == null)
 			$this->loadProducts($parent);
 
+		$master_product_list = array();
+
 		//********************************************************************
 		//Convert the WP_Product List into a Cart-Product Master List (ListItems)
 		//********************************************************************
@@ -187,6 +189,17 @@ class PProductList {
 
 			if (!$parent->categories->containsCategory($prod->category_id))
 				continue;
+
+			//Duplicate check
+			if ( $parent->ignoreDuplicates ) {
+				$skip_this_item = (isset($master_product_list[$prod->id]) && isset($master_product_list[$prod->variation_id]));
+				if ($prod->id > 0)
+					$master_product_list[$prod->id] = 1;
+				if ($prod->variation_id > 0)
+					$master_product_list[$prod->variation_id] = 1;
+				if ($skip_this_item)
+					continue;
+			}
 
 			$item = new PAProduct();
 
@@ -210,6 +223,7 @@ class PProductList {
 				$item->attributes['isVariable'] = false;
 				$item->attributes['isVariation'] = true;
 				$item->attributes['sku'] = $prod->sku_var;
+				$item->attributes['parent_sku'] = $prod->sku_main;
 				$item->attributes['regular_price'] = $prod->price_var;
 				$item->attributes['has_sale_price'] = false;
 				if ($prod->sale_price_var > 0) {
@@ -221,11 +235,12 @@ class PProductList {
 				$item->attributes['parent_title'] = '';
 			}
 
+			$item->attributes['id'] = $item->id;
 			$item->attributes['title'] = $prod->post_title;
 			$item->taxonomy = '';
 			
-			$item->description_short = substr(strip_shortcodes(strip_tags($prod->post_excerpt)), 0, 1000);
-			$item->description_long = substr(strip_shortcodes(strip_tags($prod->description)), 0, 1000);
+			$item->description_short = substr(strip_shortcodes(strip_tags($prod->post_excerpt)), 0, 5000);
+			$item->description_long = substr(strip_shortcodes(strip_tags($prod->description)), 0, 5000);
 			$item->attributes['valid'] = true;
 
 			//Fetch any default attributes Stage 0 (Mapping 3.0)
@@ -237,7 +252,7 @@ class PProductList {
 			$item->attributes['product_type'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
 			$item->attributes['localCategory'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $prod->category_name));
 			$item->attributes['localCategory'] = str_replace("|", ">", $item->attributes['localCategory']);
-			$item->attributes['link'] = $pfcore->siteHost . '?wpsc-product=' . $item->attributes['title'];
+			$item->attributes['link'] = $pfcore->siteHost . '?wpsc-product=' . rawurlencode($item->attributes['title']);
 			$images = explode(',', $prod->image_link);
 			if (count($images) == 0)
 				$item->attributes['feature_imgurl'] = '';
@@ -253,7 +268,8 @@ class PProductList {
 			$attribute_names = explode(',', $prod->attribute_names);
 			$attribute_values = explode(',', $prod->attribute_values);
 			foreach($attribute_names as $key => $value)
-				$item->attributes[$value] = $attribute_values[$key];
+				if (strlen($value) > 0)
+					$item->attributes[$value] = $attribute_values[$key];
 
 			//In-stock status
 			//a null $item->attributes['stock_quantity'] means no stock tracking, so in stock
@@ -267,6 +283,19 @@ class PProductList {
 			foreach ($parent->attributeDefaults as $thisDefault)
 				if ($thisDefault->stage == 1 && !$thisDefault->isRuled)
 					$item->attributes[$thisDefault->attributeName] = $thisDefault->getValue($item);
+
+			//Custom Fields: Old
+			/*$cfnames = explode(',', $prod->cfnames);
+			$cfvalues = explode(',', $prod->cfvalues);
+			foreach ($cfnames as $idx => $name) {
+				if (isset($cfvalues[$idx]) && (!isset($item->attributes[$name]) || strlen($item->attributes[$name]) == 0) )
+					$item->attributes[$name] = $cfvalues[$idx];
+			}*/
+			$sql = "SELECT meta_key, meta_value FROM $wpdb->postmeta
+				WHERE post_id = " . $item->attributes['id'] . " AND meta_key NOT LIKE '\_%'";
+			$attributes = $wpdb->get_results($sql);
+			foreach($attributes as $this_attribute)
+				$item->attributes[$this_attribute->meta_key] = $this_attribute->meta_value;
 	  
 			//Send this item out for Feed processing
 			$parent->handleProduct($item);

@@ -6,8 +6,8 @@
 	//********************************************************************
 
 	//both attributes are highly recommended
-	$this->addAttributeMapping('tyre-wet-grip', 'tyre-wet-grip', true, false); 
-	$this->addAttributeMapping('tyre-noise-class', 'tyre-noise-class', true, false);
+	$this->addAttributeMapping('', 'tyre-wet-grip', true, false); 
+	$this->addAttributeMapping('', 'tyre-noise-class', true, false);
 	//$this->addAttributeMapping('', '', true, false);
 	//$this->addAttributeMapping('', '', true, false);
 ?>

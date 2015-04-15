@@ -12,7 +12,7 @@ class PFeedRule {
 
 	public $enabled = true;
 	public $name = '';
-	public $order = 0; //200 ~ PActionBeforeFeed, therefore don't assign order > 299 (300 ~ PActionAfterFeed)
+	public $order = 200; //200 ~ PActionBeforeFeed, therefore don't assign order > 299 (300 ~ PActionAfterFeed)
 	public $parameters = array();
 	public $parametersV = null; //Virtual parameters... or "Interpreted" params
 	public $parent_feed = null; //points to feed provider that owns this rule
@@ -69,16 +69,27 @@ class PFeedRule {
 
 class PFeedRuleConcat extends PFeedRule {
 
+	public function initialize() {
+		parent::initialize();
+		$this->order = 200;
+	}
+
 	public function process($product) {
 		$this->resolveVirtualParameters();
 		foreach ($this->parametersV as $arg)
-			if (isset($product->attributes[$arg]))
+			if ( isset($product->attributes[$arg]) )
 				$this->value .= $product->attributes[$arg];
 			else
 				$this->value .= $arg;
 	}
-
 }
+
+/*
+Create rule generate links directly to selected variable product
+ex: rule concat(link, "?attribute_pa_", attribute-slug, attribute-value) as new_link 
+note: the attribiute-value can be:
+str_replace(' ', '+', attribute-value) OR attribute-value-slug.
+*/
 
 //***********************************************************
 //Description: Format & Length 
@@ -144,11 +155,11 @@ class PFeedRuleDescription extends PFeedRule {
 				$product->attributes['description'] = $product->description_short;
 				break;
 			default:
-				//By default pick short... if no short, pick long (original behaviour)
-				if ( strlen ( $product->description_short ) == 0 ) 
-					$product->attributes['description'] = $product->description_long;
+				//By default pick long... if no long, pick short (updated from original behaviour Mar 4 -cg)
+				if ( strlen ( $product->description_long ) == 0 ) 
+					$product->attributes['description'] = $product->description_short;
 				else
-					$product->attributes['description'] = $product->description_short;		  
+					$product->attributes['description'] = $product->description_long;		  
 				break;
 		}
 
@@ -169,9 +180,15 @@ class PFeedRuleDescription extends PFeedRule {
 			$product->attributes['description'] = $description;
 		}
 
-		if (strlen($product->attributes['description']) > $this->max_description_length) 
-			$product->attributes['description'] = substr($product->attributes['description'], 0, $this->max_description_length);
-
+		if (strlen($product->attributes['description']) > $this->max_description_length) {		
+		//$product->attributes['description'] = substr($product->attributes['description'], 0, $this->max_description_length);
+			//"wordwrap", taken off SE.
+			$product->attributes['description'] = substr($product->attributes['description'], 0, strpos($product->attributes['description'], ' ', $this->max_description_length));
+			//add ellipses
+			if ( $product->attributes['description'] < 2000 ) //some MAX_LENGTH (provider dependent)
+				$product->attributes['description'] .= '...';
+		}
+		
 	}
 
 }
@@ -216,7 +233,7 @@ class PFeedRuleDiscount extends PFeedRule {
 			//Additive value
 			if (!isset($number_value)) $number_value = 0;
 			if (in_array('s', $this->parameters))
-				$this->discount_sale = $number_value;
+				$this->discount_sale_amount = $number_value;
 			else
 				$this->discount_amount = $number_value;
 		}
@@ -244,6 +261,36 @@ class PFeedRuleDiscount extends PFeedRule {
 }
 
 //***********************************************************
+//rule FindAndSet(1,2,3,4)
+//Find attribute (1) that contains string (2), if present, set another attribute (3) to value (4)
+//Example 1: rule FindAndSet(title, "adult", valid, "false")
+//Example 2: rule FindAndSet(title, "Hip", brand, "Hippolite")
+//***********************************************************
+class PFeedRuleFindAndSet extends PFeedRule {
+
+	public function initialize() {
+		parent::initialize();
+		//$this->order = 150;
+	}
+
+	public function process($product) {
+		
+		$this->resolveVirtualParameters();
+		if ( !isset($product->attributes[$this->parametersV[0]]) )
+			return;
+		if ( count($this->parametersV) == 4 ) {
+			$findSet_haystack = $product->attributes[$this->parametersV[0]];
+			$findSet_needle = $this->parametersV[1];			
+			$findSet_pos = stripos($findSet_haystack, $findSet_needle);
+			if ( $this->parametersV[3] == 'false' ) $this->parametersV[3] = 0; //to remove product.
+			if ( $findSet_pos !== false ) {
+				$product->attributes[$this->parametersV[2]] = $this->parametersV[3];
+			}
+		}
+	}
+}
+
+//***********************************************************
 //Google-Specific
 //***********************************************************
 
@@ -252,15 +299,33 @@ class PFeedRuleGooglecombotitle extends PFeedRule {
 	public function process($product) {
 
 		if ( $this->parent_feed->google_combo_title ) {
-			$title_dash = " - ";
-			$title_combo = "";
-			//Modify Title to include Brand - Title - Flavour (if exists) - Size (if exists)		
-			$title_combo = $product->attributes['brand'].$title_dash.$product->attributes['title'];
-			if ( !empty($product->attributes['flavour']) ) {
-				$title_combo = $title_combo.$title_dash.$product->attributes['flavour'];
+			
+			$title_dash = ' - ';
+			$title_combo = '';
+			$title_original = $product->attributes['title'];
+			$title_brand = $product->attributes['brand'];
+			$title_flavor = $product->attributes['flavor'];
+			$title_flavour = $product->attributes['flavour'];
+			$title_size = $product->attributes['size'];
+			$title_color = $product->attributes['color'];
+
+			//Modify Title to include Brand - Title - Flavor - Size - Color	
+			//IF attributes exist and aren't already present in title (removes redunancy)
+			$title_combo = $product->attributes['title'];
+			if ( !empty($title_brand) ) {
+				$title_combo = $title_brand.$title_dash.$title_combo;
 			}
-			if ( !empty($product->attributes['size']) ) {
-				$title_combo = $title_combo.$title_dash.$product->attributes['size'];
+			if ( !empty($title_flavor) && stripos($title_original, $title_flavor) === false ) {
+				$title_combo = $title_combo.$title_dash.$title_flavor;
+			}
+			if ( !empty($title_flavour) && stripos($title_original, $title_flavour) === false ) {
+				$title_combo = $title_combo.$title_dash.$title_flavour;
+			}
+			if ( !empty($title_size) && stripos($title_original, $title_size) === false ) {
+				$title_combo = $title_combo.$title_dash.$title_size;
+			}
+			if ( !empty($title_color) && stripos($title_original, $title_color) === false  ) {
+				$title_combo = $title_combo.$title_dash.$title_color;			
 			}
 			$product->attributes['title'] = $title_combo;
 		}
@@ -283,9 +348,8 @@ class PFeedRuleGoogleexacttitle extends PFeedRule {
 }
 
 //***********************************************************
-//Price
+//Price: adds currency to the price fields
 //***********************************************************
-
 class PFeedRulePricestandard extends PFeedRule {
 
 	public $unit = '';
@@ -293,25 +357,149 @@ class PFeedRulePricestandard extends PFeedRule {
 	public function initialize() {
 
 		parent::initialize();
-
-		if (count($this->parameters) > 2)
+		
+		if ( count($this->parameters) > 2 )
 			$this->unit = $this->parameters[1];
 
-		$this->order = 200;
+		$this->order = 220;
 
 	}
 
 	public function process($product) {
 
+		global $pfcore;
+
+		if ($pfcore->callSuffix == 'J') {
+			$this->unit = $product->attributes['currency'];
+		} else {
+			//if currency_format is set to: "%1.2f CAD" 
+			if (strpos($this->parent_feed->currency_format,' ') !== false)
+				$this->unit = '';
+			else
+				$this->unit = $this->parent_feed->currency;
+		}
+
 		if (strlen($product->attributes['regular_price']) == 0)
-			$product->attributes['regular_price'] = '0.00';
-		$product->attributes['regular_price'] = sprintf($this->parent_feed->currency_format, $product->attributes['regular_price']) . $this->parent_feed->currency;
-		$this->parent_feed->getMapping('sale_price')->enabled = $product->attributes['has_sale_price'];
+			$product->attributes['regular_price'] = '0.00';			
+		$product->attributes['regular_price'] = sprintf( $this->parent_feed->currency_format, $product->attributes['regular_price'] ) . ' ' . $this->unit;
+		//$this->parent_feed->getMapping('sale_price')->enabled = $product->attributes['has_sale_price'];
 		if ($product->attributes['has_sale_price'])
-			$product->attributes['sale_price'] = sprintf($this->parent_feed->currency_format, $product->attributes['sale_price']) . $this->parent_feed->currency;
+			$product->attributes['sale_price'] = sprintf($this->parent_feed->currency_format, $product->attributes['sale_price']) . ' ' . $this->unit;
 
 	}
 
+}
+
+//formats price to 2 decimal places
+class PFeedRulePricerounding extends PFeedRule {
+
+	public function initialize() {
+
+		parent::initialize();
+
+		$this->digits = 2;
+		if (count($this->parameters) > 2)
+			$this->digits = $this->parameters[1];
+
+		$this->order = 210; //Just before a Price-standard
+
+	}
+
+	public function process($product) {
+		//string number_format ( float $number , int $decimals = 0 , string $dec_point = "." , string $thousands_sep = "," )
+		$product->attributes['regular_price'] = number_format((double)$product->attributes['regular_price'], $this->digits, '.', '' );
+		if ($product->attributes['has_sale_price'])
+			$product->attributes['sale_price'] = number_format((double)$product->attributes['sale_price'], $this->digits,'.', '' );
+	}
+
+}
+
+class PFeedRulePricedecimalseparator extends PFeedRule {
+
+	public function initialize() {
+
+		parent::initialize();
+
+		$this->separator = ',';
+		if (count($this->parameters) > 0)
+			$this->separator = $this->parameters[0];
+
+		$this->order = 225; //Just After a Price-standard
+
+	}
+
+	public function process($product) {
+		//string number_format ( float $number , int $decimals = 0 , string $dec_point = "." , string $thousands_sep = "," )
+		$product->attributes['regular_price'] = str_replace('.', $this->separator, $product->attributes['regular_price']);
+		if ($product->attributes['has_sale_price'])
+			$product->attributes['sale_price'] = str_replace('.', $this->separator, $product->attributes['sale_price']);
+	}
+
+}
+
+class PFeedRuleNoVariations extends PFeedRule {
+
+	public function initialize() {
+
+		parent::initialize();
+
+//all categories
+		if (in_array('*', $this->parameters)) {
+			$this->parent_feed->addAttributeDefault('allcat', $this_parameter, 'PCatVar');
+		}
+//individual categories
+		else {			
+			foreach($this->parameters as $this_parameter)
+				if ( is_numeric($this_parameter) ) 				
+					$this->parent_feed->addAttributeDefault('xVar', $this_parameter, 'PCatVar');			
+		}
+	}
+}
+
+class PFeedRulePricegroup extends PFeedRule {
+
+	public $unit = '';
+
+	public function initialize() {
+
+		parent::initialize();		
+
+		$this->limit_low = 0;
+		$this->limit_high = 10000;
+		$this->term = 'price group';
+		if ( count($this->parameters) > 0 ) $this->limit_low = $this->parameters[0];
+		if ( count($this->parameters) > 1 ) $this->limit_high = $this->parameters[1];
+		if ( count($this->parameters) > 2 ) $this->term = $this->parameters[2];
+
+		$this->order = 190;
+
+	}
+
+	public function process($product) {
+
+		if (isset($product->attributes['regular_price']) && strlen($product->attributes['regular_price']) > 0) {
+			if ($product->attributes['regular_price'] < $this->limit_low)
+				$product->attributes['price_label_1'] = $this->term;
+		}
+
+	}
+
+}
+
+//***********************************************************
+//Remove Empty (blank) Attributes.
+//example: rule removeEmptyAttributes(attribute-slug or custom field)
+//TODO: Should allow multiple parameters/attributes 
+//***********************************************************
+
+class PFeedRuleRemoveEmptyAttributes extends PFeedRule {
+	//Caution: if attribute does not exist, it's values will be blank and all products will be removed
+	public function process($product) {
+		$blankAttribute = $this->parameters[0];		
+		if ( empty( $product->attributes[$blankAttribute] ) || $product->attributes[$blankAttribute] == '0.00' )
+  			$product->attributes['valid'] = false;		
+		return true;
+	}
 }
 
 //***********************************************************
@@ -365,7 +553,7 @@ class PFeedRuleShipping extends PFeedRule {
 
 	public function process($product) {
 
-		$product->attributes['shipping_amount'] = 
+		$product->attributes['shipping_amount'] =
 			$this->shipping_amount + 										//Base amount
 			$product->attributes['regular_price'] * $this->shipping_multiplier + 		//% of Price
 			($product->attributes['has_sale_price'] ? $product->attributes['sale_price'] * $this->shipping_sale_multiplier : 0);		//% of Sale Price
@@ -376,7 +564,7 @@ class PFeedRuleShipping extends PFeedRule {
 }
 
 //***********************************************************
-//Status
+//Status: convert to "in stock" or "out of stock"
 //***********************************************************
 
 class PFeedRuleStatusstandard extends PFeedRule {
@@ -397,7 +585,9 @@ class PFeedRuleStatusstandard extends PFeedRule {
 //***********************************************************
 
 class PFeedRulePos extends PFeedRule {
-
+// public function initialize() {
+// 	$this->order = 190;
+// }
 	public function process($product) {
 	
 		if (!isset($product->attributes[$this->parametersV[0]]))
@@ -411,6 +601,23 @@ class PFeedRulePos extends PFeedRule {
 
 }
 
+//***********************************************************
+//This rule will allow the user to 'set' or 'fill in mising' attributes
+//***********************************************************
+class PFeedRuleSetAll extends PFeedRule {
+
+	 public function initialize() 
+	 {	 	
+	 	parent::initialize();
+	 	if ( !isset($this->parameters[0]) )
+			return;	
+	 }
+	public function process($product) 
+	{	
+		$product->attributes[$this->parameters[0]] = $this->parameters[1];
+	}
+
+}
 //***********************************************************
 //Strlen
 //***********************************************************
@@ -431,19 +638,39 @@ class PFeedRuleStrlen extends PFeedRule {
 }
 
 //***********************************************************
-//SubString
+//StrReplace: rule strReplace(find, replace, subject/string)
+//***********************************************************
+
+class PFeedRuleStrReplace extends PFeedRule {
+
+	public function process($product) {
+		$this->resolveVirtualParameters();
+
+		if ( !isset($product->attributes[$this->parametersV[2]]) )
+			return;
+		// if ( stripos($product->attributes[$this->parametersV[2]], $this->parametersV[0]) === false ) //if not found
+		// 	return;
+		if ( count($this->parametersV) == 3 )
+			$this->value = str_replace( $this->parametersV[0], trim($this->parametersV[1]), $product->attributes[$this->parametersV[2]] );	
+	}
+
+}
+
+//***********************************************************
+//SubString: rule substr(source, start, length) as name
 //***********************************************************
 
 class PFeedRuleSubstr extends PFeedRule {
 
 	public function process($product) {
 		$this->resolveVirtualParameters();
+
 		if (!isset($product->attributes[$this->parametersV[0]]))
 			return;
 		if (count($this->parametersV) == 2)
-			$this->value = substr($product->attributes[$this->parametersV[0]], (int) $this->parametersV[1]);
+			$this->value = substr($product->attributes[$this->parametersV[0]], (int)$this->parametersV[1]);
 		if (count($this->parametersV) == 3)
-			$this->value = substr($product->attributes[$this->parametersV[0]], $this->parametersV[1], $this->parametersV[2]);
+			$this->value = substr($product->attributes[$this->parametersV[0]], (int)$this->parametersV[1], (int)$this->parametersV[2]);
 
 	}
 
@@ -483,6 +710,20 @@ class PFeedRuleTax extends PFeedRule {
 }
 
 //***********************************************************
+//Valid
+//***********************************************************
+
+class PFeedRuleValidalways extends PFeedRule {
+
+	public function process($product) {
+
+		$product->attributes['valid'] = true;
+
+	}
+
+}
+
+//***********************************************************
 //Weight Unit
 //***********************************************************
 
@@ -501,12 +742,13 @@ class PFeedRuleWeightunit extends PFeedRule {
 
 	public function process($product) {
 
-		if (!isset($product->attributes['weight']) || strlen($product->attributes['weight']) == 0 ) {
-			$this->parent_feed->getMapping('weight')->enabled = false;
+		if (!isset($product->attributes['weight']) || strlen( trim($product->attributes['weight']) ) == 0 ) {
+//TODO: ?Upon 'update all' -- PHP Warning:  Creating default object from empty value in ~/rules.php 
+			//$this->parent_feed->getMapping('weight')->enabled = false;
 			return;
 		}
 
-		$this->parent_feed->getMapping('weight')->enabled = true;
+		//$this->parent_feed->getMapping('weight')->enabled = true;
 		if (strlen($this->unit) > 0)
 			$product->attributes['weight'] = $product->attributes['weight'] . ' ' . $this->unit;
 		else
@@ -514,6 +756,109 @@ class PFeedRuleWeightunit extends PFeedRule {
 
 	}
 
+//rule word(n, b)
+//returns nth word in string b.
+
+}
+
+//***********************************************************
+//Remove attribute condition:
+//rule removeAttributeCondition(attribute,condition,value)
+//example: rule removeAttributeCondition(regular_price,">",10000)
+//removes attributes with regular_price greater than $10000
+//***********************************************************
+class PFeedRuleRemoveAttributeCondition extends PFeedRule {
+
+	public $arrConditions = array(">","<","=","<>","<=",">=","!="); //only allow these conditions
+	
+	//needs to be called after discount() but before pricestandard
+	//needs to be before price round too
+	
+	 public function initialize() {
+	 	parent::initialize();
+	 	$this->order = 205;
+	 }
+
+	public function process($product) {
+		
+		$this->resolveVirtualParameters();
+		//if first param is not set, end;
+		if ( !isset( $this->parametersV[0] ) )
+			return;
+		//check if there are three arguments
+		if ( count($this->parametersV) == 3 ) 
+		{
+			
+			//if 'price' -- get lowest price
+			if ( $this->parametersV[0] == 'price' ) 
+			{
+				if ($product->attributes['has_sale_price'])
+					$attr = $product->attributes['sale_price'];
+				else
+					$attr = $product->attributes['regular_price'];
+			}
+			else
+				$attr = $product->attributes[$this->parametersV[0]]; //target attribute, ex: brand
+			//$attr = $this->parametersV[0];
+			$condition = $this->parametersV[1];	//>,<,=,<>				
+			$condValue = $this->parametersV[2];			
+			if ( in_array($condition, $this->arrConditions) )				
+				switch ($condition) {
+					case '>':
+						if( $attr > $condValue ) 
+							$product->attributes['valid'] = false;	
+						break;
+					case '<':
+						if( $attr < $condValue ) 
+							$product->attributes['valid'] = false;	
+						break;
+					case '=':
+						if( $attr == $condValue ) 
+							$product->attributes['valid'] = false;	
+						break;
+					case '!=':
+						if( $attr != $condValue ) 
+							$product->attributes['valid'] = false;	
+						break;
+					case '<=':
+						if( $attr <= $condValue ) 
+							$product->attributes['valid'] = false;	
+						break;
+					case '>=':
+						if( $attr >= $condValue ) 
+							$product->attributes['valid'] = false;	
+						break;
+					default:
+						//$product->attributes['valid'] = false;
+						break;
+				}		
+		}
+			
+	}	
+
+}
+
+//Escape quotes in csv/txt files
+class PFeedRuleCSVStandard extends PFeedRule {
+	
+	public function process($product) {
+
+		//$this->resolveVirtualParameters();
+
+		if (!isset($product->attributes[$this->parameters[0]]))
+			return;
+		
+		if ( !isset($this->parameters[1]) ) 
+			$attribute_max_length = 10000;
+		else
+			$attribute_max_length = $this->parameters[1];
+		
+		$attrValue = ( strlen($product->attributes[$this->parameters[0]]) > $attribute_max_length ) ? substr( $product->attributes[$this->parameters[0]],0,$attribute_max_length ) : $product->attributes[$this->parameters[0]];
+		$attrValue = str_replace('"','""',$attrValue);	
+		$attrValue = trim($attrValue);	
+		$product->attributes[$this->parameters[0]] = $attrValue;			
+
+	}
 }
 
 ?>

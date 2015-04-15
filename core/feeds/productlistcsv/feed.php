@@ -17,6 +17,7 @@ class PProductlistcsvFeed extends PCSVFeedEx {
 
 	function __construct () {
 		parent::__construct();
+		global $pfcore;
 		$this->providerName = 'Productlistcsv';
 		$this->providerNameL = 'productlistcsv';
 		$this->fieldDelimiter = ',';
@@ -24,12 +25,20 @@ class PProductlistcsvFeed extends PCSVFeedEx {
 		$this->stripHTML = true;
 
 		$this->addAttributeMapping('description', 'description', true);
+		$this->addAttributeMapping('title', 'title', true);
+		$this->addAttributeMapping('local_category', 'local_category', true);
+
+		if ($pfcore->callSuffix == 'W')
+			$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree
+		//$this->addRule( 'description', 'description',array('strict') ); 
+
+		//$this->addRule('price_rounding','pricerounding'); //2 decimals
+		$this->addRule( 'csv_standard', 'CSVStandard',array('title') ); 
+		$this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 
 	}
   
 	function formatProduct($product) {
-
-		$product->attributes['description'] = str_replace('"','""',$product->attributes['description']);
-
+	
 		//********************************************************************
 		//Make sure all the fields for this product are mapped
 		//********************************************************************
@@ -37,7 +46,7 @@ class PProductlistcsvFeed extends PCSVFeedEx {
 			foreach($product->attributes as $key => $value)
 				if ($this->getMappingByMapto($key) == null)
 					if ($key != 'category_ids')
-						$this->addAttributeMapping($key, $key);
+						$this->addAttributeMapping($key, $key, true);
 
 		return parent::formatProduct($product);
 

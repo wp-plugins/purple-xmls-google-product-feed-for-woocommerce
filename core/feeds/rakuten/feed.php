@@ -22,17 +22,16 @@ class PRakutenFeed extends PCSVFeedEx {
 		$this->fields = array();
 		//$this->fields = array('Seller-id', 'gtin', 'mfg-name', 'mfg-part-number', 'Seller-sku', 'title', 'description', 'main-image', 'additional-images', 'weight', 'category-id', 'product-set-id', 'listing-price');
 
-		//$this->addAttributeMapping('ListingId', 'ListingId'); //assigned by Rakuten.com Shopping
-
+		$this->addAttributeMapping('ListingId', 'ListingId'); //assigned by Rakuten.com Shopping
 		$this->addAttributeMapping('', 'ProductId',true,true); 
-		$this->addAttributeMapping('', 'ProductIdType',true,true);
-		$this->addAttributeMapping('ItemCondition', 'ItemCondition',true,true);
-		$this->addAttributeMapping('Price', 'Price',true,true); //Seller-sku must be unique in the feed
-		$this->addAttributeMapping('MAP', 'MAP');
-		$this->addAttributeMapping('MAPType', 'MAPType');
-		$this->addAttributeMapping('Quantity', 'Quantity',true,true);
+		$this->addAttributeMapping('ProductIdType', 'ProductIdType',true,true); //0,1,2,3
+		$this->addAttributeMapping('condition', 'ItemCondition',true,true);
+		$this->addAttributeMapping('price', 'Price',true,true); //Seller-sku must be unique in the feed
+		$this->addAttributeMapping('', 'MAP');
+		$this->addAttributeMapping('', 'MAPType');
+		$this->addAttributeMapping('stock_quantity', 'Quantity',true,true);
 		$this->addAttributeMapping('OfferExpeditedShipping', 'OfferExpeditedShipping',true,true);
-		$this->addAttributeMapping('Description', 'Description', true);
+		$this->addAttributeMapping('description_short', 'Description', true); //describes the CONDITION of the item
 		$this->addAttributeMapping('', 'ShippingRateStandard');
 		$this->addAttributeMapping('', 'ShippingRateExpedited');
 		$this->addAttributeMapping('', 'ShippingLeadTime');
@@ -43,6 +42,11 @@ class PRakutenFeed extends PCSVFeedEx {
 		$this->addAttributeMapping('', 'OfferLocalDeliveryShippingRates');
 		$this->addAttributeMapping('sku', 'ReferenceId',true,true); //unique product id assigned to the product by you
 
+		$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
+		$this->addRule('price_rounding','pricerounding'); //2 decimals
+		$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree
+		//escape any quotes
+		$this->addRule( 'csv_standard', 'CSVStandard',array('description_short','250') );
 	}
 	
 	function getFeedHeader($file_name, $file_path) 
@@ -64,59 +68,34 @@ class PRakutenFeed extends PCSVFeedEx {
 	    return substr($output, 0, -1) .  "\r\n";
 	}
 
-	function getFeedFooter() {
+	function getFeedFooter($file_name, $file_path) {
 		//Override parent and do nothing
 	}
 
 	function formatProduct($product) {
 
-		// if (!isset($this->seller_id) && !isset($product->attributes['seller-id'])) {
-		// 	$this->addErrorMessage(1000, 'Seller ID not configured. Need advanced command: $seller-id = ....');
-		// 	$this->addErrorMessage(1001, '*Note: Seller ID is the number in the upper right hand corner of your Rakuten Merchant Tools Page.');
-		// 	$this->productCount--; //Make sure the parent class knows we failed to make a product
-		// 	return '';
-		// }
-
 		//cheat: Remap these
-		//$product->attributes['ProductId'] = 'a';
+		if ( $product->attributes['condition'] == 'New' )
+			$product->attributes['condition'] = '1';
 
-		$product->attributes['Description'] = (strlen($product->attributes['description']) > 250) ? substr($product->attributes['description'],0,250) : $product->attributes['description'];
-
-		$product->attributes['ItemCondition'] = '1';
-
-		if (strlen($product->attributes['regular_price']) == 0)
-			$rakuten_price = '0.00';
-		if ($product->attributes['has_sale_price'])
-			$rakuten_price = $product->attributes['sale_price'];
-		else
-			$rakuten_price = $product->attributes['regular_price'];
-		$product->attributes['Price'] = $rakuten_price;
-
-		if ( $product->attributes['stock_status'] == 1 ) {
-			if ( !empty($product->attributes['stock_quantity']) )
-				$product->attributes['Quantity'] = $product->attributes['stock_quantity'];
-			//else
-				//$product->attributes['Quantity'] = $product->attributes['Quantity'];
+		//$product->attributes['OfferExpeditedShipping'] = 1;
+		//result code notificaitons		
+		$error_count = 0; 
+		foreach($this->attributeMappings as $thisAttributeMapping) 
+		{
+			if ( $thisAttributeMapping->isRequired && 
+				($thisAttributeMapping->mapTo == 'ProductId' || 
+				$thisAttributeMapping->mapTo == 'ProductIdType' || 
+				$thisAttributeMapping->mapTo == 'OfferExpeditedShipping') ) 
+			{		
+				if ( !isset($product->attributes[$thisAttributeMapping->attributeName]) || strlen($product->attributes[$thisAttributeMapping->attributeName]) == 0 )
+				{
+					$this->addErrorMessage(1400 . $error_count, 'Missing required: ' . $thisAttributeMapping->mapTo);			
+					$error_count++;
+				}				
 			}
-		else {
-		$product->attributes['Quantity'] = '0';
 		}
-
-		$product->attributes['OfferExpeditedShipping'] = 1;
-
-		//Prepare input (New Rakuten SKU Feed)
-		// if (isset($this->seller_id))
-		// 	$product->attributes['seller-id'] = $this->seller_id;
-		// 		$product->attributes['gtin'] = $product->attributes['sku'];
-		// while (strlen($product->attributes['gtin']) < 12)
-		// 	$product->attributes['gtin'] = '0' . $product->attributes['gtin'];
-		// if ( $this->allow_additional_images && (count($product->imgurls) > 0) )
-		// 	$product->attributes['additional_images'] = implode('|', $product->imgurls);
-		// $product->attributes['category_id'] = explode("\t", $this->current_category)[0];
-		// if (isset($product->item_group_id))
-		// 	$product->attributes['product_set_id'] = $product->item_group_id;
-		// $product->attributes['listing_price'] = sprintf($this->currency_format, $product->attributes['regular_price']);
-		
+		if ( $error_count > 0 ) $this->productCount--;
 		return parent::formatProduct($product);
 	}
 

@@ -51,7 +51,6 @@ class FoundAttribute {
 		//From WordPress / WP-ECommerce
 		$this->attributes = array();
 		global $wpdb;
-		$attr_table = $wpdb->prefix . 'woocommerce_attribute_taxonomies';
 		$this->attrOptionsTableName = $wpdb->prefix . 'options';
 		$sql = "
 			SELECT terms.name as attribute_name 

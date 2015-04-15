@@ -20,6 +20,7 @@
 	$product_limit_low = safeGetPostData('product_limit_low');
 	$product_limit_high = safeGetPostData('product_limit_high');
 	$specifier = safeGetPostData('specifier');
+	$specified = safeGetPostData('specified');
 
 	$error = 0;
 	if (strlen($token) == 0)
@@ -40,7 +41,7 @@
 		$specifierArray = explode(',', $specifier);
 		foreach($specifierArray as &$item)
 			$item = (int) $item;
-		$specifier = implode(',', $specifier);
+		$specifier = implode(',', $specifierArray);
 	}
 
 	//Parse the request
@@ -94,6 +95,9 @@
 			//Do nothing
 			$query = '';
 			break;
+		case 'specified':
+			$query = $specified;
+			break;
 		default:
 			if ($error == 0)
 				$error = 3;
@@ -141,14 +145,18 @@
 			$this_result->regular_price = $product->regular_price;
 			$this_result->sale_price = $product->sale_price;
 			$this_result->sku = $product->sku;
-			$this_result->weight = $product->get_weight();
+			
+			$thisResultWeight = $product->get_weight();
+			if ( $thisResultWeight != '')
+				$this_result->weight = $thisResultWeight;
+			
 			$this_result->valid = true;
 			//Stock
 			$this_result->stock_status = $product->is_in_stock();
 			$this_result->stock_quantity = $product->get_stock_quantity();
 			//Checks
-			if (strlen($this_result->post_content) > 2048) 
-				$this_result->post_content = substr($this_result->post_content, 0, 2048);
+			if (strlen($this_result->post_content) > 4096) 
+				$this_result->post_content = substr($this_result->post_content, 0, 4096);
 			if (strlen($this_result->description_short) > 2048) 
 				$this_result->description_short = substr($this_result->description_short, 0, 2048);
 
@@ -230,7 +238,11 @@
 		$this_result->regular_price = $product->regular_price;
 		$this_result->sale_price = $product->sale_price;
 		$this_result->sku = $product->sku;
-		$this_result->weight = $product->get_weight();
+		
+		$thisResultWeight = get_weight();
+		if ( $thisResultWeight != '')
+			$this_result->weight = $thisResultWeight;
+
 		$this_result->valid = true;
 		//Stock
 		$this_result->stock_status = $product->is_in_stock();

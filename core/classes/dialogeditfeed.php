@@ -21,7 +21,8 @@ class PEditFeedDialog {
 
 		//Figure out the dialog for the provider
 		$dialog_file = dirname(__FILE__) . '/../feeds/' . strtolower($feed->provider) . '/dialognew.php';
-		require_once $dialog_file;
+		if (file_exists($dialog_file))
+			require_once $dialog_file;
 
 		//Instantiate the dialog
 		$provider = $feed->provider . 'Dlg';

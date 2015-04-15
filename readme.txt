@@ -28,7 +28,10 @@ The created feeds are available for export (timed and on demand) for these merch
 * Beslist
 * Bing!
 * eBay Merchant
+* Facebook Dynamic Ads
 * GoDataFeed
+* GraziaShop
+* Houzz
 * Kelkoo
 * Newegg
 * NextTag
@@ -36,7 +39,6 @@ The created feeds are available for export (timed and on demand) for these merch
 * Rakuten
 * Shopping.com
 * ShopZilla
-* Houzz
 * Shareasale
 * Webgains
 * XML & CSV & TXT & Excel Export
@@ -121,6 +123,17 @@ This will not redirect to the feed URL you just created - ready for submission!
 5. Manage existing feeds that you have created
 
 == Changelog ==
+<h4>Version 3.1.1.10 2015-04-14</h4>
+<ul>
+	<li><strong>Add</strong> Added support for Amazon UK categories</li>
+  <li><strong>Add</strong> Added Amazon price inventory & listing loader templates</li>
+	<li><strong>Add</strong> Added Facebook Dynamic Ad Feeds</li>
+	<li><strong>Add</strong> Added support for GraziaShop</li>
+	<li><strong>Fix</strong> Feeds generate lighter and faster!</li>
+  <li><strong>Fix</strong> Attribute changes: less confusing mapping options</li>
+  <li><strong>New</strong> More filtering rules and ability to remove empty attributes</li>
+  <li><strong>New</strong> Rule to create your own Google custom labels based on attribute values</li>
+</ul>
 <h4>Version 3.1.0.10 2015-01-26</h4>
 <ul>
   <li><strong>Add</strong> Added support for Newegg, Kelkoo, Webgains</li>
@@ -134,7 +147,6 @@ This will not redirect to the feed URL you just created - ready for submission!
   <li><strong>New</strong> Extract shipping dimensions (length, width, height)</li>
   <li><strong>New</strong> Create .txt (in addition to .csv, .xml) files</li>
   <li><strong>New</strong> Ability to aggregate feeds (you can now join feeds together)</li>
-
 </ul>
 <h4>Version 3.0.6.10 2014-10-21</h4>
 <ul>

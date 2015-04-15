@@ -35,6 +35,7 @@
 
 			//Transform item from chicken-scratch into something the system can recognize later
 			$option = str_replace(" & ", ".and.", str_replace(" / ", ".in.", trim($this_item)));
+			$option = str_replace("'", '', $option);
 
 			//Transform a category from chicken-scratch into something the user can read
 			$text = htmlentities(trim($this_item));

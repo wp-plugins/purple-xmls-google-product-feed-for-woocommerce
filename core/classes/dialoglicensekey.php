@@ -41,34 +41,23 @@ class PLicenseKeyDialog {
 	}
 
 	public static function small_registration_dialog($current_licensekey = '', $key_name = 'cp_licensekey') {
+
 		global $pfcore;
+
+		//Only load absolute position in WordPress
+		if ($pfcore->cmsName == 'WordPress')
+			$style = 'style="position:absolute; left:300px; top:59px"';
+		else
+			$style = '';
+
 		$result =
 	  	'
-		    <div style="position:absolute; left:300px; top:59px">
+		    <div ' . $style . '>
 		     <label for="edtLicenseKey">License:</label>
 		      <input style="width:300px" type="text" name="license_key" id="edtLicenseKey" value="' . $current_licensekey . '" placeholder="Enter full license key"/>
 		      <input class="button-primary" type="submit" value="Save Key" id="submit" name="submit" onclick="submitLicenseKey(\'' . $key_name . '\')">
 		    </div>
 		    ';
-		$result_old =
-		' <table class="form-table" id="tblLicenseKey">
-		    <tbody>
-			<tr>
-				<td style="width:400px;">
-				  &nbsp;
-				</td>
-				<td style="width:300px;">
-				  <label>License:</label>
-				</td>
-				<td>
-				  <input name="license_key"  id="edtLicenseKey" class="text_large" value="' . $current_licensekey . '"/>
-				</td>
-				<td>
-				  <input class="button-primary" type="submit" value="Save Key" id="submit" name="submit" onclick="submitLicenseKey(\'' . $key_name . '\')">
-				</td>
-			</tr>
-			</tbody>
-			</table>';
 
 		return $result;
 	}

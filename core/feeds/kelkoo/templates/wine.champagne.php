@@ -5,8 +5,8 @@
 	//2015-01 Calv
 	//********************************************************************
 
-	$this->addAttributeMapping('wine-country', 'wine-country', true, false); //origin of wine
-	$this->addAttributeMapping('wine-year', 'wine-year', true, false); //year of production
-	$this->addAttributeMapping('wine-capacity', 'wine-capacity', true, false);
+	$this->addAttributeMapping('', 'wine-country', true, false); //origin of wine
+	$this->addAttributeMapping('', 'wine-year', true, false); //year of production
+	$this->addAttributeMapping('', 'wine-capacity', true, false);
 	//$this->addAttributeMapping('', '', true, false);
 ?>

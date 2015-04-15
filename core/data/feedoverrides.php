@@ -87,7 +87,7 @@ class PFeedOverride extends PBaseFeedOverride {
 					$usesCData = false;
 					if (isset($params[4]) && (strtolower($params[4]) == 'true'))
 						$usesCData = true;
-					$recent_attribute = $parent->addAttributeMapping($params[1], $params[3], $usesCData);
+					$recent_attribute = $parent->addAttributeMapping($params[1], $params[3], $usesCData, false, true);
 					break;
 				case 'rule': case 'addrule':
 					//Rule name after last ")"
@@ -114,7 +114,7 @@ class PFeedOverride extends PBaseFeedOverride {
 					break;
 				case 'set':
 					//Eg: set forceCData to off
-					if (count($params) > 2) {
+					if (count($params) > 3) {
 						if (strtolower($params[3]) == 'false') $params[3] = false;
 						if (strtolower($params[3]) == 'true') $params[3] = true;
 						if (strtolower($params[3]) == 'no') $params[3] = false;
@@ -233,6 +233,7 @@ class PFeedOverride extends PBaseFeedOverride {
 			$parent->max_custom_field = 0; //no custom fields
 			$parent->allowRelatedData = false; //hunt for brand/tag/other
 			$parent->allow_attributes = false; //disables even woo attributes
+			$parent->allow_attribute_details = false; //disable old style attribute detection
 		}
 
 		if ($this_option == '$descriptions') {
@@ -297,6 +298,13 @@ class PFeedOverride extends PBaseFeedOverride {
 		if ($this_option == '$retailer_name')
 			$parent->retailer_name = $value;
 
+		//NewEgg shipping: default or free
+		if ($this_option == '$newegg_shipping')
+			$parent->newegg_shipping = $value;
+
+		//amazon price inventory
+		if ($this_option == '$leadtime_to_ship')
+			$parent->leadtime_to_ship = $value;
 	}
 
 	function interpretOverride($this_option) {

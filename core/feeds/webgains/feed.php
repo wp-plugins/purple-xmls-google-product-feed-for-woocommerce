@@ -24,14 +24,14 @@ class PWebgainsFeed extends PCSVFeedEx {
 		//Mandatory Fields
 		$this->addAttributeMapping('title', 'Name',true,true); //name of the product
 		$this->addAttributeMapping('link', 'Deeplink',true,true); //URL where the product is located on your website
-		$this->addAttributeMapping('Category', 'Category',true,true); 
-			$this->addAttributeDefault('Category', 'none','PCategoryTree'); //store's local category
-		$this->addAttributeMapping('Price', 'Price',true,true);
-		$this->addAttributeMapping('id', 'ProductID',true,true); //unique SKU or woo id..
+		$this->addAttributeMapping('local_category', 'Category',true,true); 
+			$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category
+		$this->addAttributeMapping('price', 'Price',true,true);
+		$this->addAttributeMapping('sku', 'ProductID',true,true); //unique SKU or woo id..
 		$this->addAttributeMapping('description', 'Description', true,true);
 		$this->addAttributeMapping('feature_imgurl', 'Image_URL',true,true);
-		$this->addAttributeMapping('Delivery_time', 'Delivery_time',true,true);
-		$this->addAttributeMapping('Delivery_Cost', 'Delivery_Cost',true,true); 
+		$this->addAttributeMapping('Delivery_time', 'Delivery_time',true,true); //default
+		$this->addAttributeMapping('Delivery_cost', 'Delivery_cost',true,true); //default
 
 		//Non-mandatory fields
 		$this->addAttributeMapping('', 'Extra_price_field'); 
@@ -41,34 +41,42 @@ class PWebgainsFeed extends PCSVFeedEx {
 		$this->addAttributeMapping('', 'Related_products_IDs');
 		$this->addAttributeMapping('', 'Promotions');
 		$this->addAttributeMapping('stock_status', 'Availability'); 
-		$this->addAttributeMapping('', 'Best_sellers');
+		$this->addAttributeMapping('', 'Best_sellers'); //integer
+
+		$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
+		$this->addRule('price_rounding','pricerounding'); //2 decimals
+		//Description and title: escape any quotes
+		$this->addRule( 'csv_standard', 'CSVStandard',array('title') ); 
+		$this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 
 	
 	}
 
     function formatProduct($product) {
 
 		//cheat: Remap these
-		if (strlen($product->attributes['regular_price']) == 0)
-		$product->attributes['regular_price'] = '0.00';
-		$product->attributes['Price'] = $product->attributes['regular_price'];
-		if ($product->attributes['has_sale_price'])
-			$product->attributes['Price'] = $product->attributes['sale_price'];
-		
-			
-  		$productDescription = str_replace('"','""',$product->attributes['description']);		
-		$product->attributes['description'] = trim($productDescription);	
-		$product->attributes['Image_URL'] = $product->attributes['feature_imgurl'];
-
-		$product->attributes['Brand'] = $product->attributes['brand'];
-		
-		if ($product->attributes['stock_status'] == 1)
+  		if ($product->attributes['stock_status'] == 1)
 			$product->attributes['stock_status'] = 'in stock';
 		else
-			$product->attributes['stock_status'] = '0';
+			$product->attributes['stock_status'] = '0';		
+
 	
-
+		//Cycle through required attributes. If missing, show error
+		//$error_count = 0; //<-- No need... $this->addErrorMessage() already counts the error messages of matching IDs
+		foreach($this->attributeMappings as $thisAttributeMapping) 
+		{
+			if ( $thisAttributeMapping->isRequired && ($thisAttributeMapping->mapTo == 'Delivery_time' || $thisAttributeMapping->mapTo == 'Delivery_cost') ) 
+			{				
+				if ( !isset($product->attributes[$thisAttributeMapping->attributeName]) || strlen($product->attributes[$thisAttributeMapping->attributeName]) == 0 )
+				{
+					$this->addErrorMessage(12000, 'Missing required: ' . $thisAttributeMapping->mapTo);			
+					$this->productCount--; //break;
+				}
+				//$error_count++;
+			}
+		}
+		
 		return parent::formatProduct($product);
-
+	
   }
 
 }

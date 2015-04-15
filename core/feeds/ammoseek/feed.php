@@ -115,7 +115,7 @@ class PAmmoSeekFeed extends PBasicFeed{
 
 	}
 
-	function getFeedFooter() {   
+	function getFeedFooter($file_name, $file_path) {   
     $output = '
   </productlist>';
 		return $output;

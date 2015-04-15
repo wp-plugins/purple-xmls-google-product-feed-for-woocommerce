@@ -14,7 +14,7 @@ class ShareASaleDlg extends PBaseFeedDialog {
 	function __construct() {
 		parent::__construct();
 		$this->service_name = 'ShareASale';
-		$this->service_name_long = 'ShareASale Merchant Data Feed';
+		$this->service_name_long = 'ShareASale Data Feed';
 		$this->options = array(
 			"Commission","SubCategory", "SearchTerms","Custom 1", "Custom 2", "Custom 3", "Custom 4", "Custom 5",
 			"Manufacturer","PartNumber","MerchantSubcategory","ISBN","UPC"

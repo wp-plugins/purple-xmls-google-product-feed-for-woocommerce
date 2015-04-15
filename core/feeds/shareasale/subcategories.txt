@@ -1,0 +1,216 @@
+Art / Media / Performance Subcategories
+1: Art
+2: Photography
+3: Posters / Prints
+4: Music
+5: Music Instruments
+
+Auto Subcategories
+6: Accessories
+7: Car Audio
+8: Cleaning / Care
+9: Motorcycles
+10: Misc.
+11: Repair
+12: Parts
+
+Books / Reading Subcategories
+13: Art
+14: Careers
+15: Business
+16: Childrens
+17: Computers
+18: Crafts
+19: Education
+20: Engineering
+21: Gifts
+22: Health
+23: History
+24: Fiction
+25: Law
+26: Magazines
+27: Financial
+28: Medical
+29: Office
+30: Real Estate
+31: Misc.
+164: Religious
+173: Science
+
+Business / Services Subcategories
+32: Advertising
+33: Motivational
+34: Coupons / Freebies
+35: Financial
+36: Loans
+37: Office
+38: Careers
+39: Mis.
+179: Education
+
+Computer Subcategories
+40: Hardware
+41: Software
+42: Instruction
+43: Handheld / Wireless
+162: Web Hosting
+
+Electronics Subcategories
+44: Audio
+45: Video
+46: Camera
+47: Wireless
+
+Entertainment Subcategories
+48: Audio
+49: Video
+50: DVD
+51: Laser Disc
+52: Sheet Music
+53: Crafts / Hobbies
+
+Fashion Subcategories
+54: Boys
+55: Clearance
+56: Vintage
+57: Girls
+58: Mens
+59: Womens
+60: Maternity
+61: Footware
+62: Accessories
+63: Baby / Infant
+64: Jewelry
+65: Lingerie
+66: Plus-Size
+67: Athletic
+161: T-Shirts
+166: Big And Tall
+168: Petite
+169: Unisex
+172: Costumes
+
+Food / Beverage Subcategories
+68: Baked Goods
+69: Beverages
+70: Chocolate
+71: Cheese / Condiments
+72: Coupons
+73: Diet
+74: Ethnic
+75: Gifts / Gift Baskets
+76: Nuts
+77: Cookies / Desserts
+78: Organic
+163: Tobacco
+176: Gourmet
+177: Meals / Complete Dishes
+180: Appetizers
+181: Soups
+
+Gifts / Specialty Subcategories
+79: Anniversary
+80: Birthday
+81: Misc. Holiday
+82: Collectibles
+83: Coupons
+84: Executive Gifts
+85: Flowers
+86: Baskets
+87: Greeting Card
+88: Baby / Infant
+89: Party
+90: Religious
+91: Sympathy
+92: Valentine's Day
+93: Wedding
+170: Personalized
+
+Home / Family Subcategories
+94: Bed/Bath
+95: Garden
+96: Cleaning / Care
+97: Furniture
+98: Home D�cor
+99: Home Improvement
+100: Kitchen
+101: Pets
+
+Metaphysical Subcategories
+160: Metaphysical
+
+Parts / Equipment Subcategories
+167: HVAC (Heating and Air Conditioning)
+171: Medical
+182: Military
+
+Personal Care Subcategories
+102: Cosmetics
+103: Exercise / Wellness
+104: Safety
+183: Medical
+
+Sports / Outdoors Subcategories
+105: Accessories
+106: Auto
+107: Outdoors / Camping
+108: Parlor / Backyard Games
+109: Baseball / Softball
+110: Cricket
+111: Billiards
+112: Boating
+113: Body Building / Fitness
+114: Bowling
+115: Boxing
+116: Canoeing
+117: Climbing / Mountaineering
+118: Cycling
+119: Diving
+120: Field Hockey
+121: Skating
+122: Fishing
+123: Football
+124: Frisbee
+125: Golf
+126: Gymnastics
+127: Hockey
+128: Horses
+129: Hunting
+130: In-line Skating
+131: Kayaking
+132: Lacrosse
+133: Martial Arts
+134: Racquetball
+135: Running
+136: Skateboards
+137: Ski/Snowboard
+138: Soccer
+139: Surfing
+140: Tennis
+141: Teamware / Logo
+142: Volleyball
+143: Wrestling
+165: Birding
+174: Prospecting / Treasure Hunting
+175: Swimming
+178: Basketball
+
+Toys / Games Subcategories
+144: Action
+145: Animals
+146: Baby / Infant
+147: Board Games
+148: Card / Casino
+149: Electronic
+150: Educational
+151: Magic
+152: Misc.
+153: Musical
+154: Outdoor
+155: Video
+
+Travel Subcategories
+156: Coupons
+157: Maps
+158: References / Guides
+159: Vacation Travel

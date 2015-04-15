@@ -21,23 +21,26 @@ class PProviderList {
 
 		$this->addProvider('Google', 'Google Merchant Feed');
 		$this->addProvider('Amazon', 'Amazon Product Ads Feed', 'txt');
-		$np = $this->addProvider('AmazonSC', 'Amazon Seller Central', 'csv'); $np->prettyName = 'Amazon Seller';
-		$this->addProvider('eBay', 'eBay Feed');
+		$np = $this->addProvider('AmazonPAUK', 'Amazon Product Ads Feed (UK)');
+		$np = $this->addProvider('AmazonSC', 'Amazon Seller Central', 'txt'); $np->prettyName = 'Amazon Seller';
 		$this->addProvider('eBaySeller', 'eBay Seller');
 		$this->addProvider('', '------'); //A gap for dialogfeedpage
 		$this->addProvider('AmmoSeek', 'AmmoSeek');
 		$this->addProvider('Beslist', 'Beslist Feed');
 		$this->addProvider('Bing', 'Bing Feed', 'csv');
-		$this->addProvider('GoDataFeed', 'GoDataFeed');
-		$this->addProvider('kelkoo', 'Kelkoo');
-		$this->addProvider('Newegg', 'Newegg');
+		$this->addProvider('eBay', 'eBayCommerceNetwork');
+		$this->addProvider('FacebookXML', 'FacebookXML');
+		$this->addProvider('GoDataFeed', 'GoDataFeedXML');
+		$this->addProvider('GoDataFeedCSV', 'GoDataFeedCSV');
+		$this->addProvider('GraziaShop', 'GraziaShop','csv');
+		$this->addProvider('Houzz', 'Houzz','csv');
+		$this->addProvider('Kelkoo', 'Kelkoo');
+		$this->addProvider('Newegg', 'Newegg','csv');
 		$this->addProvider('Nextag', 'Nextag Feed', 'csv');
 		$this->addProvider('PriceGrabber', 'PriceGrabber', 'csv');
-		$this->addProvider('Rakuten', 'Rakuten Feed', 'txt');
+		$this->addProvider('Rakuten', 'Rakuten Inventory Feed', 'txt');
 		$this->addProvider('RakutenNewSku', 'Rakuten New SKU Feed', 'txt');
-		if ($pfcore->callSuffix == 'JS')
-			$this->addProvider('Sears', 'Sears Commerce Services', 'xls');
-		$this->addProvider('ShareASale', 'ShareASale Merchant Data Feed', 'csv');
+		$this->addProvider('ShareASale', 'ShareASale Data Feed', 'csv');
 		$this->addProvider('Shopzilla', 'Shopzilla Feed', 'csv');
 		$this->addProvider('Webgains', 'Webgains Feed', 'csv');
 
@@ -57,10 +60,14 @@ class PProviderList {
 		//***************************************************
 		$np = $this->addProvider('AggXml', 'XML Aggregate Feed', 'xml');
 		$np->prettyName = 'XML Aggregate';
+		$np = $this->addProvider('AggCsv', 'CSV Aggregate Feed', 'xml');
+		$np->prettyName = 'CSV Aggregate';
+
+		$pfcore->triggerFilter('cpf_init_provider', $this);
 
 	}
 
-	private function addProvider($name, $description, $fileformat = 'xml') {
+	public function addProvider($name, $description, $fileformat = 'xml') {
 		$np = new stdClass();
 		$np->name = $name;
 		$np->prettyName = $name; //Used by ManageFeeds Page

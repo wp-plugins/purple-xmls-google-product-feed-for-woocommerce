@@ -23,15 +23,15 @@ class PeBayFeed extends PBasicFeed {
 		$this->addAttributeMapping('title', 'Product_Name', true,true);
 		$this->addAttributeMapping('link', 'Product_URL', true,true);
 		$this->addAttributeMapping('feature_imgurl', 'Image_URL', true,true);
-		$this->addAttributeMapping('current_price', 'Current_Price', true,true);
+		$this->addAttributeMapping('price', 'Current_Price', true,true);
 		$this->addAttributeMapping('stock_status', 'Stock_Availability', true,true);
 		$this->addAttributeMapping('condition', 'Condition', true,true);
 		//MPN or ISBN (media only)
-		$this->addAttributeMapping('mpn', 'MPN', true); //can be blank
-		$this->addAttributeMapping('isbn', 'ISBN', true); //can be blank
+		$this->addAttributeMapping('', 'MPN', true); //can be blank
+		$this->addAttributeMapping('', 'ISBN', true); //can be blank
 		//UPC or EAN (media only)
-		$this->addAttributeMapping('upc', 'UPC', true); //can be blank
-		$this->addAttributeMapping('eab', 'EAN', true); //can be blank
+		$this->addAttributeMapping('', 'UPC', true); //can be blank
+		$this->addAttributeMapping('', 'EAN', true); //can be blank
 
 		//Recommended Attributes
 		$this->addAttributeMapping('description', 'Product_Description', true);
@@ -44,7 +44,7 @@ class PeBayFeed extends PBasicFeed {
 		$this->addAttributeMapping('', 'Coupon_Code_Description', true);
 		$this->addAttributeMapping('gender', 'Gender', true);
 		$this->addAttributeMapping('color', 'Color', true);
-		$this->addAttributeMapping('material', 'Material', true);
+		$this->addAttributeMapping('', 'Material', true);
 		$this->addAttributeMapping('size', 'Size', true);
 		$this->addAttributeMapping('', 'Size_Unit_Of_Measure', true);
 		$this->addAttributeMapping('', 'Age_Range', true);		
@@ -61,12 +61,13 @@ class PeBayFeed extends PBasicFeed {
 		// $this->addAttributeMapping('product_weight', 'Product_Weight', true);
 		// $this->addAttributeMapping('shipping_weight', 'Shipping_Weight', true);
 		// $this->addAttributeMapping('weight_unit_of_measure', 'Weight_Unit_of_Measure', true);
-		
+	$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
+	$this->addRule('csv_standard', 'CSVStandard',array('title')); 
+	$this->addRule('csv_standard', 'CSVStandard',array('description')); 
+
 	}
 
   function formatProduct($product) {
-
-	$product->attributes['description'] = str_replace('"','""',$product->attributes['description']);
 
 	$category = explode(":", $product->attributes['current_category']);
 	if (isset($category[1]))
@@ -133,7 +134,7 @@ class PeBayFeed extends PBasicFeed {
     return $output;
   }
 
-	function getFeedFooter() {
+	function getFeedFooter($file_name, $file_path) {
     $output = '
   </Products>';
 		return $output;

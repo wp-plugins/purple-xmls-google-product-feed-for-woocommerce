@@ -11,7 +11,7 @@
 
 require_once dirname(__FILE__) . '/../basicfeed.php';
 
-class PkelkooFeed extends PBasicFeed {
+class PKelkooFeed extends PBasicFeed {
 
 	public $templateLoaded = false;
 
@@ -20,12 +20,14 @@ class PkelkooFeed extends PBasicFeed {
 		$this->forceCData = true;
 		$this->providerName = 'Kelkoo';
 		$this->providerNameL = 'kelkoo';
+
+		$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
 	}
   	
   	function loadTemplate($template) {
 
-		//$this->kelkoo_category = $template;
-		include_once dirname(__FILE__) . '/templates/all.templates.php';
+		//need to use include rather than include_once
+		include dirname(__FILE__) . '/templates/all.templates.php';
 		
 		//Load the individual templates
 		$files = scandir(dirname(__FILE__) . '/templates');		
@@ -81,20 +83,66 @@ class PkelkooFeed extends PBasicFeed {
 		$this->loadTemplate($template);
 	}
 
+	//Not safe to assume continueFeed will exist next version.
+	//Note: continueFeed() cannot safely call initializeFeed() so I've replicated it for now -KH
+	protected function continueFeed($category, $file_name, $file_path, $remote_category) {
+		switch ($remote_category){
+			case 'Any/Other':
+				$template = '';
+				break;
+			case 'Books':
+				$template = 'books';
+				break;
+			case 'Video games and software':
+				$template = 'videogames.software';
+				break;
+			case 'Fashion and Fashion accessories':
+				$template = 'fashion.accessories';
+				break;
+			case 'Mobilephones with subscription and Prepaid cards':
+				$template = 'mobilephones';
+				break;	
+			case 'Movies':
+				$template = 'movies';
+				break;	
+			case 'Music':
+				$template = 'music';
+				break;	
+			case 'New and used cars':
+				$template = 'new.usedcars';
+				break;	
+			case 'Property':
+				$template = 'property';
+				break;	
+			case 'Wine and Champagne':
+				$template = 'wine.champagne';
+				break;	
+			case 'Tyres':
+				$template = 'tyres';
+				break;				
+			default:
+				$template = '';
+				break;
+		}
+		$this->loadTemplate($template);
+		parent::continueFeed($category, $file_name, $file_path, $remote_category);
+	}
+
 	function formatProduct($product) {
 
-		$product->attributes['image-url'] = $product->attributes['feature_imgurl'];
+		#$product->attributes['currency'] = $this->currency;
+
 		if ($product->attributes['stock_status'] == 1)
-			$product->attributes['availability'] = 'In Stock';
+			$product->attributes['stock_status'] = 'In Stock';
 		else
-			$product->attributes['availability'] = 'Out of Stock';
+			$product->attributes['stock_status'] = 'Out of Stock';
 
 		//Price
-		if (strlen($product->attributes['regular_price']) == 0)
-			$product->attributes['price'] = '0.00';
-		$product->attributes['price'] = $product->attributes['regular_price'];
-		if ($product->attributes['has_sale_price'])
-			$product->attributes['price'] = $product->attributes['sale_price'];
+		// if (strlen($product->attributes['regular_price']) == 0)
+		// 	$product->attributes['price'] = '0.00';
+		// $product->attributes['price'] = $product->attributes['regular_price'];
+		// if ($product->attributes['has_sale_price'])
+		// 	$product->attributes['price'] = $product->attributes['sale_price'];
 
 		//Images now soft-coded
 		foreach($product->imgurls as $image_count => $imgurl) {
@@ -135,7 +183,7 @@ class PkelkooFeed extends PBasicFeed {
     return $output;
   }
 
-  function getFeedFooter() {   
+  function getFeedFooter($file_name, $file_path) {   
     $output = '
  </items>';
 	return $output;

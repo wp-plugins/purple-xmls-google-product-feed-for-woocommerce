@@ -41,6 +41,34 @@ class PMasterAttributeList {
 
 }
 
+class PTaxonomyList {
+
+	public $children;
+
+	public function __construct() {
+		$this->children = array();
+	}
+
+	public function add($child) {
+		$this->children[] = $child;
+	}
+
+	public function findByName($name) {
+		foreach ($this->children as $child)
+			if ($child->name == $name)
+				return $child;
+		return null;
+	}
+
+	public function findBySlug($slug) {
+		foreach ($this->children as $child)
+			if ($child->slug == $slug)
+				return $child;
+		return null;
+	}
+
+}
+
 class PProductList {
 
 	public $AttributeCategory;
@@ -59,16 +87,30 @@ class PProductList {
 
 	}
 
-  /*function ExistsInChildList($needle, $haystack) {
-    $result = false;
-	foreach($haystack as $x) {
-	 	if ($x->ID == $needle->id) {
-	    	$result = true;
-			break;
-	  	}
+	public function applyWCAttributes($listitem) {
+		if (!isset($listitem->wc_attributes) || gettype($listitem->wc_attributes) != 'array' || count($listitem->wc_attributes) == 0)
+			return;
+		foreach ($listitem->wc_attributes as $index => $thisAttribute) {
+			$value = $thisAttribute['value'];
+			if ($thisAttribute['is_taxonomy'] == 1) {
+				$taxo = $listitem->taxonomies->findByName(substr($thisAttribute['name'], 3));
+				if ($taxo != null) {
+					$value = $taxo->value;
+					$listitem->attributes['_' . $thisAttribute['name']] = $taxo->slug;
+				}
+			}
+			//Insert directly
+			if (strlen($value) > 0)
+				$listitem->attributes[$thisAttribute['name']] = $value;
+			//Insert pa_xyz as xyz
+			$pos = strpos($thisAttribute['name'], 'pa_');
+			if ($pos !== false && $pos == 0) {
+				$name = substr($thisAttribute['name'], 3);
+				if (!isset($listitem->attributes[$name]) || strlen($listitem->attributes[$name]) == 0)
+					$listitem->attributes[$name] = $value;
+			}
+		}
 	}
-	return $result;
-  }*/
   
 	public function get_customfields($parent) {
 		if ($parent->max_custom_field == 0)
@@ -130,42 +172,45 @@ class PProductList {
 		//********************************************************************
 
 		if ($parent->has_product_range)
-			$limit = 'LIMIT ' . $parent->product_limit_low . ', ' . $parent->product_limit_high - $parent->product_limit_low;
+			$limit = 'LIMIT ' . $parent->product_limit_low . ', ' . ($parent->product_limit_high - $parent->product_limit_low);
 		else
 			$limit = '';
 
-		if ($parent->allow_attributes) {
-			$attribute_select = 'attributes.meta_value as attribute_list, attribute_details.attribute_details, ';
-			$attribute_sql_part = "
+		$attribute_select = '';
+		$attribute_sql_part = '';
+
+		if ($parent->allow_attribute_details) {
+			$attribute_select .= 'attributes.meta_value as attribute_list, ';
+			$attribute_sql_part .= "
 				#Attribute_list
 				LEFT JOIN
 					(
 						SELECT post_id, meta_value
 						FROM $wpdb->postmeta
 						WHERE $wpdb->postmeta.meta_key = '_product_attributes'
-					) as attributes ON attributes.post_id = $wpdb->posts.ID
+					) as attributes ON attributes.post_id = $wpdb->posts.ID";
+		}
 
+		if ($parent->allow_attributes) {
+			$attribute_select .= 'attribute_details.attribute_details, ';
+			$attribute_sql_part .= "
 				#Attributes in detail
 				LEFT JOIN
 					(
-						SELECT a.ID, GROUP_CONCAT(CONCAT(c.taxonomy, '=', d.name)) as attribute_details
+						SELECT a.ID, GROUP_CONCAT(CONCAT(c.taxonomy, '=', d.slug, '=', d.name)) as attribute_details
 						FROM $wpdb->posts a
 						LEFT JOIN $wpdb->term_relationships b ON (a.ID = b.object_id)
 						LEFT JOIN $wpdb->term_taxonomy c ON (b.term_taxonomy_id = c.term_taxonomy_id)
 						LEFT JOIN $wpdb->terms d ON (c.term_id = d.term_id)
-						WHERE c.taxonomy LIKE 'pa_%'
+						WHERE c.taxonomy LIKE 'pa\_%'
 						GROUP BY a.ID
 					) as attribute_details ON attribute_details.ID = $wpdb->posts.ID";
-		} else {
-			$attribute_select = '';
-			$attribute_sql_part = '';
 		}
 		
 		$sql = "
 				SELECT 
-				  $wpdb->posts.ID, $wpdb->posts.post_title, $wpdb->posts.post_content, $wpdb->posts.post_name, 
+				  $wpdb->posts.ID, $wpdb->posts.post_title, $wpdb->posts.post_content, $wpdb->posts.post_excerpt, $wpdb->posts.post_name, 
 					tblCategories.category_names, tblCategories.category_ids,
-					#$wpdb->term_taxonomy.taxonomy, $wpdb->terms.name as category_name, $wpdb->terms.term_id as category_id, 
 					details.name as product_type,
 					$attribute_select
 					variation_id_table.variation_ids as variation_ids 
@@ -273,6 +318,9 @@ class PProductList {
 
 		$master_product_list = array();
 
+		$this->woocommerce_manage_stock = get_option( 'woocommerce_manage_stock' );
+		$this->woocommerce_notify_no_stock_amount = get_option( 'woocommerce_notify_no_stock_amount' );
+
 		//********************************************************************
 		//Convert the WP_Product List into a Cart-Product Master List (ListItems)
 		//********************************************************************
@@ -290,6 +338,8 @@ class PProductList {
 					$skip = false;
 					break;
 				}
+			if ($parent->force_all_categories)
+				$skip = false;
 			if ($skip)
 				continue;
 			$category_names = explode(',', $prod->category_names);
@@ -308,7 +358,6 @@ class PProductList {
 
 			//Prepare the item
 			$item = new PAProductW(); //extends PAProduct (basicfeed.php)
-			$product = get_product($prod->ID); //WooCommerce - get product by id
 
 			//Basics
 			$item->id = $prod->ID;
@@ -317,8 +366,12 @@ class PProductList {
 			$item->taxonomy = $category_names;
 			$item->attributes['isVariable'] = $prod->product_type == 'variable';
 			$item->attributes['isVariation'] = false;
-			$item->description_short = substr(strip_shortcodes(strip_tags($product->post->post_excerpt)), 0, 1000);
-			$item->description_long = substr(strip_shortcodes(strip_tags($prod->post_content)), 0, 1000);
+			$item->description_short = substr(strip_shortcodes(strip_tags($prod->post_excerpt)), 0, 5000);
+			if ( isset($item->description_short) )
+				$item->attributes['description_short'] = $item->description_short;
+			$item->description_long = substr(strip_shortcodes(strip_tags($prod->post_content)), 0, 5000);
+			if ( isset($item->description_long) )
+				$item->attributes['description_long'] = $item->description_long;
 			$item->attributes['valid'] = true;
 
 			//Fetch any default attributes Stage 0 (Mapping 3.0)
@@ -330,6 +383,10 @@ class PProductList {
 			foreach($this->relatedData as $index => $relation)
 				$relation->check($index, $item);
 
+			$item->attributes['currency'] = $parent->currency;
+			$item->attributes['weight_unit'] = $parent->weight_unit;
+			$item->attributes['dimension_unit'] = $parent->dimension_unit;
+
 			$item->attributes['category'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
 			$item->attributes['product_type'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $remote_category));
 			$item->attributes['localCategory'] = str_replace(".and.", " & ", str_replace(".in.", " > ", $category_names[0]));
@@ -337,89 +394,88 @@ class PProductList {
 			$item->attributes['category_id'] = $category_ids[0];
 			$item->attributes['category_ids'] = $category_ids;
 			$item->attributes['link'] = get_permalink($prod->ID);
-			$thumb_ID = get_post_thumbnail_id($prod->ID);
-			$thumb = wp_get_attachment_image_src($thumb_ID, 'small-feature');
+			$item->attributes['thumb_ID'] = get_post_thumbnail_id($prod->ID);
+			$thumb = wp_get_attachment_image_src($item->attributes['thumb_ID'], 'small-feature');
 			$item->attributes['feature_imgurl'] = $thumb['0'];
-			$attachments = $product->get_gallery_attachment_ids();
-			$attachments = array_diff($attachments, array($thumb_ID));
-			if ($attachments) 
-			{
-				foreach ($attachments as $attachment) 
-				{
-					$thumb = (wp_get_attachment_image_src($attachment, 'small-feature'));
-					$imgurl = $thumb['0'];
-					if (strlen($imgurl) > 0)
-						$item->imgurls[] = $imgurl;
-				}
-			}
 
 			$item->attributes['condition'] = 'New';
-			$item->attributes['regular_price'] = $product->regular_price;
+			$item->attributes['regular_price'] = 0;
 			$item->attributes['has_sale_price'] = false;
-			if ( $product->sale_price != '' ) 
-			{
-				$item->attributes['has_sale_price'] = true;
-				$item->attributes['sale_price'] = $product->sale_price;
-			}
-			$item->attributes['sku'] = $product->sku;
-			$item->attributes['weight'] = $product->get_weight();
-			if ($parent->get_wc_shipping_attributes) {
-				//WooCommerce shipping weight and unit				
-				//WooCommerce shipping dimensions + unit
-				$item->attributes['length'] = $product->length;
-				$item->attributes['width'] = $product->width;
-				$item->attributes['height'] = $product->height; 
-			}
-			//$item->parent_manage_stock = $prod->parent_manage_stock;
-			$item->parent_manage_stock = true; //Temp... testing Calvin's new code
-			$item->attributes['stock_status'] = 1; //Assume in stock
-			$item->attributes['stock_quantity'] = 1;
-			//$item->stock_status_explicitly_set = false;
+			$item->attributes['stock_status'] = 1;
+			$item->attributes['stock_quantity'] = 0; //needs a non-zero-length -K
+			$item->attributes['weight'] = null; //should not be 0
 
-			if ( isset($product->vendor) )
-				$item->attributes['vendor'] = $product->vendor; //Suggested new attribute not found on local dev setup
-			if ( isset($product->model) )
-				$item->attributes['model'] = $product->model;
-			if ( isset($product->size) )
-				$item->attributes['size'] = $product->size;
-			$item->attributes['product_is_in_stock'] = $product->is_in_stock(); //already checks for global manage stock and product inventory stock_status
-			$item->attributes['product_stock_qty'] = $product->get_stock_quantity();
-			
-			//get attributes
-			//attempt using WC_Products and/or WC_Variable_Product			
-			//$koostis = array_shift( wc_get_product_terms( $prod->id, 'pa-screen-size', array( 'fields' => 'names' ) ) );
-			//$item->attributes['condition'] = $koostis[0];				
+			//API calls now optional... disabled by default
+			if ($parent->force_wc_api) {
+				$product = get_product($prod->ID); //WooCommerce - get product by id
+				$attachments = $product->get_gallery_attachment_ids();
+				$attachments = array_diff($attachments, array($thumb_ID));
+				if ($attachments) 
+				{
+					foreach ($attachments as $attachment) 
+					{
+						$thumb = (wp_get_attachment_image_src($attachment, 'small-feature'));
+						$imgurl = $thumb['0'];
+						if (strlen($imgurl) > 0)
+							$item->imgurls[] = $imgurl;
+					}
+				}
+				$this->loadProductFromWCAPI($parent, $item, $product); 
+			}
 
-			//Attributes (General)
-			if (!$parent->allow_attributes || strlen($prod->attribute_list) == 0)
+			//Attributes (General) (Deprecated)
+			if (!$parent->allow_attribute_details || strlen($prod->attribute_list) == 0)
 				$attributes = array();
 			else
 				$attributes = unserialize($prod->attribute_list);
-			foreach($attributes as $this_attribute)
+			foreach($attributes as $attindex => $this_attribute)
 			{
 				if ( isset($this_attribute['name']) && (strlen($this_attribute['name']) > 0) && (strpos($this_attribute['name'], 'pa_') === false) )
-				//error_log($this_attribute['name'] . ' > ' . $this_attribute['value'] . ' | ' . strpos($this_attribute['name'], 'pa_'));
 					$item->attributes[$this_attribute['name']] = $this_attribute['value'];
 			}
 
+			/*
 			//Attributes (Detailed)
 			//The attribute_details in the form:
-			//  pa_attribute=example,pa_attribute2=example2,pa_attribute3=example3
+			//  pa_attribute=slug=example,pa_attribute2=slug2=example2,pa_attribute3=slug3=example3
 			//convert to:
 			//  item->attributes[attribute]=example; item->attributes[attribute2]=example2; etc
 			if ($parent->allow_attributes)
 				$item->attribute_details = explode(',', $prod->attribute_details);
 			else
 				$item->attribute_details = array();
-			foreach($item->attribute_details as $this_attribute){
+
+			foreach($item->attribute_details as $this_attribute) {
 				$this_attribute = explode('=', $this_attribute);
-				if (count($this_attribute) > 1)
-					$item->attributes[substr($this_attribute[0], 3)] = $this_attribute[1];
+				if (count($this_attribute) > 1) {
+					$item->attributes[substr($this_attribute[0], 3)] = $this_attribute[2];
+					//if ($parent->create_attribute_slugs) 
+						$item->attributes['_' . $this_attribute[0]] = $this_attribute[1];
+				}
+			}*/
+
+			if ($parent->allow_attributes)
+				$item->attribute_details = explode(',', $prod->attribute_details);
+			else
+				$item->attribute_details = array();
+			$item->taxonomies = new PTaxonomyList();
+			foreach($item->attribute_details as $this_attribute) {
+				$this_attribute = explode('=', $this_attribute);
+				if (count($this_attribute) > 1) {
+					$taxonomy = new stdClass();
+					$taxonomy->name = substr($this_attribute[0], 3);
+					$taxonomy->slug = $this_attribute[1];
+					$taxonomy->value = $this_attribute[2];
+					$item->taxonomies->add($taxonomy);
+				}
 			}
+
+			$this->postmetaLookup($item, $parent);
 
 			$item->variation_ids = $prod->variation_ids;
 
 			//$item->fetch_meta_attributes(); //Old
+
 			foreach($this->custom_fields as $custom_field)
 				if ($custom_field->post_id == $item->id)
 					$item->attributes[$custom_field->meta_key] = $custom_field->meta_value;
@@ -435,20 +491,20 @@ class PProductList {
 					if ( (count($parent->gmc_attributes) == 0) || (in_array($key, $parent->gmc_attributes)) )
 						switch ($key) 
 						{
-							case "description": 
+							case 'description': 
 								if (strlen($item->description_short) == 0) $item->description_short = $this_attribute;
 								if (strlen($item->description_long) == 0) $item->description_long = $this_attribute;
 								break;
-							case "product_type":
+							case 'product_type':
 								$item->attributes['product_type'] = $this_attribute;
 								break;
-							case "category":
+							case 'category':
 								$item->attributes['localCategory'] = $this_attribute;
 								break;
-							case "condition":
+							case 'condition':
 								$item->attributes['condition'] = $this_attribute;
 								break;
-							case "shipping_weight":
+							case 'shipping_weight':
 								$item->attributes['weight'] = $this_attribute;
 								break;							
 							default:
@@ -464,7 +520,19 @@ class PProductList {
 						$item->attributes[$thisDefault->attributeName] = $thisDefault->getValue($item);
 			}
 
-			$this->expandProduct($item, $parent);
+			if ($item->attributes['isVariable'])
+			{				
+				$this->applyWCAttributes($item);
+				$this->expandProduct($item, $parent);				
+			}
+			else {
+				$item->parent_manage_stock = 'no';
+				$this->applyWCAttributes($item);
+				$parent->handleProduct($item);
+				foreach($item->attributes as &$x)
+					unset($x);
+				unset($item);
+			}
 
 		}
 
@@ -488,36 +556,28 @@ class PProductList {
 			//If item has no variations, use the parent
 			$listitem->parent_manage_stock = 'no';
 			$resultlist[] = $listitem;
+			$this->applyWCAttributes($listitem);
 		}
 
 		//Process the results
 
 		foreach($resultlist as $index => $item) {
 
-			//attempting to pull flat  shipping cost
-			//Note: extra call to new WC_product means an extra trip to the database which will increase timeouts (-K)
-			/*
-			$slug = $product->get_shipping_class();		
-			$slug_object = get_term_by('slug', $slug, 'product_shipping_class'); 
-			$slug_object->name;
-			error_log(var_export($slug_object, true));
-
-			$product = new WC_product($product->id);
- 			echo $product->get_price_html();
-
-			$item->attributes['condition'] = '.'.$slug_object->id;
-			*/
-
-			//STOCK CODE
-			if ( $item->attributes['product_is_in_stock'] && $item->attributes['product_stock_qty'] > 0 )
-				$item->attributes['stock_status'] = 1;
-			else if ($item->attributes['product_stock_qty'] == '') 
-				$item->attributes['stock_status'] = $item->attributes['product_is_in_stock']; //use parent's stock status if qty is blank
-			else
-				$item->attributes['stock_status'] = 0;
-			$item->attributes['stock_quantity'] = $item->attributes['product_stock_qty'];
-			unset($item->attributes['product_stock_qty']); //This was causing confusion among users
-			unset($item->attributes['product_is_in_stock']); //This was causing confusion among users
+			if ($parent->force_wc_api) { //expand product
+				//STOCK CODE
+				// if ( $item->attributes['product_is_in_stock'] && $item->attributes['product_stock_qty'] > 0 )
+				// 	$item->attributes['stock_status'] = 1;
+				// else if ($item->attributes['product_stock_qty'] == '') 
+				// 	$item->attributes['stock_status'] = $item->attributes['product_is_in_stock']; //use parent's stock status if qty is blank
+				// else
+				// 	$item->attributes['stock_status'] = 0;				
+				
+				//$item->attributes['stock_status'] = $item->attributes['product_is_in_stock'];
+				//$item->attributes['stock_quantity'] = $item->attributes['product_stock_qty'];
+				
+				unset($item->attributes['product_stock_qty']); //This was causing confusion among users
+				unset($item->attributes['product_is_in_stock']); //This was causing confusion among users
+			}
 
 			//Hide out of stock
 			if (($pfcore->manage_stock) && ($pfcore->hide_outofstock) && ($item->attributes['stock_status'] == 0))
@@ -547,7 +607,7 @@ class PProductList {
 		
   }
   
-  function insertVariation($id, $parentItem, &$resultlist, $parent) {
+	function insertVariation($id, $parentItem, &$resultlist, $parent) {
 
 		//********************************************************************
 		//Variable attributes occur when the user has fully defined the variations and attributes.
@@ -572,58 +632,53 @@ class PProductList {
 		$item->attributes['isVariation'] = true;
 		$item->attributes['id'] = $id;
 		$item->attributes['item_group_id'] = $parentItem->id;
-
+		$item->attributes['parent_sku'] = $parentItem->attributes['sku']; //get parent sku
 		//Some basics
-		$product = get_product($id);
-		$item->product = $product; //Save for meta-data iteration
+		//$product = get_product($id);
+		//$item->product = $product; //Save for meta-data iteration
 
-		$item->attributes['regular_price'] = $product->regular_price;
-		$item->attributes['has_sale_price'] = false;
-		if ($product->sale_price != "") {
-			$item->attributes['has_sale_price'] = true;
-			$item->attributes['sale_price'] = $product->sale_price;
-		}
-		$item->attributes['sku'] = $product->sku;
-		$item->attributes['weight'] = $product->get_weight();
-		if ($parent->get_wc_shipping_attributes) {
-			//WooCommerce shipping dimensions + unit
-			//dimension unit provided from feedcore.php
-			$item->attributes['length'] = $product->length;
-			$item->attributes['width'] = $product->width;
-			$item->attributes['height'] = $product->height; 
+		//$item->attributes['condition'] = 'New';
+		//$item->attributes['has_sale_price'] = false;
+		//$item->attributes['stock_status'] = 1;
+		//$item->attributes['stock_quantity'] = 1;
+
+		//API calls now optional... disabled by default
+		if ($parent->force_wc_api) {
+			$product = get_product($id);
+			$this->loadProductFromWCAPI($parent, $item, $product); //variation call
 		}
 
-		$item->attributes['product_is_in_stock'] = $product->is_in_stock();
-		$item->attributes['product_stock_qty'] = $product->get_stock_quantity();
+		$this->postmetaLookup($item, $parent); //variations
 
-		//Go find the Variations' Attributes
-		$sql = "SELECT meta_key, meta_value FROM $wpdb->postmeta
+		//Go find the Variation's Attributes
+		/*$sql = "SELECT meta_key, meta_value FROM $wpdb->postmeta
 			WHERE post_id = " . $id . " AND 
 			meta_key LIKE 'attribute\_pa\_%'";
-		$attributes = $wpdb->get_results($sql);
+		$attributes = $wpdb->get_results($sql);*/
 
 		//Add the variation attributes
 		//meta_value takes the slug from wp_terms instead of the name
 		$permutations = array();
-		foreach($attributes as $this_attribute) {
-			if (strpos($this_attribute->meta_key, 'attribute_pa') == 0) {
-				$this_attribute->meta_key = substr($this_attribute->meta_key, 13);
+		/*foreach($attributes as $this_attribute) {
+			$key = $this_attribute->meta_key;
+			if (strpos($key, 'attribute_pa') == 0) {
+				$key = substr($key, 13);
 				//Convert from Slug to Term
 				$term = $this->masterAttributeList->findBySlug($this_attribute->meta_value);
 				if ($term != null)
 					$this_attribute->meta_value = $term->name;
 				//If no meta_value provided it means ANY of this attribute. Mark it for future permutation
 				if (strlen($this_attribute->meta_value) == 0) {
-					$termcat = $this->masterAttributeList->findByName($this_attribute->meta_key);
+					$termcat = $this->masterAttributeList->findByName($key);
 					if ($termcat != null)
 						$permutations[] = $termcat;
 				}
 			}
-			$item->attributes[$this_attribute->meta_key] = $this_attribute->meta_value;
-		}
+			$item->attributes[$key] = $this_attribute->meta_value;
+		}*/
 
 		//If no permutations, we're done
-		if (count($permutations) == 0 || !$parent->allow_variationPermutations)
+		if (count($permutations) == 0 || $parent->allow_variationPermutations)
 			return;
 
 		//The presence of permutations forcefully invalidate existing items
@@ -633,11 +688,61 @@ class PProductList {
 
 		//Now, add the permutations
 		//for ($i = 0; $i < count($permutations); $i++) //Only need this loop if counting null values into permutations
-		// $i = 0;
-		// $this->permute($id, $i, $permutations, $resultlist, $parent);
+		$i = 0;
+		$this->permute($id, $i, $permutations, $resultlist, $parent);
 
   }
 
+	function loadProductFromWCAPI($parent, $item, $product) {
+
+		$item->attributes['sku'] = $product->sku;
+		$item->attributes['regular_price'] = $product->get_regular_price();
+		$item->attributes['sale_price'] = $product->get_sale_price();
+		$item->attributes['has_sale_price'] = (strlen($item->attributes['sale_price']) > 0);
+		$item->attributes['weight'] = $product->get_weight();				
+		//$this->scpf_get_tax_rates($item,$product);
+		if ($parent->get_wc_shipping_attributes) 
+			$this->scpf_get_dimension_values($item,$product);					
+		if ($parent->get_wc_shipping_class) 
+			$this->scpf_get_shipping_classes($item,$product);
+		if ($parent->variation_images) 
+			$this->scpf_get_wc_variation_images($item,$product);
+		//if ($parent->get_wc_tax_rates) 
+		//	$this->scpf_get_tax_rates($item,$product);
+
+		// if ( isset($product->vendor) )
+		// 	$item->attributes['vendor'] = $product->vendor;
+		// if ( isset($product->model) )
+		// 	$item->attributes['model'] = $product->model;
+		// if ( isset($product->size) )
+		// 	$item->attributes['size'] = $product->size;
+
+		$item->parent_manage_stock = true; //Temp... testing Calvin's new code
+		$item->attributes['product_is_in_stock'] = $product->is_in_stock(); //already checks for global manage stock and product inventory stock_status
+
+		//NEW STOCK CODE (includes check for notify_no_stock_amount)
+		// $item->attributes['product_is_in_stock'] = $product->get_availability()['class'];
+		// //if not managing stock, but status is in stock...
+		// if ( $item->attributes['product_is_in_stock'] == '' )
+		// 		$item->attributes['product_is_in_stock'] = 'in-stock';
+		// //convert to 1/0
+		// $item->attributes['product_is_in_stock'] = $item->attributes['product_is_in_stock'] == 'in-stock' ? 1 : 0;
+		// $item->attributes['stock_status'] = $item->attributes['product_is_in_stock'];
+		
+		// //if not managing stock, returns ''
+		 $item->attributes['product_stock_qty'] = $product->get_stock_quantity();
+		// //if in-stock but quantity is blank, set to 1
+		// if ( $item->attributes['product_is_in_stock'] === 1 && $item->attributes['product_stock_qty'] == '' )
+		// 	$item->attributes['product_stock_qty'] = 1;
+		// //if not managing stock and out of stock
+		// elseif ( $item->attributes['product_is_in_stock'] === 0 && $item->attributes['product_stock_qty'] == '')
+		//  	$item->attributes['product_stock_qty'] = 0;
+
+		// $item->attributes['stock_quantity'] = $item->attributes['product_stock_qty'];
+
+	}
+
+	//currently it triggers on piped values in the MasterAttributeTable (which comes from the central table). Soon it will come from the product's attribute value
 	function permute($id, $index, $permutations, &$resultlist, $parent, $stack = array() ) {
 		foreach ($permutations[$index]->children as $thisChild) 
 			if ($index == count($permutations) - 1) {
@@ -664,4 +769,248 @@ class PProductList {
 			}
 	}
 
+	public function postmetaLookup($item, $parent) {
+
+		global $wpdb;
+
+		//********************************************************************
+		//Go find the Attributes
+		//********************************************************************
+		$sql = "SELECT meta_key, meta_value FROM $wpdb->postmeta
+			WHERE post_id = " . $item->attributes['id'];;
+		$attributes = $wpdb->get_results($sql);
+
+		//********************************************************************
+		//Parse
+		//********************************************************************
+		$permutations = array();
+		foreach($attributes as $this_attribute) {
+	
+			$key = $this_attribute->meta_key;
+			$value = $this_attribute->meta_value;
+
+			if (strlen($value) == 0)
+				continue;
+
+			//Special Case: Variation Attributes
+			if (strpos($key, 'attribute_pa') !== false) {
+				//meta_value takes the slug from wp_terms instead of the name
+				$key = substr($key, 13);
+				$slug = '';
+				//Convert from Slug to Term
+				$term = $this->masterAttributeList->findBySlug($value);
+				if ($term != null) {
+					$value = $term->name;
+					//error_log(json_encode($term));
+					$item->attributes['_' . $key] = $term->slug;
+				}
+				//If no value provided it means ANY of this attribute. Mark it for future permutation
+				if (strlen($value) == 0) {
+					$termcat = $this->masterAttributeList->findByName($key);
+					if ($termcat != null)
+						$permutations[] = $termcat;
+				} else
+					$item->attributes[$key] = $value;
+				continue;
+			}
+
+			//Special Case: Attribute Definitions
+			if ($key == '_product_attributes') {
+				$item->wc_attributes = unserialize($value);
+				//$item->attributes[$key] = $value;
+				continue;
+			}
+
+			//Generic Case
+			if ($parent->attribute_granularity < 5)
+				switch ($key) {
+					case '_backorders':
+						$item->attributes['backorders'] = $value;
+						break;
+					case '_height':
+						$item->attributes['height'] = $value;
+						break;
+					case '_length':
+						$item->attributes['length'] = $value;
+						break;
+					case '_manage_stock':
+						$item->attributes['manage_stock'] = $value;
+						break;
+					case '_model':
+						$item->attributes['model'] = $value;
+						break;
+					case '_price':
+						$item->attributes['price'] = $value; //sale or regular price, whichever is lower
+						break;
+					case '_product_image_gallery':
+						$item->attributes['product_image_gallery'] = explode(',', $value);
+						break;
+					case '_regular_price':
+						$item->attributes['regular_price'] = $value;
+						$item->attributes['_regular_price'] = $value;						
+						break;
+					case '_sale_price':
+						$item->attributes['sale_price'] = $value;
+						$item->attributes['_sale_price'] = $value;
+						$item->attributes['has_sale_price'] = true;
+						break;
+					case '_sale_price_dates_from':
+						$item->attributes['sale_price_dates_from'] = $value;
+						break;
+					case '_sale_price_dates_to':
+						$item->attributes['sale_price_dates_to'] = $value;
+						break;
+					case '_sku':
+						$item->attributes['sku'] = $value;
+						break;
+					case '_size':
+						$item->attributes['size'] = $value;
+						break;
+					case '_stock':
+						$item->attributes['stock_quantity'] = $value;
+						break;
+					case '_stock_status':
+						$item->attributes['stock_status'] = $value;
+						break;
+					case '_vendor':
+						$item->attributes['vendor'] = $value;
+						break;
+					case '_width':
+						$item->attributes['width'] = $value;
+						break;
+					case '_bto_data':
+						$item->bto_data = $value;
+					default:
+						if (strlen($key) > 0 && $key[0] != '_')
+							$item->attributes[$key] = $value;
+				}
+			else
+				switch ($key) {
+					case '_bto_data':
+						$item->bto_data = $value;
+						break;
+					case '_product_image_gallery':
+						$item->attributes['product_image_gallery'] = explode(',', $value);
+						break;
+					case '_sale_price':
+						$item->attributes['sale_price'] = $value;
+						if (strlen($value) > 0)
+							$item->attributes['has_sale_price'] = true;
+						break;
+					case '_stock':
+						$item->attributes['stock_quantity'] = $value;
+						break;
+					default:
+						if (strlen($key) > 0) {
+							if ($key[0] == '_')
+								$item->attributes[substr($key, 1)] = $value; //will include all remaining postmeta.. including regular price
+							else
+								$item->attributes[$key] = $value;
+						}
+				}
+
+		}
+
+		//********************************************************************
+		//Stock
+		//********************************************************************
+
+		if ( ! isset( $item->attributes['manage_stock'] ) || $item->attributes['manage_stock'] == 'no' || $this->woocommerce_manage_stock !== 'yes' )
+			$managing_stock = false;
+		else
+			$managing_stock = true;
+		$backorders_allowed = ($item->attributes['backorders'] === 'yes' || $item->attributes['backorders'] === 'notify' ? true : false);
+		//$item->attributes['mgs'] = (string) $managing_stock; //Debug
+		//$item->attributes['bks'] = (string) $backorders_allowed; //Debug
+		if ($managing_stock && $backorders_allowed)
+			$item->attributes['stock_status'] = 1;
+		elseif ($managing_stock && $item->attributes['stock_quantity'] <= $this->woocommerce_notify_no_stock_amount)
+			$item->attributes['stock_status'] = 0;
+		else {
+			if ($item->attributes['stock_status'] == 'instock' || $item->attributes['stock_status'] == '1')
+				$item->attributes['stock_status'] = 1;
+			else
+				$item->attributes['stock_status'] = 0;
+		}
+		if ($item->attributes['stock_quantity'] === 0 )
+				$item->attributes['stock_quantity'] = 0;
+		 $item->attributes['stock_quantity'] = (int) $item->attributes['stock_quantity'];
+
+		//********************************************************************
+		//Gallery Images
+		//********************************************************************
+		if (!isset($item->attributes['product_image_gallery'])) {
+			// Backwards compat
+			$attachment_ids = get_posts( 'post_parent=' . $item->attributes['id'] . '&numberposts=-1&post_type=attachment&orderby=menu_order&order=ASC&post_mime_type=image&fields=ids&meta_key=_woocommerce_exclude_image&meta_value=0' );
+			$item->attributes['product_image_gallery'] = array_diff( $attachment_ids, array( get_post_thumbnail_id( $item->attributes['id'] ) ) );
+		}
+		if (isset($item->attributes['thumb_ID']))
+			$item->attributes['product_image_gallery'] = array_diff($item->attributes['product_image_gallery'], array($item->attributes['thumb_ID']));
+		if (count($item->attributes['product_image_gallery']) > 0 && !$item->attributes['isVariation']) {
+			foreach ($item->attributes['product_image_gallery'] as $gid) {
+				$thumb = (wp_get_attachment_image_src($gid, 'small-feature'));
+				$imgurl = $thumb['0'];
+				if (strlen($imgurl) > 0)
+					$item->imgurls[] = $imgurl;
+			}
+		}
+		if ($item->attributes['isVariation']) {
+			$image_id = get_post_thumbnail_id($item->attributes['id']);
+			if ($image_id) {
+				$var_image = wp_get_attachment_image_src( $image_id, 'full' );
+				if ( $var_image[0] )
+					$item->attributes['feature_imgurl'] = $var_image[0]; //use wc variation image
+			}
+		}
+
+		//Basic Tax Rates: Does not handle multiple rates per class
+		if ($parent->get_tax_rates) {
+			$tax_status = $item->attributes['tax_status']; //taxable, shipping, none
+			if ($tax_status == 'taxable') {
+				$tax_rate_class = $item->attributes['tax_class']; //'' (standard), reduced-rate, other user defined classes	
+				$tax_rate = $parent->taxData->loadTaxationDataW($parent,$tax_status,$tax_rate_class);
+				$item->attributes['tax_rate'] = $tax_rate;
+
+				$tax = ($item->attributes['regular_price']*$tax_rate)/100;
+				$item->attributes['regular_price'] = $item->attributes['regular_price']+$tax;
+				if ($item->attributes['has_sale_price']) {
+					$tax = ($item->attributes['sale_price']*$tax_rate)/100;
+					$item->attributes['sale_price'] = $item->attributes['sale_price']+$tax;
+				}
+			}
+		}
+		
+	} //postmetalookup
+
+	//Pulls dimension values into respective attributes
+	function scpf_get_dimension_values($item,$product) {
+		$item->attributes['length'] = $product->length;
+		$item->attributes['width'] = $product->width;
+		$item->attributes['height'] = $product->height;		
+	}
+
+	//Pull WooCommerce shipping classes
+	function scpf_get_shipping_classes($item,$product) {
+		$slug = $product->get_shipping_class();
+		$slug_object = get_term_by('slug', $slug, 'product_shipping_class'); 
+		$item->attributes['shipping_class'] = $slug_object->name;
+	}
+
+	function scpf_get_wc_variation_images($item,$product) {
+		//variation images
+		$var_image = wp_get_attachment_image_src( $product->get_image_id(), 'full' ); //full size... rather than 'shop_thumbnail'
+		if ( $var_image[0] )
+			$item->attributes['feature_imgurl'] = $var_image[0]; //use wc variation image
+	}
+
+	//pull WooCommerce tax rates (should be a db call?)
+	//if VAT/TAX enabled (checkbox in plugin). Move to rules?	
+	//  function scpf_get_tax_rates($item,$product) {
+	//  $item->attributes['regular_price_including_tax'] = $product->get_price_including_tax('1',$item->attributes['regular_price']);
+	// 	if ( isset($item->attributes['regular_price_including_tax']) )
+	// 		$item->attributes['regular_price'] = $item->attributes['regular_price_including_tax'];	
+	// 	$item->attributes['sale_price_including_tax'] = $product->get_price_including_tax('1',$item->attributes['sale_price']);
+	// 	if ( isset($item->attributes['sale_price_including_tax']) )
+	// 		$item->attributes['sale_price'] = $item->attributes['sale_price_including_tax'];
+	// }
 }

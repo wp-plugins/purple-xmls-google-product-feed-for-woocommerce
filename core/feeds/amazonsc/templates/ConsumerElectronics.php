@@ -4,6 +4,7 @@
 	//2014-12
 	//********************************************************************
 
+//34 product types to select from
 	$this->addAttributeMapping('feed_product_type', 'feed_product_type',true,true)->localized_name = 'Product Type';
 	$this->addAttributeMapping('', 'part_number', true)->localized_name = 'Mfr Part Number';
 	//$this->addAttributeMapping('', 'brand_name', true)->localized_name = '';

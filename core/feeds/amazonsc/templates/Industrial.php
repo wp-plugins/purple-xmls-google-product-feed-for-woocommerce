@@ -21,6 +21,5 @@
 	$this->addAttributeMapping('', 'material_type', true,false)->localized_name = 'Product Name';
 	//also required
 	$this->addAttributeMapping('number_of_items', 'number_of_items',true,true)->localized_name = 'Number Of Items';
-	$this->addAttributeMapping('fulfillment_latency', 'fulfillment_latency',true,true)->localized_name = 'Fulfillment Latency';
-
+	
 ?>

@@ -21,7 +21,7 @@ class PGoogleFeed extends PXMLFeed
 		$this->providerNameL = 'google';
 		//Create some attributes (Mapping 3.0) in the form (title, Google-title, CData, isRequired)
 		//  Note that isRequired is just to direct the plugin on where on the dialog to display
-		$this->addAttributeMapping('brand', 'g:brand', false, true);
+		$this->addAttributeMapping('brand', 'g:brand', true, true);
 		$this->addAttributeMapping('id', 'g:id', false, true);
 		$this->addAttributeMapping('item_group_id', 'g:item_group_id', false, true);
 		$this->addAttributeMapping('title', 'title', true, true);
@@ -43,15 +43,16 @@ class PGoogleFeed extends PXMLFeed
 		$this->addAttributeMapping('age_group', 'g:age_group', false, false);
 		$this->addAttributeMapping('color', 'g:color', true, false);
 		$this->addAttributeMapping('size', 'g:size', true, false);
-		$this->addAttributeMapping('material', 'g:material', true, false);
-		$this->addAttributeMapping('pattern', 'g:pattern', true, false);
-		$this->addAttributeMapping('', 'g:sale_price_effective_date', true, false);
-		$this->addAttributeMapping('tax', 'g:tax', true, false);
+		$this->addAttributeMapping('', 'g:material', true, false);
+		$this->addAttributeMapping('', 'g:pattern', true, false);
+		$this->addAttributeMapping('sale_price_effective_date', 'g:sale_price_effective_date', true, false);
+		$this->addAttributeMapping('', 'g:identifier_exists', true, false);
+		$this->addAttributeMapping('', 'g:tax', true, false);
 		$this->addAttributeMapping('', 'g:multipack', true, false);
-		$this->addAttributeMapping('adult', 'g:adult', true, false);
-		$this->addAttributeMapping('adwords_grouping', 'g:adwords_grouping', true, false);
-		$this->addAttributeMapping('adwords_labels', 'g:adwords_labels', true, false);
-		$this->addAttributeMapping('adwords_redirect', 'g:adwords_redirect', true, false);
+		$this->addAttributeMapping('', 'g:adult', true, false);
+		$this->addAttributeMapping('', 'g:adwords_grouping', true, false);
+		$this->addAttributeMapping('', 'g:adwords_labels', true, false);
+		$this->addAttributeMapping('', 'g:adwords_redirect', true, false);
 		$this->addAttributeMapping('', 'g:unit_pricing_measure', true, false);
 		$this->addAttributeMapping('', 'g:unit_pricing_base_measure', true, false);
 		$this->addAttributeMapping('', 'g:energy_efficiency_class', true, false);
@@ -70,22 +71,36 @@ class PGoogleFeed extends PXMLFeed
 		$this->addAttributeDefault('additional_images', 'none', 'PGoogleAdditionalImages');
 		$this->addAttributeDefault('tax_country', 'US');
 
-		$this->addRule('price_standard', 'pricestandard');
-		$this->addRule('status_standard', 'statusstandard');
+		$this->addRule('price_standard', 'pricestandard'); //append currency
+		$this->addRule('status_standard', 'statusstandard'); //'in stock' or 'out of stock'
+		$this->addRule('price_rounding','pricerounding'); //2 decimals
 		$this->addRule('weight_unit', 'weightunit');
-		$this->addRule('google_exact_title', 'googleexacttitle');
+		$this->addRule('google_exact_title', 'googleexacttitle'); //true disables ucowrds
 		$this->addRule('google_combo_title', 'googlecombotitle');
 
 	}
  
   function formatProduct($product) 
   {
+		global $pfcore;
 		//********************************************************************
 		//Prepare the Product Attributes
 		//********************************************************************
+ 		
+ 		//********************************************************************
+ 		//Google date, ISO 8601 format. 
+ 		//Timezone Bug in WordPress: a manual offset, for example UTC+5:00 will show offset of 0
+ 		//Fix: Select specific region, example: Toronto
+ 		//********************************************************************
+		if (isset($product->attributes['sale_price_dates_from']) && isset($product->attributes['sale_price_dates_to'])) 
+		{	
+			$product->attributes['sale_price_dates_from'] = $pfcore->localizedDate( 'Y-m-d\TH:i:sO', $product->attributes['sale_price_dates_from'] );
+			$product->attributes['sale_price_dates_to'] = $pfcore->localizedDate( 'Y-m-d\TH:i:sO', $product->attributes['sale_price_dates_to'] );
 
-//PLA
-//$product->attributes['link'] .= '?source=googleproduct&cvars='. rawurlencode($product->attributes['title']);
+			if ( strlen($product->attributes['sale_price_dates_from']) > 0 && strlen($product->attributes['sale_price_dates_to']) > 0 )
+				$product->attributes['sale_price_effective_date'] = $product->attributes['sale_price_dates_from'].'/'.$product->attributes['sale_price_dates_to'];
+		}
+
 		//********************************************************************
 		//Validation checks & Error messages
 		//********************************************************************
@@ -98,7 +113,7 @@ class PGoogleFeed extends PXMLFeed
 
 	}
 
-	function getFeedFooter( ) 
+	function getFeedFooter($file_name, $file_path) 
 	{   
     	$output = '
   </channel>

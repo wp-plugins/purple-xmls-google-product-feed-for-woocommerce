@@ -23,30 +23,40 @@ class PBeslistFeed extends PBasicFeed
 		$this->addAttributeMapping('title', 'title', true,true);
 		$this->addAttributeMapping('regular_price', 'price',false,true); //inc. VAT and in Euros
 		$this->addAttributeMapping('link', 'product_url', true,true);
-		$this->addAttributeMapping('url_image', 'url_image', true,true);	
+		$this->addAttributeMapping('feature_imgurl', 'url_image', true,true);	
 		$this->addAttributeMapping('unique_code', 'unique_code', true,true);
-		$this->addAttributeMapping('category', 'category', true,true);
-		$this->addAttributeMapping('delivery_costs', 'delivery_costs', true,true);
-		$this->addAttributeMapping('delivery_period', 'delivery_period', true,true);
+		$this->addAttributeMapping('current_category', 'category', true,true);
+		$this->addAttributeMapping('delivery_costs', 'delivery_costs_nl', true,true);
+		$this->addAttributeMapping('delivery_costs', 'delivery_costs_be', true,true);
+		$this->addAttributeMapping('delivery_period', 'delivery_period_nl', true,true);
+		$this->addAttributeMapping('delivery_period', 'delivery_period_be', true,true);
 		$this->addAttributeMapping('', 'ean', true,true);
-		$this->addAttributeMapping('', 'brand', true,true);
-		//optional
-		$this->addAttributeMapping('sale_price', 'sale_price');
-		$this->addAttributeMapping('model_code', 'model_code'); //item group id
-		$this->addAttributeMapping('', 'original');		
-		$this->addAttributeMapping('', 'mpn');
-		$this->addAttributeMapping('', 'mpn_color', true);
-		
-		$this->addAttributeMapping('description', 'description', true);
-		$this->addAttributeMapping('', 'colour');
+		$this->addAttributeMapping('brand', 'brand', true,true);
+		//products available in different sizes
 		$this->addAttributeMapping('', 'size', true);
-		//combo codes
-		
 		$this->addAttributeMapping('variant_code', 'variant_code', true);
+		//matching categories
+		$this->addAttributeMapping('sku', 'SKU',true);
+		$this->addAttributeMapping('', 'original');	//new, refurbished, renewed, bulk...
+		//optional
+		$this->addAttributeMapping('description', 'description', true);
+		$this->addAttributeMapping('', 'model_code'); //item group id
+		$this->addAttributeMapping('color', 'colour');
+		$this->addAttributeMapping('price-old', 'price-old'); //original/old price for an on-sale item
+		$this->addAttributeMapping('', 'material');
+		$this->addAttributeMapping('', 'gender');
+		//$this->addAttributeMapping('sale_price', 'sale_price');		
+				
 	}
   
 	function formatProduct( $product ) 
 	{
+
+		//apply price-old if a product is on sale
+		if ($product->attributes['has_sale_price']) {
+			$product->attributes['price-old'] = $product->attributes['regular_price'];
+			$product->attributes['regular_price'] = $product->attributes['sale_price'];
+		}
 
 		//kleur
 		if ( isset($product->attributes['kleur']) )
@@ -86,8 +96,8 @@ class PBeslistFeed extends PBasicFeed
 				
 			}
 
-		$beslist_variant_code = $product->attributes['model_code'];
-		$beslist_unique_code = $product->attributes['model_code'];
+		$beslist_variant_code = $product->attributes['model_code']; //connects the different sizes of one product to id/model code
+		$beslist_unique_code = $product->attributes['model_code']; //connects colours to id/model code
 		if ( !empty($cpf_attribute_color) ) 
 		{
 			$beslist_variant_code .= '-'.$cpf_attribute_color;
@@ -131,7 +141,7 @@ class PBeslistFeed extends PBasicFeed
 	    return $output;
 	  }
 
-  function getFeedFooter( ) 
+  function getFeedFooter($file_name, $file_path) 
   {   
     $output = '
     		  </items>';

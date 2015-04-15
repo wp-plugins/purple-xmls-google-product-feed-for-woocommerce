@@ -1,0 +1,312 @@
+Adult > Adult Games ; 13,087
+Adult > Adult Novelty Products ; 13,771
+Adult > Aphrodisiacs ; 13,831
+Adult > Condoms & Safe Sex Products ; 13,496
+Adult > Erotic Art, Books, and DVDs ; 13,260
+Adult > Lubricants ; 13,050
+Adult > Men's Erotic Underwear ; 100,000,298
+Adult > Miscellaneous Adult Products ; 14,064
+Adult > Sensory Stimulation Products ; 13,205
+Adult > Sex Toys ; 13,588
+Adult > Women's Erotic Lingerie ; 14,102
+
+Appliances > Air Conditioners ; 13,274 
+Appliances > Air Purifiers ; 13,870 
+Appliances > Appliance Parts & Spares ; 100,000,128 
+Appliances > Blenders ; 13,865 
+Appliances > Breadmakers ; 13,808 
+Appliances > Can Openers ; 13,874 
+Appliances > Coffee Grinders ; 13,880 
+Appliances > Coffee Maker Accessories ; 13,886 
+Appliances > Coffee Makers ; 13,813 
+Appliances > Cooker Hoods ; 13,925 
+Appliances > Deep Fryers ; 13,892 
+Appliances > Dehumidifiers ; 13,900 
+Appliances > Dishwashers ; 13,052 
+Appliances > Egg Cookers & Poachers ; 13,797 
+Appliances > Electric Irons ; 13,279 
+Appliances > Electric Knife Sharpeners ; 13,673 
+Appliances > Electric Knives ; 13,154 
+Appliances > Electric Woks & Frying Pans ; 13,941 
+Appliances > Espresso Machine Accessories ; 100,000,125 
+Appliances > Espresso Machines ; 13,819 
+Appliances > Fans ; 13,284 
+Appliances > Food Dehydrators ; 13,480 
+Appliances > Food Processors ; 13,849 
+Appliances > Food Slicers ; 13,749 
+Appliances > Freezers ; 13,060 
+Appliances > Garment Steamers ; 14,170 
+Appliances > Heaters & Radiators ; 13,315 
+Appliances > Hobs ; 13,889 
+Appliances > Home Cleaning Appliances > Cleaning Accessories ; 9,702
+Appliances > Home Cleaning Appliances > Hard Floor Cleaners ; 9,700
+Appliances > Home Cleaning Appliances > Miscellaneous Home Cleaning Appliances ; 9,705
+Appliances > Home Cleaning Appliances > Specialty Cleaning ; 9,703
+Appliances > Home Cleaning Appliances > Steam Cleaners ; 9,704
+Appliances > Home Cleaning Appliances > Vacuum Cleaners ; 9,698
+Appliances > Humidifiers ; 13,277
+Appliances > Ice Cream Makers ; 13,917
+Appliances > Indoor Grills ; 13,921
+Appliances > Juicers ; 13,824
+Appliances > Kettles ; 13,929
+Appliances > Meat Grinders ; 13,024
+Appliances > Microwave Ovens ; 13,029
+Appliances > Mini Ovens ; 13,962
+Appliances > Miscellaneous Appliances ; 13,310
+Appliances > Mixers ; 13,835
+Appliances > Ovens ; 13,038
+Appliances > Pasta Makers ; 13,945
+Appliances > Popcorn Makers ; 13,958
+Appliances > Range Cookers ; 13,031
+Appliances > Refrigerators ; 13,027
+Appliances > Rice Cookers & Steamers ; 13,960
+Appliances > Rotisseries ; 13,934
+Appliances > Sandwich Toasters ; 13,191
+Appliances > Sewing Machines ; 13,299
+Appliances > Slow Cookers ; 13,939
+Appliances > Snow Cone & Ice Shavers ; 13,099
+Appliances > Toasters ; 13,840
+Appliances > Vacuum Food Sealers ; 14,037
+Appliances > Waffle Makers ; 13,937
+Appliances > Warming Drawers ; 13,991
+Appliances > Washing Machines & Tumble Dryers ; 13,054
+Appliances > Waste Compactors ; 12,995
+Appliances > Water Coolers ; 13,351
+Appliances > Water Filters ; 13,233
+Appliances > Wine Cellars, Racks & Coolers ; 13,415
+Appliances > Yoghurt Makers ; 14,092
+
+Automotive > Car Accessories ; 13,012
+Automotive > Car Maintenance Products ; 14,077
+Automotive > Car Parts ; 13,222
+Automotive > Car Repair Tools ; 13,457
+Automotive > Cars ; 100,000,152
+Automotive > Miscellaneous Automotive ; 14,023
+Automotive > Motorcycle Accessories ; 100,000,155
+Automotive > Motorcycles ; 100,000,153
+Automotive > Tyres & Wheels ; 13,174
+
+Babies & Kids >	Baby & Children's Bedding >	Baby & Toddler Bedding	;	13,408
+Babies & Kids >	Baby & Children's Bedding >	Children's Bedding	;	13,404
+Babies & Kids >	Baby & Children's Bedding >	Miscellaneous Children's Bedding	;	13,400
+Babies & Kids >	Baby & Children's Furniture >	Baby Bedroom Accessories	;	100,000,971
+Babies & Kids >	Baby & Children's Furniture >	Baby Furniture	;	100,000,969
+Babies & Kids >	Baby & Children's Furniture >	Children's Bedroom Accessories	;	100,000,970
+Babies & Kids >	Baby & Children's Furniture >	Children's Furniture	;	100,000,968
+Babies & Kids >	Baby & Children's Furniture >	Miscellaneous Baby & Children's Furniture	;	100,000,973
+Babies & Kids >	Baby & Toddler Accessories >	Baby & Kids' Hats	;	100,000,195
+Babies & Kids >	Baby & Toddler Accessories >	Baby & Kids' Shoes	;	13,455
+Babies & Kids >	Baby & Toddler Accessories >	Baby & Kids' Sleepwear & Underwear	;	13,387
+Babies & Kids >	Baby & Toddler Accessories >	Baby & Kids' Socks	;	14,017
+Babies & Kids >	Baby & Toddler Accessories >	Baby & Toddler Gloves & Mittens	;	100,000,194
+Babies & Kids >	Baby & Toddler Accessories >	Baby & Toddler Scarves	;	100,000,197
+Babies & Kids >	Baby & Toddler Accessories >	Baby Bibs	;	13,173
+Babies & Kids >	Baby & Toddler Accessories >	Baby Changing Bags	;	13,722
+Babies & Kids >	Baby & Toddler Accessories >	Miscellaneous Baby & Toddler Accessories	;	12,977
+Babies & Kids >	Baby & Toddler Clothes >	Baby & Kids' Dresses & Skirts	;	14,034
+Babies & Kids >	Baby & Toddler Clothes >	Baby & Kids' Outerwear	;	12,987
+Babies & Kids >	Baby & Toddler Clothes >	Baby & Kids' Swimwear	;	13,090
+Babies & Kids >	Baby & Toddler Clothes >	Baby & Kids' Trousers	;	13,410
+Babies & Kids >	Baby & Toddler Clothes >	Baby & Toddler All-in-Ones	;	13,177
+Babies & Kids >	Baby & Toddler Clothes >	Baby & Toddler Tops	;	13,975
+Babies & Kids >	Baby & Toddler Clothes >	Miscellaneous Baby & Toddler Apparel	;	13,604
+Babies & Kids >	Baby Gear >	Baby Bath Accessories & Potties	;	13,711
+Babies & Kids >	Baby Gear >	Baby Bouncers	;	13,699
+Babies & Kids >	Baby Gear >	Baby Car Seats	;	13,725
+Babies & Kids >	Baby Gear >	Baby Feeding Products	;	13,732
+Babies & Kids >	Baby Gear >	Baby Monitors & Safety Products	;	13,735
+Babies & Kids >	Baby Gear >	Baby Rockers & Chair Bouncers	;	13,693
+Babies & Kids >	Baby Gear >	Baby Walkers	;	13,703
+Babies & Kids >	Baby Gear >	High Chairs & Booster Seats	;	13,68
+Babies & Kids >	Baby Gear >	Miscellaneous Baby Gear	;	13,739
+Babies & Kids >	Baby Gear >	Play Pens	;	13,707
+Babies & Kids >	Baby Gear >	Pushchairs, Buggies & Prams	;	13,683
+Babies & Kids >	Children's Accessories >	Baby & Kids' Gloves & Mittens	;	100,000,184
+Babies & Kids >	Children's Accessories >	Baby & Kids' Scarves	;	100,000,189
+Babies & Kids >	Children's Accessories >	Children's Belts & Braces	;	100,000,191
+Babies & Kids >	Children's Accessories >	Children's Hats	;	100,000,187
+Babies & Kids >	Children's Accessories >	Children's Shoes	;	13,552
+Babies & Kids >	Children's Accessories >	Children's Sleepwear & Underwear	;	13,023
+Babies & Kids >	Children's Accessories >	Children's Socks	;	14,087
+Babies & Kids >	Children's Accessories >	Miscellaneous Children's Accessories	;	13,796
+Babies & Kids >	Children's Clothes >	Baby & Kids' Tops	;	13,911
+Babies & Kids >	Children's Clothes >	Children's Jeans	;	13,648
+Babies & Kids >	Children's Clothes >	Children's Jumpers & Sweaters	;	13,257
+Babies & Kids >	Children's Clothes >	Children's Outerwear	;	13,136
+Babies & Kids >	Children's Clothes >	Children's Shorts	;	13,085
+Babies & Kids >	Children's Clothes >	Children's Suits & Blazers	;	100,000,174
+Babies & Kids >	Children's Clothes >	Children's Swimwear	;	13,830
+Babies & Kids >	Children's Clothes >	Children's T-Shirts	;	13,049
+Babies & Kids >	Children's Clothes >	Children's Trousers	;	14,152
+Babies & Kids >	Children's Clothes >	Girls' Dresses & Skirts	;	13,965
+Babies & Kids >	Children's Clothes >	Miscellaneous Children's Apparel	;	13,495
+Babies & Kids >	Children's Fitness Clothing >	Children's Sports Tops	;	100,000,176
+Babies & Kids >	Children's Fitness Clothing >	Children's Tracksuit Bottoms & Joggers	;	100,000,179
+Babies & Kids >	Children's Fitness Clothing >	Children's Tracksuits & Sportswear Sets	;	100,000,181
+Babies & Kids >	Children's Fitness Clothing >	Miscellaneous Children's Fitness Clothing	;	100,000,182
+Babies & Kids >		Children's Healthcare Products	;	14,127
+Babies & Kids >	Maternity Clothes >	Maternity Dresses/Skirts	;	13,933
+Babies & Kids >	Maternity Clothes >	Maternity Lingerie	;	13,609
+Babies & Kids >	Maternity Clothes >	Maternity Tops	;	13,517
+Babies & Kids >	Maternity Clothes >	Maternity Trousers	;	13,860
+Babies & Kids >	Maternity Clothes >	Miscellaneous Maternity Clothing & Accessories	;	14,024
+
+Books & Magazines > Children's Books ; 13,312
+Books & Magazines > Educational Books ; 13,267
+Books & Magazines > Erotica Books ; 13,539
+Books & Magazines > Fiction Books ; 13,637
+Books & Magazines > Magazines & Newspapers ; 13,207
+Books & Magazines > Miscellaneous Books ; 13,734
+Books & Magazines > Non-Fiction Books ; 13,287
+
+Clothing & Accessories >	Bags & Luggage >	Backpacks	;	14,131
+Clothing & Accessories >	Bags & Luggage >	Briefcases	;	13,294
+Clothing & Accessories >	Bags & Luggage >	Handbags	;	14,093
+Clothing & Accessories >	Bags & Luggage >	Luggage	;	13,234
+Clothing & Accessories >	Bags & Luggage >	Miscellaneous Handbags & Luggage	;	13,750
+Clothing & Accessories >	Bags & Luggage >	Sports Bags	;	13,025
+Clothing & Accessories >	Bags & Luggage >	Wallets	;	13,194
+Clothing & Accessories >	Men's Accessories >	Men's Belts & Braces	;	13,745
+Clothing & Accessories >	Men's Accessories >	Men's Gloves	;	13,984
+Clothing & Accessories >	Men's Accessories >	Men's Hats	;	13,151
+Clothing & Accessories >	Men's Accessories >	Men's Scarves	;	100,000,293
+Clothing & Accessories >	Men's Accessories >	Men's Socks	;	14,168
+Clothing & Accessories >	Men's Accessories >	Miscellaneous Men's Accessories	;	13,095
+Clothing & Accessories >	Men's Accessories >	Ties	;	13,345
+Clothing & Accessories >	Men's Clothing >	Men's Jeans	;	13,765
+Clothing & Accessories >	Men's Clothing >	Men's Jumpers, Sweaters & Waistcoats	;	12,938
+Clothing & Accessories >	Men's Clothing >	Men's Outerwear	;	13,001
+Clothing & Accessories >	Men's Clothing >	Men's Shirts	;	14,006
+Clothing & Accessories >	Men's Clothing >	Men's Shorts	;	13,164
+Clothing & Accessories >	Men's Clothing >	Men's Suits & Blazers	;	13,698
+Clothing & Accessories >	Men's Clothing >	Men's Swimwear	;	13,949
+Clothing & Accessories >	Men's Clothing >	Men's T-Shirts	;	13,366
+Clothing & Accessories >	Men's Clothing >	Men's Trousers	;	13,434
+Clothing & Accessories >	Men's Clothing >	Miscellaneous Men's Clothing	;	13,112
+Clothing & Accessories >	Men's Fitness Clothing >	Men's Sports Tops	;	14,074
+Clothing & Accessories >	Men's Fitness Clothing >	Men's Tracksuit Bottoms & Joggers	;	13,216
+Clothing & Accessories >	Men's Fitness Clothing >	Men's Tracksuits & Sportswear Sets	;	9,344
+Clothing & Accessories >	Men's Fitness Clothing >	Miscellaneous Men's Sports Clothing	;	13,776
+Clothing & Accessories >		Men's Shoes	;	13,443
+Clothing & Accessories >	Men's Underwear & Nightwear >	Men's Boxers	;	9,559
+Clothing & Accessories >	Men's Underwear & Nightwear >	Men's Briefs	;	9,560
+Clothing & Accessories >	Men's Underwear & Nightwear >	Men's Dressing Gowns	;	9,563
+Clothing & Accessories >	Men's Underwear & Nightwear >	Men's Long Johns	;	9,567
+Clothing & Accessories >	Men's Underwear & Nightwear >	Men's Nightwear & Pyjamas	;	9,561
+Clothing & Accessories >	Men's Underwear & Nightwear >	Men's Underwear Sets	;	9,569
+Clothing & Accessories >	Men's Underwear & Nightwear >	Men's Vests & Undershirts	;	9,565
+Clothing & Accessories >	Men's Underwear & Nightwear >	Miscellaneous Men's Underwear	;	9,570
+Clothing & Accessories >		Miscellaneous Clothing	;	100,000,296
+Clothing & Accessories >		Shoe Care & Accessories	;	100,000,294
+Clothing & Accessories >		Sunglasses	;	14,117
+Clothing & Accessories >	Travel Accessories >	Keyrings	;	8,526
+Clothing & Accessories >	Travel Accessories >	Other Travel Accessories	;	8,539
+Clothing & Accessories >	Travel Accessories >	Toiletry & Cosmetic Bags	;	8,540
+Clothing & Accessories >	Travel Accessories >	Umbrellas	;	8,519
+Clothing & Accessories >	Women's Accessories >	Miscellaneous Women's Accessories	;	14,008
+Clothing & Accessories >	Women's Accessories >	Women's Belts	;	13,436
+Clothing & Accessories >	Women's Accessories >	Women's Gloves & Mittens	;	13,041
+Clothing & Accessories >	Women's Accessories >	Women's Hats	;	13,492
+Clothing & Accessories >	Women's Accessories >	Women's Scarves & Shawls	;	13,202
+Clothing & Accessories >	Women's Accessories >	Women's Socks	;	14,055
+Clothing & Accessories >	Women's Clothing >	Miscellaneous Women's Clothing	;	13,913
+Clothing & Accessories >	Women's Clothing >	Women's Dresses	;	13,458
+Clothing & Accessories >	Women's Clothing >	Women's Jeans	;	13,175
+Clothing & Accessories >	Women's Clothing >	Women's Jumpers, Sweaters & Waistcoats	;	13,649
+Clothing & Accessories >	Women's Clothing >	Women's Outerwear	;	13,728
+Clothing & Accessories >	Women's Clothing >	Women's Shirts & Blouses	;	13,396
+Clothing & Accessories >	Women's Clothing >	Women's Shorts	;	13,321
+Clothing & Accessories >	Women's Clothing >	Women's Skirts	;	13,966
+Clothing & Accessories >	Women's Clothing >	Women's Suits & Blazers	;	13,138
+Clothing & Accessories >	Women's Clothing >	Women's Swimwear	;	13,088
+Clothing & Accessories >	Women's Clothing >	Women's T-Shirts	;	14,154
+Clothing & Accessories >	Women's Clothing >	Women's Trousers	;	12,979
+Clothing & Accessories >	Women's Fitness Clothing >	Miscellaneous Women's Fitness Clothing	;	13,752
+Clothing & Accessories >	Women's Fitness Clothing >	Women's Sports Tops	;	14,039
+Clothing & Accessories >	Women's Fitness Clothing >	Women's Tracksuit Bottoms & Joggers	;	13,198
+Clothing & Accessories >	Women's Fitness Clothing >	Women's Tracksuits & Sportswear Sets	;	9,342
+Clothing & Accessories >	Women's Lingerie >	Miscellaneous Women's Lingerie	;	13,666
+Clothing & Accessories >	Women's Lingerie >	Women's Bras	;	13,230
+Clothing & Accessories >	Women's Lingerie >	Women's Camisoles & Vests	;	13,022
+Clothing & Accessories >	Women's Lingerie >	Women's Dressing Gowns	;	12,988
+Clothing & Accessories >	Women's Lingerie >	Women's Hosiery	;	14,035
+Clothing & Accessories >	Women's Lingerie >	Women's Knickers	;	13,742
+Clothing & Accessories >	Women's Lingerie >	Women's Lingerie Sets	;	9,020
+Clothing & Accessories >	Women's Lingerie >	Women's Shapewear & Corsets	;	13,976
+Clothing & Accessories >	Women's Lingerie >	Women's Sleepwear & Pyjamas	;	13,413
+Clothing & Accessories >	Women's Lingerie >	Women's Shoes	;	13,130
+
+Computers & Software >	Blank Computer Media	;	13,838
+Computers & Software >	Bridges & Routers	;	14,000
+Computers & Software >	CD & DVD Drives	;	13,655
+Computers & Software >	CPUs & Computer Processor Upgrades	;	13,639
+Computers & Software >	Cable, DSL & Wireless Modems	;	14,109
+Computers & Software >	Computer Cases & Bags	;	13,820
+Computers & Software >	Computer Keyboards	;	14,103
+Computers & Software >	Computer Monitors	;	13,712
+Computers & Software >	Computer Speakers	;	14,069
+Computers & Software >	Desktop Computer Accessories	;	13,919
+Computers & Software >	Desktop Computers & Servers	;	13,967
+Computers & Software >	Digital Cameras	;	13,635
+Computers & Software >	Docking Stations	;	13,828
+Computers & Software >	Educational Software	;	13,119
+Computers & Software >	GPS Maps & Software	;	13,932
+Computers & Software >	Graphics Cards	;	13,650
+Computers & Software >	Hard Drives	;	13,684
+Computers & Software >	Headsets & Desktop Microphones	;	14,067
+Computers & Software >	Hobbies & Home Software	;	13,124
+Computers & Software >	Ink, Toner & Inkjet Cartridges	;	13,877
+Computers & Software >	Interface Cards	;	14,046
+Computers & Software >	Internet & Network Software	;	13,140
+Computers & Software >	Label Printers	;	9,832
+Computers & Software >	Laptop Accessories	;	13,908
+Computers & Software >	Laptop Computers >	Notebooks	;
+Computers & Software >	MP3 & Media Players	;	14,125
+Computers & Software >	MP3 Player Accessories	;	13,893
+Computers & Software >	Media Hubs	;	13,758
+Computers & Software >	Memory Card Readers	;	13,866
+Computers & Software >	Memory Cards	;	13,994
+Computers & Software >	Mice & Pointing Devices	;	14,004
+Computers & Software >	Miscellaneous Hardware	;	100,000,024
+Computers & Software >	Miscellaneous Software	;	13,176
+Computers & Software >	Monitor Accessories	;	13,923
+Computers & Software >	Motherboards	;	13,736
+Computers & Software >	Multimedia Software	;	13,116
+Computers & Software >	Network Adapters & Cards	;	14,121
+Computers & Software >	Network Hubs & Switches	;	14,105
+Computers & Software >	Networking Products	;	14,107
+Computers & Software >	Office, Tax & Accounting Software	;	13,148
+Computers & Software >	Operating Systems	;	13,145
+Computers & Software >	PC Cases & Drive Cases	;	13,997
+Computers & Software >	PDA & Handheld Computers	;	13,816
+Computers & Software >	PDA Accessories	;	13,841
+Computers & Software >	Power Supplies	;	13,871
+Computers & Software >	Printer Accessories	;	13,881
+Computers & Software >	Printers	;	13,740
+Computers & Software >	Programming Software	;	13,157
+Computers & Software >	RAM & Memory Upgrades	;	13,659
+Computers & Software >	Scanner Accessories	;	13,890
+Computers & Software >	Scanners	;	13,754
+Computers & Software >	Sound Cards	;	13,971
+Computers & Software >	System Cooling Equipment	;	14,096
+Computers & Software >	Tape Drives & Cartridge Drives	;	13,973
+Computers & Software >	UPS & Power Adapters	;	13,845
+Computers & Software >	USB Sticks	;	9,833
+Computers & Software >	Utility Software & Tools	;	13,159
+Computers & Software >	Video Editing & Capture Cards	;	13,756
+Computers & Software >	WebCams	;	13,642
+
+DVDs & Videos >	Action & Western DVDs	;	14,104
+DVDs & Videos >	Adult DVDs	;	14,173
+DVDs & Videos >	Anime DVDs	;	14,165
+DVDs & Videos >	Bollywood & World Cinema DVDs	;	14,124
+DVDs & Videos >	Children's DVDs	;	14,106
+DVDs & Videos >	Comedy DVDs	;	14,108
+DVDs & Videos >	Documentary DVDs	;	14,122
+DVDs & Videos >	Drama DVDs	;	14,112
+DVDs & Videos >	Horror & Thriller DVDs	;	14,126
+DVDs & Videos >	Miscellaneous DVDs	;	14,159
+DVDs & Videos >	Music & Musicals DVDs	;	14,128
+DVDs & Videos >	Science Fiction & Fantasy DVDs	;	14,136
+DVDs & Videos >	Sport & Fitness DVDs	;	14,139
+DVDs & Videos >	TV Series DVDs	;	14,133

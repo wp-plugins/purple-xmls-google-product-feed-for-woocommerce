@@ -34,8 +34,50 @@ jQuery( document ).ready(function() {
 
 				<!-- Attribute Mapping DropDowns -->
 				<div class="feed-left" id="attributeMappings">
-					<label for="categoryDisplayText">Please select an Amazon Template first to see the list of required attributes. <br> In the Template field start typing a template name.</label>
-					<p><a target='_blank' href='http://www.amazon.com/gp/help/customer/display.html/ref=hp_left_sib?ie=UTF8&nodeId=200186090#templates_tables'>View Amazon Templates</a></p>
+					<label for="categoryDisplayText">
+					<br>Templates differ by region, please refer to the table below. <br>
+					Type the template name in the field on the right.</label>
+					<br/>
+					<div class='amazon-template-table'>
+					<table>
+					<tr>
+						<th>Region</th>
+						<th>Template prefix</th>
+						<th>Example</th>
+					</tr>
+					<tr>
+						<td>US</td>
+						<td>Type template as is</td>
+						<td>Clothing</td>
+					</tr>
+					<tr>
+						<td>UK / GB</td>
+						<td>UK/</td>
+						<td>UK/ Home</td>
+					</tr>
+					<tr>
+						<td>Spain</td>
+						<td>ES/</td>
+						<td>ES/ Books</td>
+					</tr>
+					<tr>
+						<td>France</td>
+						<td>FR/</td>
+						<td>FR/ Lighting</td>
+					</tr>
+					<tr>					
+						<td>Germany</td>
+						<td>DE/</td>
+						<td>DE/ Sports</td>
+					</tr>
+					<tr>						
+						<td>Italy</td>
+						<td>IT/</td>
+						<td>IT/ Luggage</td>
+					</tr>
+					</table>
+					</div>
+					<p>Example: To target the "Amazon UK Home template", type: UK/ Home<br>Template names are in English</p>
 					<?php //echo $this->attributeMappings(); ?>
 				</div>
 
@@ -72,19 +114,6 @@ jQuery( document ).ready(function() {
 						<div id="feed-error-display">&nbsp;</div>
 						<div id="feed-status-display">&nbsp;</div>
 					</div>
-
-					<!-- ROW 5: Upload Credentials
-					<div class="feed-right-row">
-							<?php echo $this->uploadFeed(); ?>
-					</div>
-
-					ROW 6: Upload Feed Button
-					<div class="feed-right-row">
-							<input class="cupid-green" type="button" onclick="doUploadFeed('<?=$this->servName;?>','<?=$this->service_name;?>', <?=get_current_user_id()?>)" value="Upload Feed" />
-							<div id="feed-error-display2">&nbsp;</div>
-							<div id="feed-status-display2">&nbsp;</div>
-					</div>
-					-->
 
 				</div>
 

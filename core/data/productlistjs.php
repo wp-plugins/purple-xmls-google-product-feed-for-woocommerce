@@ -11,6 +11,8 @@
 class PProductList {
 
 	public $products = null;
+	
+	public $productStart = -1;
 
 	//********************************************************************
 	//Load the products from the DB
@@ -27,12 +29,15 @@ class PProductList {
 		$parent->logActivity('Reading products...');
 
 		if ($parent->has_product_range)
-			$limit = 'LIMIT ' . $parent->product_limit_low . ', ' . $parent->product_limit_high;
+			$limit = 'LIMIT ' . $parent->product_limit_low . ', ' . ($parent->product_limit_high - $parent->product_limit_low);
 		else
 			$limit = '';
 
+		if ($this->productStart > -1)
+			$limit = 'LIMIT ' . $this->productStart . ', 50000';
+
 		$sql = '
-			SELECT id, shopify_id, shopify_handle, title, description, vendor, price, stock_quantity, attributes, parent_id, parent_shopify_id, categories
+			SELECT id, shopify_id, shopify_handle, title, description, vendor, price, stock_quantity, attributes, attribute_overrides, parent_id, parent_shopify_id, categories
 			FROM #__rapidcart_products
 			WHERE (shop_id = ' . $shopID . ') AND (state = 1)
 		' . $limit;
@@ -98,6 +103,28 @@ class PProductList {
 			} else
 				$item->attributes = array();
 
+			//Pre-process the attributes
+			foreach($item->attributes as $attributeIndex => $attribute) {
+
+				//For WordPress, _product_attributes is a special sub-attribute list
+				//This code should be moved into jobs one day so that it doesn't slow down feed loading
+				if ($attributeIndex == '_product_attributes') {
+					if ($attribute[0] != 's') $attribute = ''; //Minor anti-hack protection
+					$attribute = unserialize($attribute);
+					if ($attribute[0] != 'a') $attribute = ''; //Minor anti-hack protection
+					if (strlen($attribute) == 0)
+						$list = array();
+					else
+						$list = unserialize($attribute);
+					foreach($list as $listIndex => $listItem) {
+						if (isset($item->attributes[$listIndex]) && strlen($item->attributes[$listIndex]) > 0)
+							$listIndex = '@' . $listIndex; //Displaced attribute!
+						$item->attributes[$listIndex] = $listItem['value'];
+					}
+				}
+
+			}
+
 			//Carry on defining product
 			if (!isset($item->attributes['id']))
 				$item->attributes['id'] = $prod->id;
@@ -109,7 +136,13 @@ class PProductList {
 			$item->attributes['isVariation'] = false;
 			$item->description_short = substr(strip_tags($prod->description), 0, 1000);
 			$item->description_long = substr(strip_tags($prod->description), 0, 1000);
-			$item->attributes['valid'] = true;
+			if (isset($item->attributes['valid'])) {
+				$valid = strtolower($item->attributes['valid']);
+				$item->attributes['valid'] = true;
+				if ($valid == 'false') $item->attributes['valid'] = false;
+				if ($valid == 'true') $item->attributes['valid'] = true;
+			} else
+				$item->attributes['valid'] = true;
 			if ($prod->parent_id > 0)
 			$item->attributes['item_group_id'] = $prod->parent_id;
 
@@ -153,6 +186,9 @@ class PProductList {
 						//$item->attributes['link'] = $shopName . '/?product=' . $item->attributes['CLEAN_URL'];
 					elseif (isset($item->attributes['_shorten_url_bitly']) && strlen($item->attributes['_shorten_url_bitly']) > 0)
 						$item->attributes['link'] = $item->attributes['_shorten_url_bitly'];
+					//_stock should go to jobs queue
+					if (isset($item->attributes['_stock']) && $item->attributes['_stock'] > 0)
+						$item->attributes['stock_quantity'] = $item->attributes['_stock'];
 					break;
 				case 2:
 					//$item->attributes['link'] = $shopName . $item->attributes['link'];
@@ -168,10 +204,18 @@ class PProductList {
 					$item->attributes['image_url'] = $shopName . '/image/' . $item->attributes['image_url'];
 					break;
 			}
+
+			//Product overrides look like WordPress custom fields
+			if (strlen($prod->attribute_overrides) > 0) {
+				$overrides = json_decode($prod->attribute_overrides);
+				$overrides = get_object_vars($overrides);
+				foreach($overrides as $key => $value)
+					$item->attributes[$key] = $value;
+			}
 			
 			if (isset($item->attributes['image_url']))
 				$item->attributes['feature_imgurl'] =  $item->attributes['image_url'];
-			else
+			elseif (!isset($item->attributes['feature_imgurl']))
 				$item->attributes['feature_imgurl'] = '';
 			$item->attributes['condition'] = 'New';
 			if (isset($item->attributes['price']))
