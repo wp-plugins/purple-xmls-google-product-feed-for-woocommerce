@@ -6,7 +6,6 @@
 	  Copyright 2014 Purple Turtle Productions. All rights reserved.
 		license	GNU General Public License version 3 or later; see GPLv3.txt
 	By: Calv 2014-14-10
-
   ********************************************************************/
 
 require_once dirname(__FILE__) . '/../basicfeed.php';
@@ -29,7 +28,7 @@ class PeBaySellerFeed extends PCSVFeedEx
 		$this->addAttributeMapping('Action', 'Action',true,true); //should select from list of valid values
 		$this->addAttributeMapping('category', 'Category',true,true);
 		$this->addAttributeMapping('title', 'Title',true,true);
-		$this->addAttributeMapping('description', 'Description',true,true);	
+		$this->addAttributeMapping('description', 'Description',true,true);			
 		$this->addAttributeMapping('feature_imgurl', 'PicURL',true);
 		$this->addAttributeMapping('price', 'StartPrice',true,true);
 		$this->addAttributeMapping('quantity', 'Quantity',true,true);	
@@ -65,8 +64,9 @@ class PeBaySellerFeed extends PCSVFeedEx
 		$this->addAttributeMapping('PayPalEmailAddress', 'PayPalEmailAddress');	
 
 		//category2 available
-		$this->addAttributeMapping('Category', 'Category2',true);
+		$this->addAttributeMapping('Category2', 'Category2',true);
 
+		$this->addRule( 'description', 'description',array('strict') );
 		$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
 		$this->addRule('price_rounding','pricerounding');	
 		$this->addRule( 'csv_standard', 'CSVStandard',array('title','80') ); 
@@ -131,12 +131,12 @@ class PeBaySellerFeed extends PCSVFeedEx
 					$product->attributes['weight_unit'] = 'kg';
 					break;
 				case 'g':
-					$product->attributes['WeightMajor'] = 0;
+					$product->attributes['WeightMajor'] = '';
 					$product->attributes['WeightMinor'] = round($shippingWeight*0.1, 0);
 					$product->attributes['weight_unit'] = 'g';
 					break;
 				case 'oz':
-					$product->attributes['WeightMajor'] = 0;	
+					$product->attributes['WeightMajor'] = '';	
 					$product->attributes['WeightMinor'] = round($shippingWeight, 0);
 					$product->attributes['weight_unit'] = 'oz';
 					break;
@@ -146,7 +146,8 @@ class PeBaySellerFeed extends PCSVFeedEx
 					$product->attributes['weight_unit'] = $this->weight_unit;		
 			}		
 		}
-
+		else
+			$product->attributes['weight_unit'] = ''; //weight unit not required for flat-rate shipping
 		
 		return parent::formatProduct($product);
 	}

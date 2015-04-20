@@ -30,9 +30,9 @@ class PShareASaleAFeed extends PCSVFeed {
 		$this->addAttributeMapping('link', 'Link');
 		$this->addAttributeMapping('other_image_url_0', 'Thumbnail');
 		$this->addAttributeMapping('feature_imgurl', 'BigImage');
-		$this->addAttributeMapping('regular_price', 'Price');
+		$this->addAttributeMapping('price', 'Price');
 		$this->addAttributeMapping('regular_price', 'RetailPrice');
-		$this->addAttributeMapping('category', 'Category');
+		$this->addAttributeMapping('current_category', 'Category');
 		$this->addAttributeMapping('subcategory', 'SubCategory');
 		$this->addAttributeMapping('description', 'Description');
 		$this->addAttributeMapping('brand', 'Manufacturer');
@@ -40,11 +40,14 @@ class PShareASaleAFeed extends PCSVFeed {
 		$this->addAttributeMapping('merchant_category', 'MerchantCategory');
 		$this->addAttributeMapping('merchant_subcategory', 'MerchantSubcategory');
 		$this->addAttributeMapping('description_short', 'ShortDescription');
-		$this->addAttributeMapping('isbn', 'ISBN');
-		$this->addAttributeMapping('upc', 'UPC');
-		$this->addAttributeMapping('last_updated', 'LastUpdated');
-		$this->addAttributeMapping('status', 'status');
-		
+		$this->addAttributeMapping('', 'ISBN');
+		$this->addAttributeMapping('', 'UPC');
+		$this->addAttributeMapping('', 'LastUpdated');
+		$this->addAttributeMapping('', 'status');
+
+		$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
+		$this->addRule('price_rounding','pricerounding'); //2 decimals	
+		$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree	
 	}
 
 	function formatProduct($product) {
@@ -61,6 +64,7 @@ class PShareASaleAFeed extends PCSVFeed {
 			$this->merchant = '';
 		}
 
+		$product->attributes['current_category'] = $this->current_category;
 		//********************************************************************
 		//Prepare
 		//********************************************************************

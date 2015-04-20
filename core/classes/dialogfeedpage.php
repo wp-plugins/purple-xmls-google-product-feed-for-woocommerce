@@ -35,7 +35,7 @@ class PFeedPageDialogs {
 		$output = '
 			<div class="postbox" style="width:98%;">
 				<div class="inside-export-target">
-					<div style="position:absolute;">
+					<div>
 						<h4>Select Merchant Type</h4>
 						<select id="selectFeedType" onchange="doSelectFeed();">
 						<option></option>' . 

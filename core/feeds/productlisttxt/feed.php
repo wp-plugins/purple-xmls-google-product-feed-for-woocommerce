@@ -22,17 +22,12 @@ class PProductlisttxtFeed extends PCSVFeedEx {
 		$this->fileformat = 'txt';
 		$this->stripHTML = true;
 
-		$this->addAttributeMapping('description', 'description', true);
+		//$this->addAttributeMapping('description', 'description', true);
 		$this->addAttributeMapping('local_category', 'local_category', true);
 
-		if ($pfcore->callSuffix == 'W')
-			$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree
-		//$this->addRule('price_rounding','pricerounding'); //2 decimals
-		//$this->addRule( 'description', 'description',array('max_length=8','strict') ); 
-		
-		//Description and title: escape any quotes
-		$this->addRule( 'csv_standard', 'CSVStandard',array('title') ); 
-		$this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 
+		//if ($pfcore->callSuffix == 'W')
+		$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree
+		$this->addRule('price_rounding','pricerounding'); //2 decimals
 
 	}
   
@@ -45,8 +40,11 @@ class PProductlisttxtFeed extends PCSVFeedEx {
 		if ($this->mapAttributesOnTheFly)
 			foreach($product->attributes as $key => $value)
 				if ($this->getMappingByMapto($key) == null)
-					if ($key != 'category_ids')
+					if ($key != 'category_ids') {
 						$this->addAttributeMapping($key, $key, true);
+						//enclose in quotes + escape any inner quotes
+						$this->addRule( 'csv_standard', 'CSVStandard',array($key) );
+					}
 
 		return parent::formatProduct($product);
 

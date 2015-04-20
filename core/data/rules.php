@@ -178,6 +178,8 @@ class PFeedRuleDescription extends PFeedRule {
 				}
 			}
 			$product->attributes['description'] = $description;
+			$product->attributes['description_long'] = $description;
+			//$product->attributes['description_short'] = $description_short;
 		}
 
 		if (strlen($product->attributes['description']) > $this->max_description_length) {		
@@ -185,11 +187,11 @@ class PFeedRuleDescription extends PFeedRule {
 			//"wordwrap", taken off SE.
 			$product->attributes['description'] = substr($product->attributes['description'], 0, strpos($product->attributes['description'], ' ', $this->max_description_length));
 			//add ellipses
-			if ( $product->attributes['description'] < 2000 ) //some MAX_LENGTH (provider dependent)
+			if ( $product->attributes['description'] < 5000 ) //some MAX_LENGTH (provider dependent)
 				$product->attributes['description'] .= '...';
 		}
 		
-	}
+	}//rule description process
 
 }
 
@@ -589,7 +591,9 @@ class PFeedRulePos extends PFeedRule {
 // 	$this->order = 190;
 // }
 	public function process($product) {
-	
+
+		$this->resolveVirtualParameters();
+
 		if (!isset($product->attributes[$this->parametersV[0]]))
 			return;
 		if (count($this->parametersV) < 2)
@@ -662,6 +666,12 @@ class PFeedRuleStrReplace extends PFeedRule {
 
 class PFeedRuleSubstr extends PFeedRule {
 
+	public function initialize() {
+
+		parent::initialize();
+ 		$this->order = 205; //after rule pos
+
+ 	}
 	public function process($product) {
 		$this->resolveVirtualParameters();
 
@@ -840,12 +850,16 @@ class PFeedRuleRemoveAttributeCondition extends PFeedRule {
 
 //Escape quotes in csv/txt files
 class PFeedRuleCSVStandard extends PFeedRule {
-	
+	//csvstandard should also elminiate characters outside \x20-\x7E ...what about other language chars? -cg
+	public function initialize() {
+		parent::initialize();
+		$this->order = 210; //after description(strict)
+	}
 	public function process($product) {
 
 		//$this->resolveVirtualParameters();
 
-		if (!isset($product->attributes[$this->parameters[0]]))
+		if (!isset($product->attributes[$this->parameters[0]]) || !is_string($product->attributes[$this->parameters[0]]))
 			return;
 		
 		if ( !isset($this->parameters[1]) ) 

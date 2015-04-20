@@ -9,10 +9,9 @@
 	********************************************************************/
 
 	define ('XMLRPC_REQUEST', true);
-	ob_start(null);
+	ob_start(null, 0, PHP_OUTPUT_HANDLER_CLEANABLE);
 
 	require_once dirname(__FILE__) . '/../../../../../../wp-load.php';
-	ob_clean();
 	global $wpdb;
 
 	$token = safeGetPostData('token');
@@ -149,6 +148,8 @@
 			$thisResultWeight = $product->get_weight();
 			if ( $thisResultWeight != '')
 				$this_result->weight = $thisResultWeight;
+			else
+				$this_result->weight = 0; //Required field for RC
 			
 			$this_result->valid = true;
 			//Stock
@@ -204,6 +205,7 @@
 		$result->categoryCount = $data[0]->count_of_categories;
 	}
 
+	ob_clean();
 	echo json_encode($result);
 
 	/*function finalProduct($chosen) {
@@ -239,9 +241,11 @@
 		$this_result->sale_price = $product->sale_price;
 		$this_result->sku = $product->sku;
 		
-		$thisResultWeight = get_weight();
+		$thisResultWeight = $product->get_weight();
 		if ( $thisResultWeight != '')
 			$this_result->weight = $thisResultWeight;
+		else
+			$this_result->weight = 0;
 
 		$this_result->valid = true;
 		//Stock

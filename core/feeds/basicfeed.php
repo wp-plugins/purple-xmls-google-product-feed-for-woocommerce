@@ -801,12 +801,14 @@ class PAggregateFeed extends PBasicFeed {
 		$this->productCount = 0;
 		$this->file_name_short = $file_name;
 
-		global $pfcore;
-		$data = $pfcore->settingGet('cpf_aggrfeedlist_' . $id);
-		$data = explode(',', $data);
-		$this->feeds = array();
-		foreach($data as $datum)
-			$this->feeds[$datum] = true;
+		if ( !isset($this->feeds) || count($this->feeds) == 0) {
+			global $pfcore;
+			$data = $pfcore->settingGet('cpf_aggrfeedlist_' . $id);
+			$data = explode(',', $data);
+			$this->feeds = array();
+			foreach($data as $datum)
+				$this->feeds[$datum] = true;
+		}
 
   }
 

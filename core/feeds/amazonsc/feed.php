@@ -170,8 +170,8 @@ class PAmazonSCFeed extends PCSVFeed
 			$product->attributes['category'] = $this->current_category;
 
 			//sometimes templates only have one feed_product_type.
-			if (isset($this->feed_product_type))
-				if ( (strlen($this->feed_product_type) > 0) || (strlen($product->attributes['feed_product_type']) == 0) )
+			if (isset($this->feed_product_type) && strlen($this->feed_product_type) > 0)
+				if (isset($product->attributes['feed_product_type']) && (strlen($product->attributes['feed_product_type']) == 0) )
 					$product->attributes['feed_product_type'] = $this->feed_product_type;
 
 			if (!isset($product->attributes['currency']) || (strlen($product->attributes['currency']) == 0))

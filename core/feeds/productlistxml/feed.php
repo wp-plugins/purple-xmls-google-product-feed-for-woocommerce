@@ -61,7 +61,8 @@ class PProductlistxmlFeed extends PXMLFeed {
 				if ($this->getMappingByMapto($key) == null)
 					if ($key != 'category_ids')
 					{					
-						$this->addAttributeMapping($key, str_replace(' ', '_', $key), $this->forceCData);
+						//temp solution for spaces in xml names. Need solution for all illegal chars: /, <, >
+						$this->addAttributeMapping($key, str_replace(' ', '._', $key), $this->forceCData);
 					}
 			}
 
