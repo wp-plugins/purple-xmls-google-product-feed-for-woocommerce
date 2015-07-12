@@ -362,14 +362,30 @@ class PProductList {
 			//Basics
 			$item->id = $prod->ID;
 			$item->attributes['id'] = $prod->ID;
-			$item->attributes['title'] = $prod->post_title;
+			if (function_exists(qtranxf_use)){
+				$item->attributes['title'] = qtranxf_useCurrentLanguageIfNotFoundShowEmpty($prod->post_title);
+			}
+			else{
+				$item->attributes['title'] = $prod->post_title;
+			}
 			$item->taxonomy = $category_names;
 			$item->attributes['isVariable'] = $prod->product_type == 'variable';
 			$item->attributes['isVariation'] = false;
 			$item->description_short = substr(strip_shortcodes(strip_tags($prod->post_excerpt)), 0, 5000);
-			if ( isset($item->description_short) )
-				$item->attributes['description_short'] = $item->description_short;
-			$item->description_long = substr(strip_shortcodes(strip_tags($prod->post_content)), 0, 5000);
+			if ( isset($item->description_short) ){
+				if (function_exists(qtranxf_use)){
+					$item->attributes['description_short'] = qtranxf_useCurrentLanguageIfNotFoundShowEmpty($item->description_short);
+				}
+				else{
+					$item->attributes['description_short'] = $item->description_short;
+				}
+			}
+			if (function_exists(qtranxf_use)){
+				$item->description_long = qtranxf_useCurrentLanguageIfNotFoundShowEmpty(substr(strip_shortcodes(strip_tags($prod->post_content)), 0, 5000));
+			}
+			else{
+				$item->description_long = substr(strip_shortcodes(strip_tags($prod->post_content)), 0, 5000);
+			}
 			if ( isset($item->description_long) )
 				$item->attributes['description_long'] = $item->description_long;
 			$item->attributes['valid'] = true;
