@@ -19,11 +19,7 @@ class PShareASaleFeed extends PCSVFeedEx {
 		$this->providerName = 'ShareASale';
 		$this->providerNameL = 'shareasale';
 		$this->fileformat = 'csv';
-		$this->fields = array('SKU','Name','URL to product','Price','Retail Price','URL to image',
-			'URL to thumbnail image','Commission','Category','SubCategory','Description',
-			'SearchTerms','Status','Your MerchantID', 'Custom 1', 'Custom 2', 'Custom 3',
-			'Custom 4', 'Custom 5','Manufacturer','PartNumber','MerchantCategory',
-			'MerchantSubcategory','ShortDescription','ISBN','UPC');
+		//$this->fields = array();
 		$this->fieldDelimiter = ',';
 		$this->stripHTML = true;
 
@@ -36,6 +32,9 @@ class PShareASaleFeed extends PCSVFeedEx {
 		$this->addAttributeMapping('feature_imgurl', 'Full Image');
 		$this->addAttributeMapping('other_image_url_0', 'Thumbnail Image');
 		$this->addAttributeMapping('', 'Commission');
+		//Dollar amount of product commission (do not enter in a commission percentage). 
+		//This will not affect the tracking or the actual commission rewarded on the sale, 
+		//and is only for a quick reference for the affiliate.
 		$this->addAttributeMapping('current_category', 'Category',true,true);
 //Missing ShareASale SubCategories
 		$this->addAttributeMapping('subcategory', 'SubCategory',true,true); //10
@@ -52,7 +51,7 @@ class PShareASaleFeed extends PCSVFeedEx {
 		$this->addAttributeMapping('', 'PartNumber');
 		$this->addAttributeMapping('localCategory', 'MerchantCategory');
 		$this->addAttributeMapping('', 'MerchantSubcategory'); 
-		$this->addAttributeMapping('description_short', 'ShortDescription');
+		$this->addAttributeMapping('description_short', 'ShortDescription',true);
 		$this->addAttributeMapping('', 'ISBN');
 		$this->addAttributeMapping('', 'UPC');
 	// these were found from exampledatafeed csv file	
@@ -84,9 +83,6 @@ class PShareASaleFeed extends PCSVFeedEx {
 		$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
 		$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree		
 		$this->addRule('price_rounding','pricerounding'); //2 decimals	 
-		//Description and title: escape any quotes
-		$this->addRule( 'csv_standard', 'CSVStandard',array('title') ); 
-		$this->addRule( 'csv_standard', 'CSVStandard',array('description') );
 	
 	}
 
@@ -95,8 +91,9 @@ class PShareASaleFeed extends PCSVFeedEx {
 		//********************************************************************
 		//Prepare
 		//********************************************************************
-		$product->attributes['merchant_id'] = $this->merchant_id;
-		$product->attributes['description_short'] = $product->description_short;
+		if ( isset($this->merchant_id) )
+			$product->attributes['merchant_id'] = $this->merchant_id;
+		//$product->attributes['description_short'] = $product->description_short;
 
 		if ($product->attributes['stock_status'] == 1)
 			$product->attributes['stock_status'] = 'instock';

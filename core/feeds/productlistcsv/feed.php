@@ -43,7 +43,6 @@ class PProductlistcsvFeed extends PCSVFeedEx {
 				if ($this->getMappingByMapto($key) == null)
 					if ($key != 'category_ids' ) {
 						$this->addAttributeMapping($key, $key, true); 
-						$this->addRule( 'csv_standard', 'CSVStandard',array($key) );
 					}
 
 		return parent::formatProduct($product);

@@ -12,7 +12,7 @@
 
 	//product_id on by default
 	$external_product_id_required = true;
-	$this->addAttributeMapping('- select UPC/EAN attribute -', 'external_product_id', true, $external_product_id_required)->localized_name = 'Product ID'; //ex: 0452011876
+	$this->addAttributeMapping('', 'external_product_id', true, $external_product_id_required)->localized_name = 'Product ID'; //ex: 0452011876
 
 	//brand required by default
 	$brandRequired = true;
@@ -33,8 +33,8 @@
 	//standard_price, currency, quantity, condition
 	//sale_price (sale_from_date, sale_end_date),	
 	$this->addAttributeMapping('sale_price', 'sale_price',true,false)->localized_name = 'Sale Price';		
-	$this->addAttributeMapping('sale_price_dates_from', 'sale_from_date',true,false)->localized_name = 'Sale From Date';
-	$this->addAttributeMapping('sale_price_dates_to', 'sale_end_date',true,false)->localized_name = 'Sale End Date';
+	$this->addAttributeMapping('sale_from_date', 'sale_from_date',true,false)->localized_name = 'Sale From Date';
+	$this->addAttributeMapping('sale_end_date', 'sale_end_date',true,false)->localized_name = 'Sale End Date';
 
 
 /*** Dimension ***/

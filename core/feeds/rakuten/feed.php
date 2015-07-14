@@ -46,7 +46,7 @@ class PRakutenFeed extends PCSVFeedEx {
 		$this->addRule('price_rounding','pricerounding'); //2 decimals
 		$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree
 		//escape any quotes
-		$this->addRule( 'csv_standard', 'CSVStandard',array('description_short','250') );
+		//$this->addRule( 'csv_standard', 'CSVStandard',array('description_short','250') );
 	}
 	
 	function getFeedHeader($file_name, $file_path) 
@@ -84,8 +84,7 @@ class PRakutenFeed extends PCSVFeedEx {
 		foreach($this->attributeMappings as $thisAttributeMapping) 
 		{
 			if ( $thisAttributeMapping->isRequired && 
-				($thisAttributeMapping->mapTo == 'ProductId' || 
-				$thisAttributeMapping->mapTo == 'ProductIdType' || 
+				($thisAttributeMapping->mapTo == 'ProductIdType' || 
 				$thisAttributeMapping->mapTo == 'OfferExpeditedShipping') ) 
 			{		
 				if ( !isset($product->attributes[$thisAttributeMapping->attributeName]) || strlen($product->attributes[$thisAttributeMapping->attributeName]) == 0 )

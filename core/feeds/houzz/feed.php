@@ -31,7 +31,7 @@ class PHouzzFeed extends PCSVFeedEx
 		$this->addAttributeMapping('', 'Parentage',true);
 		$this->addAttributeMapping('', 'RelationshipType',true);
 		$this->addAttributeMapping('', 'VariationTheme',true);
-		$this->addAttributeMapping('n/a', 'UPC',true,true); //n/a allowed
+		$this->addAttributeMapping('upc', 'UPC',true,true); //n/a allowed
 		$this->addAttributeMapping('title', 'Title',true,true);	
 		$this->addAttributeMapping('link', 'ProductUrl',true,true);	
 		$this->addAttributeMapping('description', 'Description',true,true);		
@@ -69,8 +69,9 @@ class PHouzzFeed extends PCSVFeedEx
 		$this->addRule('price_rounding','pricerounding');
 		$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
 		//$this->addRule('description', 'description', array('strict'));
-		$this->addRule( 'csv_standard', 'CSVStandard',array('title','80') ); //Houzz product titles are limited to 80 characters
-		$this->addRule( 'csv_standard', 'CSVStandard',array('description') ); //65000 max?
+		//$this->addRule( 'csv_standard', 'CSVStandard',array('title','80') ); //Houzz product titles are limited to 80 characters
+		$this->addRule( 'substr','substr', array('title','0','80',true) ); //80 length
+		//$this->addRule( 'csv_standard', 'CSVStandard',array('description') ); //65000 max?
 	}
 
 	function formatProduct($product) {
@@ -84,7 +85,7 @@ class PHouzzFeed extends PCSVFeedEx
 		}
 //upc
 		if ( !isset($product->attributes['upc']) ) 
-			$product->attributes['n/a'] = 'n/a';
+			$product->attributes['upc'] = 'n/a';
 
 //ProductURL: automatically pulled from "link". If you do not have a URL for the product, include your company website.
 
@@ -95,8 +96,8 @@ class PHouzzFeed extends PCSVFeedEx
 		else
 			$product->attributes['current_category'] = 'no_category_selected';
 //style: 14 different styles
-		if ( !isset($product->attributes['Style']) )
-			$product->attributes['Style'] = 'see Houzz template for acceptable entries';
+		// if ( !isset($product->attributes['Style']) )
+		// 	$product->attributes['Style'] = 'see Houzz template for acceptable entries';
 //additional images	
 		$image_count = 1;
 		foreach($product->imgurls as $imgurl) {
@@ -113,7 +114,7 @@ class PHouzzFeed extends PCSVFeedEx
 			{				
 				if ( !isset($product->attributes[$thisAttributeMapping->attributeName]) || strlen($product->attributes[$thisAttributeMapping->attributeName]) == 0 )
 				{
-					$this->addErrorMessage(19000, 'Missing required: ' . $thisAttributeMapping->mapTo);
+					$this->addErrorMessage(19000, 'Missing required values for LeadTimeMax or LeadTimeMin');
 					$this->productCount--;
 				}
 			}
@@ -128,7 +129,6 @@ class PHouzzFeed extends PCSVFeedEx
 		}
 		return parent::formatProduct($product);
 
-		//$this->productCount--;
 
 	}//formatProduct	
 

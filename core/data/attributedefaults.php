@@ -84,6 +84,39 @@ class PActionAfterFeed extends PAttributeDefault {
 //Built-in Feed Modifiers
 //********************************************************************
 
+//Look up category and copy it to an attribute. Designed for WP-ECommerce. Needs testing in woo
+class PCategoryLookUp extends PAttributeDefault {
+
+	public function getValue($item) {
+
+		global $pfcore;
+		if ($pfcore->callSuffix[0] == 'W') {
+			global $wpdb;
+			$id = $item->attributes['id'];
+			$sql = "
+				SELECT postsAsTaxo.ID, category_terms.name as category_name, category_terms.term_id as category_id
+				FROM $wpdb->posts postsAsTaxo
+				LEFT JOIN $wpdb->term_relationships category_relationships ON (postsAsTaxo.ID = category_relationships.object_id)
+				LEFT JOIN $wpdb->term_taxonomy category_taxonomy ON (category_relationships.term_taxonomy_id = category_taxonomy.term_taxonomy_id)
+				LEFT JOIN $wpdb->terms category_terms ON (category_taxonomy.term_id = category_terms.term_id)
+				#LEFT JOIN $wpdb->term_taxonomy parent_taxonomy on (category_taxonomy.parent = parent_taxonomy.term_taxonomy_id) #Woo?
+				#LEFT JOIN $wpdb->terms parent_taxonomy_name on (parent_taxonomy.term_id = parent_taxonomy_name.term_id) #Woo?
+				LEFT JOIN $wpdb->terms parent_taxonomy_name on (category_taxonomy.parent = parent_taxonomy_name.term_id)
+				WHERE (category_taxonomy.taxonomy = 'wpsc_product_category') AND (postsAsTaxo.ID = $id) AND (parent_taxonomy_name.name = '$this->attributeName')
+			";
+			$categories = $wpdb->get_results($sql);
+
+			if (count($categories) > 0)
+				return $categories[0]->category_name;
+			else
+				return '';
+
+		}
+
+	}
+
+}
+
 //Category Tree: display the full category for an item.
 
 class PCategoryTree extends PActionBeforeFeed {
@@ -197,7 +230,7 @@ class PGraziaBusinessRule extends PActionBeforeFeed {
 
 		if ( strlen($item->attributes[$this->attributeName]) > 0 ) {
 			if ( strtolower( $item->attributes[str_replace('"','',$this->attributeName)] ) == 'no' ) 
-				$item->attributes['stock'] = 0;
+				$item->attributes['stock_quantity'] = 0;
 		}
 		return '';
 	}
@@ -271,9 +304,15 @@ class PMergeFields extends PActionBeforeFeed {
 
 class PSalePriceIfDefined extends PActionBeforeFeed {
 
-	public function getValue($item) {
-		if ($item->attributes['has_sale_price'])
-			return $item->attributes['sale_price'];
+	public function getValue($item) 
+	{
+		if ($item->attributes['has_sale_price']) 
+		{
+			if ( $item->attributes['sale_price'] > 0 )
+				return $item->attributes['sale_price'];
+			else 
+				return $item->attributes['regular_price'];
+		}
 		else
 			return $item->attributes['regular_price'];
 	}

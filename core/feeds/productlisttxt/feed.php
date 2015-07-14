@@ -42,8 +42,12 @@ class PProductlisttxtFeed extends PCSVFeedEx {
 				if ($this->getMappingByMapto($key) == null)
 					if ($key != 'category_ids') {
 						$this->addAttributeMapping($key, $key, true);
-						//enclose in quotes + escape any inner quotes
-						$this->addRule( 'csv_standard', 'CSVStandard',array($key) );
+						//enclose in quotes + escape any inner quotes						
+						// $this->addRule( 'csv_standard', 'CSVStandard', array($key) );
+						// //apply strictAttribute rule (to remove special chars) to descriptions
+						// if ( strpos($key,'descr') !== false )
+						// 	$this->addRule( 'strict_attribute','strictAttribute', array($key) );
+						
 					}
 
 		return parent::formatProduct($product);

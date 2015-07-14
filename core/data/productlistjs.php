@@ -134,8 +134,9 @@ class PProductList {
 			$item->taxonomy = '';
 			$item->attributes['isVariable'] = false;
 			$item->attributes['isVariation'] = false;
-			$item->description_short = substr(strip_tags($prod->description), 0, 1000);
-			$item->description_long = substr(strip_tags($prod->description), 0, 1000);
+			$item->description_short = substr(strip_tags($prod->description), 0, 8000);
+			$item->description_long = substr(strip_tags($prod->description), 0, 8000);
+			$item->attributes['stock_quantity'] = 0;
 			if (isset($item->attributes['valid'])) {
 				$valid = strtolower($item->attributes['valid']);
 				$item->attributes['valid'] = true;
@@ -233,7 +234,7 @@ class PProductList {
 			//In-stock status
 			$item->attributes['stock_status'] = 1;
 			if (isset($item->attributes['inventory_quantity']))
-			$item->attributes['stock_quantity'] = $item->attributes['inventory_quantity'];
+				$item->attributes['stock_quantity'] = $item->attributes['inventory_quantity'];
 			if ($prod->stock_quantity == 0)
 				$item->attributes['stock_status'] = 0;
 			//Hide out of stock

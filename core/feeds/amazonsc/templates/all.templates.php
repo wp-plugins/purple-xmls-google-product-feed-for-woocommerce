@@ -39,7 +39,7 @@
 								   || $this->template == 'jewelry' 
 								   || $this->template == 'software.and.video games' 
 								   || $this->template == 'sports collectibles');
-	$this->addAttributeMapping('- select UPC/EAN attribute -', 'external_product_id', true, $external_product_id_required)->localized_name = 'Product ID'; //ex: 0452011876
+	$this->addAttributeMapping('', 'external_product_id', true, $external_product_id_required)->localized_name = 'Product ID'; //ex: 0452011876
 	
 	//Description: optional by default
 	$descriptionRequired = ($this->template == 'pet supplies' || 

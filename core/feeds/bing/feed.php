@@ -48,7 +48,7 @@ class PBingFeed extends PCSVFeedEx
 		$this->addAttributeMapping('current_category', 'B_Category'); //desired bing category
 		$this->addAttributeMapping('condition', 'Condition');
 		$this->addAttributeMapping('', 'Expiration_date');
-		$this->addAttributeMapping('', 'Multippack');
+		$this->addAttributeMapping('', 'Multipack');
 		$this->addAttributeMapping('', 'Product_type');
 		//optional - apparel products
 		$this->addAttributeMapping('', 'Gender');
@@ -68,9 +68,10 @@ class PBingFeed extends PCSVFeedEx
 		$this->addAttributeMapping('sale_price', 'Sale_price');
 		$this->addAttributeMapping('', 'Sale_price_effective_date');
 		
-		$this->addRule( 'description', 'description',array('max_length=5000','strict') );
-		$this->addRule( 'csv_standard', 'CSVStandard',array('title','150') );
-		$this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 		
+		$this->addRule( 'description', 'description', array('max_length=5000','strict') );
+		// $this->addRule( 'csv_standard', 'CSVStandard',array('title','150') );
+		// $this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 
+		$this->addRule( 'substr','substr', array('title','0','150',true) ); //150 length		
 	}
 
   function formatProduct($product) {

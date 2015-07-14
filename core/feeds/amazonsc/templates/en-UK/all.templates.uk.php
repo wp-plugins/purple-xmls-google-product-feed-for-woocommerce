@@ -13,7 +13,7 @@
 	$external_product_id_required = !($thisHeaderTemplateType == 'jewelry' ||
 									  $thisHeaderTemplateType == 'baby' ||
 									  $thisHeaderTemplateType == 'lighting');
-	$this->addAttributeMapping('- select UPC/EAN attribute -', 'external_product_id', true, $external_product_id_required)->localized_name = 'Product ID'; //ex: 0452011876
+	$this->addAttributeMapping('', 'external_product_id', true, $external_product_id_required)->localized_name = 'Product ID'; //ex: 0452011876
 
 	//brand: required by default
 	$brandRequired = !($thisHeaderTemplateType == 'softwarevideogames' ||					 
@@ -41,11 +41,18 @@
 	//standard_price, currency, quantity, condition
 	//sale_price (sale_from_date, sale_end_date),	
 	$this->addAttributeMapping('sale_price', 'sale_price',true,false)->localized_name = 'Sale Price';		
-	$this->addAttributeMapping('sale_price_dates_from', 'sale_from_date',true,false)->localized_name = 'Sale From Date';
-	$this->addAttributeMapping('sale_price_dates_to', 'sale_end_date',true,false)->localized_name = 'Sale End Date';
-	$this->addAttributeMapping('fulfillment_latency', 'fulfillment_latency',true,false)->localized_name = 'Fulfillment Latency';
+	$this->addAttributeMapping('sale_from_date', 'sale_from_date',true,false)->localized_name = 'Sale From Date';
+	$this->addAttributeMapping('sale_end_date', 'sale_end_date',true,false)->localized_name = 'Sale End Date';
+	$this->addAttributeMapping('handling_time', 'fulfillment_latency',true,false)->localized_name = 'Fulfillment Latency';
 	
 /*** Dimension ***/
+	$this->addAttributeMapping('length', 'item_display_length')->localized_name = 'Display Length';
+		$this->addAttributeMapping('dimension_unit', 'item_display_length_unit_of_measure',true,false)->localized_name = 'Item Display Length Unit Of Measure';
+	$this->addAttributeMapping('width', 'item_display_width')->localized_name = 'Display Width';
+		$this->addAttributeMapping('dimension_unit', 'item_display_width_unit_of_measure',true,false)->localized_name = 'Item Display Width Unit Of Measure';
+	$this->addAttributeMapping('height', 'item_display_height')->localized_name = 'Display Height';
+		$this->addAttributeMapping('dimension_unit', 'item_display_height_unit_of_measure',true,false)->localized_name = 'Item Display Height Unit Of Measure';
+	
 	$this->addAttributeMapping('weight', 'website_shipping_weight',true,false)->localized_name = 'Shipping Weight';
 	$this->addAttributeMapping('weight_unit', 'website_shipping_weight_unit_of_measure',true,false)->localized_name = 'Website Shipping Weight Unit Of Measure';
 
@@ -58,10 +65,9 @@
 	for ($i = 1; $i <= 3; $i++)
 		$this->addAttributeMapping('', 'generic_keywords' . $i, true,false)->localized_name = 'Search Terms' . $i;
 
-	//recommended browse nodes: required by default
-	$this->addAttributeMapping('recommended_browse_nodes', 'recommended_browse_nodes', true, true)->localized_name = 'Recommended Browse Nodes'; 
-	for ($i = 1; $i <= 2; $i++)
-		$this->addAttributeMapping('', 'recommended_browse_nodes' . $i, true)->localized_name = 'Recommended Browse Nodes' . $i; 
+	//recommended browse nodes1: required by default
+	$this->addAttributeMapping('recommended_browse_nodes1', 'recommended_browse_nodes1', true, true)->localized_name = 'Recommended Browse Nodes1';
+	$this->addAttributeMapping('recommended_browse_nodes2', 'recommended_browse_nodes2', true)->localized_name = 'Recommended Browse Nodes2';
 
 /*** Image ***/
 	$this->addAttributeMapping('feature_imgurl', 'main_image_url', true,true)->localized_name = 'Main Image URL';

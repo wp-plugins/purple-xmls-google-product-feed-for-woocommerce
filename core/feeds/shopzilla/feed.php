@@ -17,8 +17,8 @@ class PShopzillaFeed extends PCSVFeedEx {
 		parent::__construct();
 		$this->providerName = 'Shopzilla';
 		$this->providerNameL = 'shopzilla';
-		$this->fileformat = 'csv';
-		$this->fieldDelimiter = ",";
+		$this->fileformat = 'txt';
+		$this->fieldDelimiter = "\t";
 		$this->fields = array();
 
 //required
@@ -39,10 +39,10 @@ class PShopzillaFeed extends PCSVFeedEx {
 		$this->addAttributeMapping('brand', 'Brand',true);
 		$this->addAttributeMapping('', 'GTIN',true);
 		$this->addAttributeMapping('', 'MPN',true);
-		$this->addAttributeMapping('', 'Gender',true);
-		$this->addAttributeMapping('', 'Age Group',true);
-		$this->addAttributeMapping('', 'Size',true);
-		$this->addAttributeMapping('', 'Color',true);
+		$this->addAttributeMapping('gender', 'Gender',true);
+		$this->addAttributeMapping('age_group', 'Age Group',true);
+		$this->addAttributeMapping('size', 'Size',true);
+		$this->addAttributeMapping('color', 'Color',true);
 		$this->addAttributeMapping('', 'Material',true);
 		$this->addAttributeMapping('', 'Pattern',true);
 		$this->addAttributeMapping('', 'Bid',true);
@@ -51,9 +51,6 @@ class PShopzillaFeed extends PCSVFeedEx {
 		$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
 		$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree
 		$this->addRule('price_rounding','pricerounding'); //2 decimals
-//Description and title: escape any quotes
-		$this->addRule( 'csv_standard', 'CSVStandard',array('title') ); 
-		$this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 	
 	}
 		
   function formatProduct($product) {

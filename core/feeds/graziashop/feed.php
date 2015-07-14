@@ -32,9 +32,9 @@ class PGraziaShopFeed extends PCSVFeedEx
 		$this->addAttributeMapping('current_category', 'category',true,true);
 		$this->addAttributeMapping('title', 'title',true,true);	//5 - 200 chars
 		$this->addAttributeMapping('description', 'description',true,true);		
-		$this->addAttributeMapping('', 'material',false); //100% cotton
-		$this->addAttributeMapping('', 'pattern',false);
-		$this->addAttributeMapping('', 'care',false);	//hand wash only
+		$this->addAttributeMapping('', 'material',true); //100% cotton
+		$this->addAttributeMapping('', 'pattern',true);
+		$this->addAttributeMapping('', 'care',true);	//hand wash only
 		$this->addAttributeMapping('feature_imgurl', 'image_link',true);
 		$this->addAttributeMapping('additional_image_links', 'additional_image_links',true,false);
 		$this->addAttributeMapping('', 'gender'); //reserved for future use
@@ -57,9 +57,9 @@ class PGraziaShopFeed extends PCSVFeedEx
 //List the product price in US dollars, without a $ sign, commas, text, or quotation marks.
 		$this->addRule('price_rounding','pricerounding');
 		$this->addRule( 'description', 'description',array('max_length=6500','strict') ); 
-		$this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 
-		$this->addRule( 'csv_standard', 'CSVStandard',array('title','200') ); //200 title char limit
-
+		//$this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 
+		//$this->addRule( 'csv_standard', 'CSVStandard',array('title','200') ); //200 title char limit
+		$this->addRule( 'substr','substr', array('title','0','200',true) ); //200 length
 	
 	}
 
@@ -99,10 +99,10 @@ class PGraziaShopFeed extends PCSVFeedEx
 		}
 
 /*
-This is an essential requirement from Grazia and gives the store owner the ability to simply 
-select 'Yes' or 'No' at the product level.
-GraziaShop Business rule: setAttributeDefualt business-attribute as none PGraziaBusinessRule
-where business-attribute is the custom field containing 'yes' or 'no'
+* This is an essential requirement from Grazia and gives the store owner the ability to simply 
+* select 'Yes' or 'No' at the product level.
+* GraziaShop Business rule: setAttributeDefualt business-attribute as none PGraziaBusinessRule
+* where business-attribute is the custom field containing 'yes' or 'no' (if the custom attribute has spaces, enclose it in double quotes)
 */
 
 //additional image links 

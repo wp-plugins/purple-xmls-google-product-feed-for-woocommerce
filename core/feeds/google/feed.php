@@ -19,8 +19,11 @@ class PGoogleFeed extends PXMLFeed
 		parent::__construct();
 		$this->providerName = 'Google';
 		$this->providerNameL = 'google';
+
 		//Create some attributes (Mapping 3.0) in the form (title, Google-title, CData, isRequired)
-		//  Note that isRequired is just to direct the plugin on where on the dialog to display
+		//Note that isRequired is just to direct the plugin on where on the dialog to display
+
+		//Basic product information
 		$this->addAttributeMapping('brand', 'g:brand', true, true);
 		$this->addAttributeMapping('id', 'g:id', false, true);
 		$this->addAttributeMapping('item_group_id', 'g:item_group_id', false, true);
@@ -29,35 +32,53 @@ class PGoogleFeed extends PXMLFeed
 		$this->addAttributeMapping('link', 'link', true, true);
 		$this->addAttributeMapping('product_type', 'g:product_type', true, true);	
 		$this->addAttributeMapping('current_category', 'g:google_product_category', true, true);
-		$this->addAttributeMapping('condition', 'g:condition', false, true);
-		$this->addAttributeMapping('stock_status', 'g:availability', false, true);
-		$this->addAttributeMapping('sku', 'g:mpn', true, true);
-		$this->addAttributeMapping('regular_price', 'g:price', false, true);
-		$this->addAttributeMapping('sale_price', 'g:sale_price', false, false);		
-		$this->addAttributeMapping('weight', 'g:shipping_weight', false, false);
 		$this->addAttributeMapping('feature_imgurl', 'g:image_link', true, true);
+		$this->addAttributeMapping('condition', 'g:condition', false, true);
 
-		//Optional Attributes
+		//Availability & Price
+		$this->addAttributeMapping('stock_status', 'g:availability', false, true);		
+		$this->addAttributeMapping('regular_price', 'g:price', false, true);
+		$this->addAttributeMapping('sale_price', 'g:sale_price', false, false);
+		$this->addAttributeMapping('sale_price_effective_date', 'g:sale_price_effective_date', true, false);
+
+		//Unique Product Identifiers
+		$this->addAttributeMapping('sku', 'g:mpn', true, true);
 		$this->addAttributeMapping('upc', 'g:gtin', true, false);
+		$this->addAttributeMapping('', 'g:identifier_exists', true, false);		
+		
+		//Detailed Product Attributes		
 		$this->addAttributeMapping('gender', 'g:gender', true, false);
 		$this->addAttributeMapping('age_group', 'g:age_group', false, false);
 		$this->addAttributeMapping('color', 'g:color', true, false);
 		$this->addAttributeMapping('size', 'g:size', true, false);
+		$this->addAttributeMapping('', 'g:size_type', true, false);
+		$this->addAttributeMapping('', 'g:size_system', true, false);		
 		$this->addAttributeMapping('', 'g:material', true, false);
-		$this->addAttributeMapping('', 'g:pattern', true, false);
-		$this->addAttributeMapping('sale_price_effective_date', 'g:sale_price_effective_date', true, false);
-		$this->addAttributeMapping('', 'g:identifier_exists', true, false);
+		$this->addAttributeMapping('', 'g:pattern', true, false);	
+
+		//Tax & Shipping
 		$this->addAttributeMapping('', 'g:tax', true, false);
-		$this->addAttributeMapping('', 'g:multipack', true, false);
-		$this->addAttributeMapping('', 'g:adult', true, false);
-		$this->addAttributeMapping('', 'g:adwords_grouping', true, false);
-		$this->addAttributeMapping('', 'g:adwords_labels', true, false);
+		$this->addAttributeMapping('weight', 'g:shipping_weight', false, false);
+		$this->addAttributeMapping('length', 'g:shipping_length', false, false); //req. measurment unit
+		$this->addAttributeMapping('width', 'g:shipping_width', false, false);
+		$this->addAttributeMapping('height', 'g:shipping_height', false, false);
+		$this->addAttributeMapping('', 'g:shipping_label', false, false);
+
+		$this->addAttributeMapping('', 'g:multipack', true, false); //integer
+		$this->addAttributeMapping('', 'g:is_bundle', true, false); //TRUE or FALSE
+		$this->addAttributeMapping('', 'g:adult', true, false); //TRUE or FALSE
+
+		// $this->addAttributeMapping('', 'g:adwords_grouping', true, false); //deprecated
+		// $this->addAttributeMapping('', 'g:adwords_labels', true, false); //deprecated
 		$this->addAttributeMapping('', 'g:adwords_redirect', true, false);
+
 		$this->addAttributeMapping('', 'g:unit_pricing_measure', true, false);
 		$this->addAttributeMapping('', 'g:unit_pricing_base_measure', true, false);
 		$this->addAttributeMapping('', 'g:energy_efficiency_class', true, false);
 		$this->addAttributeMapping('', 'g:excluded_destination', true, false);
 		$this->addAttributeMapping('', 'g:expiration_date', true, false);
+
+		//Custom Label Attributes for Shopping Campaigns
 		$this->addAttributeMapping('', 'g:custom_label_0', true, false);
 		$this->addAttributeMapping('', 'g:custom_label_1', true, false);
 		$this->addAttributeMapping('', 'g:custom_label_2', true, false);
@@ -70,11 +91,17 @@ class PGoogleFeed extends PXMLFeed
 
 		$this->addAttributeDefault('additional_images', 'none', 'PGoogleAdditionalImages');
 		$this->addAttributeDefault('tax_country', 'US');
+		$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree
 
 		$this->addRule('price_standard', 'pricestandard'); //append currency
 		$this->addRule('status_standard', 'statusstandard'); //'in stock' or 'out of stock'
 		$this->addRule('price_rounding','pricerounding'); //2 decimals
+		//shipping
 		$this->addRule('weight_unit', 'weightunit');
+		$this->addRule('length_unit', 'dimensionunit', array('length'));
+		$this->addRule('width_unit', 'dimensionunit', array('width'));
+		$this->addRule('height_unit', 'dimensionunit', array('height'));	
+
 		$this->addRule('google_exact_title', 'googleexacttitle'); //true disables ucowrds
 		$this->addRule('google_combo_title', 'googlecombotitle');
 

@@ -104,9 +104,7 @@ class PNeweggFeed extends PCSVFeedEx {
 		$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
 		$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree
 		$this->addRule( 'description', 'description',array('max_length=500','strict') );
-		$this->addRule('csv_standard_title', 'CSVStandard',array('title')); 
-		$this->addRule('csv_standard', 'CSVStandard',array('description')); 
-		//$this->addRule('quantity','SetQty');
+
 	}
 
 	function getFeedHeader($file_name, $file_path) 
@@ -174,7 +172,6 @@ class PNeweggFeed extends PCSVFeedEx {
 			$this->addErrorMessage(17000, 'Shipping not configured. Need advanced command: $newegg_shipping = ....', true);
 			//$this->addErrorMessage(9001, 'You can find your Merchant ID in the top left corner of the ShareASale web interface for advertisers/merchants (login required)', true);
 			$this->productCount--;
-			$this->merchant_id = '';
 		}
 
 		return parent::formatProduct($product);

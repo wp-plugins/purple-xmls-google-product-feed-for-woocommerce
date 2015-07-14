@@ -87,6 +87,8 @@ class PFeedOverride extends PBaseFeedOverride {
 					$usesCData = false;
 					if (isset($params[4]) && (strtolower($params[4]) == 'true'))
 						$usesCData = true;
+					if (!isset($params[3]) || strlen($params[3]) == 0)
+						$params[3] = $params[1];
 					$recent_attribute = $parent->addAttributeMapping($params[1], $params[3], $usesCData, false, true);
 					break;
 				case 'rule': case 'addrule':
@@ -222,7 +224,7 @@ class PFeedOverride extends PBaseFeedOverride {
 		if ($this_option == '$hide_out_of_stock') {$pfcore->hide_outofstock = true;}
 		if ($this_option == '$ignore_duplicates') {$parent->ignoreDuplicates = true;}
 		if ($this_option == '$max_description_length') {$parent->addErrorMessage(11001, 'Use of deprecated command: $max_description_length', true);}
-		if ($this_option == '$max_custom_field') {$parent->max_custom_field = $value;}
+		//if ($this_option == '$max_custom_field') {$parent->max_custom_field = $value;} //max_custom_field not used in recent versions
 		if ($this_option == '$strip_html_markup') {$parent->stripHTML = true;}
 		if ($this_option == '$system_wide_shipping_type') {$parent->addErrorMessage(11001, 'Use of deprecated command: $system_wide_shipping_type', true);} 
 		if ($this_option == '$timeout') {$parent->timeout = $value;}
@@ -302,9 +304,21 @@ class PFeedOverride extends PBaseFeedOverride {
 		if ($this_option == '$newegg_shipping')
 			$parent->newegg_shipping = $value;
 
-		//amazon price inventory
+		//amazon leadtime
 		if ($this_option == '$leadtime_to_ship')
 			$parent->leadtime_to_ship = $value;
+
+		//eBay business policies
+		if ($this_option == '$payment_name')
+			$parent->payment_name = $value;
+		if ($this_option == '$shipping_name')
+			$parent->shipping_name = $value;
+		if ($this_option == '$return_name')
+			$parent->return_name = $value;
+
+		//Become delivery time
+		if ($this_option == '$delivery-charge')
+			$parent->delivery_charge = $value;
 	}
 
 	function interpretOverride($this_option) {

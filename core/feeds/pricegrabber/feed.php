@@ -61,9 +61,8 @@ class PPriceGrabberFeed extends PCSVFeedEx {
 	$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
 	$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree
 	$this->addRule( 'description', 'description',array('max_length=1500','strict') );
-	$this->addRule( 'csv_standard', 'CSVStandard',array('title','100') ); //100 char limit for pricegrabber titles
-	$this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 
-
+	//$this->addRule( 'csv_standard', 'CSVStandard',array('title','100') ); //100 char limit for pricegrabber titles
+	$this->addRule( 'substr','substr', array('title','0','100',true) ); //127 length
 	}
 
   function formatProduct($product) {

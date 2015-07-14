@@ -88,8 +88,10 @@ class PProductList {
 	}
 
 	public function applyWCAttributes($listitem) {
+
 		if (!isset($listitem->wc_attributes) || gettype($listitem->wc_attributes) != 'array' || count($listitem->wc_attributes) == 0)
 			return;
+
 		foreach ($listitem->wc_attributes as $index => $thisAttribute) {
 			$value = $thisAttribute['value'];
 			if ($thisAttribute['is_taxonomy'] == 1) {
@@ -100,8 +102,9 @@ class PProductList {
 				}
 			}
 			//Insert directly
-			if (strlen($value) > 0)
-				$listitem->attributes[$thisAttribute['name']] = $value;
+			if (strlen($value) == 0)
+				continue;
+			$listitem->attributes[$thisAttribute['name']] = $value;
 			//Insert pa_xyz as xyz
 			$pos = strpos($thisAttribute['name'], 'pa_');
 			if ($pos !== false && $pos == 0) {
@@ -109,9 +112,26 @@ class PProductList {
 				if (!isset($listitem->attributes[$name]) || strlen($listitem->attributes[$name]) == 0)
 					$listitem->attributes[$name] = $value;
 			}
+
+		}
+
+	}
+
+	public function applyWCAttributesPost($listitem) {
+		//System was designed to applyWCAttributes() after postmetaLookup() but in the case of
+		//variations parent's applyWCAttributes() can mess this up, so patching
+		foreach ($listitem->wc_attributes as $index => $thisAttribute) {
+			//For Attributes not in pa_XYZ but in attribute_XYZ exists in listitem->attributes, trim the word attribute
+			$custom_index = 'attribute_' . strtolower($thisAttribute['name']);
+			if (isset($listitem->attributes[$custom_index])) {
+				$listitem->attributes[strtolower($thisAttribute['name'])] = $listitem->attributes[$custom_index];
+				unset($listitem->attributes[$custom_index]);
+			}
 		}
 	}
-  
+
+	/*
+	CustomFields and max_custom_field are ignored anyway, so removing
 	public function get_customfields($parent) {
 		if ($parent->max_custom_field == 0)
 			$this->custom_fields = array();
@@ -120,7 +140,7 @@ class PProductList {
 			$sql = "SELECT post_id, meta_key, meta_value FROM $wpdb->postmeta WHERE meta_key NOT LIKE '\_%' LIMIT 0, " . $parent->max_custom_field;
 			$this->custom_fields = $wpdb->get_results($sql);
 		}
-	}
+	}*/
 
   public function loadProducts($parent) {
 
@@ -149,7 +169,7 @@ class PProductList {
 			$this->relatedData['tag'] = new PProductSupplementalData('product_tag');
 		
 		//Load up the meta attributes which will tell us the custom fields
-		$this->get_customfields($parent);
+		//$this->get_customfields($parent);
 
 		$this->gmc_active = false;
 		if (($parent->gmc_enabled) && (is_plugin_active( 'woocommerce-google-merchant-center-feed/woocommerce-google-merchant-center-feed.php' )) ) {
@@ -372,6 +392,7 @@ class PProductList {
 			$item->description_long = substr(strip_shortcodes(strip_tags($prod->post_content)), 0, 5000);
 			if ( isset($item->description_long) )
 				$item->attributes['description_long'] = $item->description_long;
+			$item->wc_attributes = array(); //This will almost always get replaced by postmeta
 			$item->attributes['valid'] = true;
 
 			//Fetch any default attributes Stage 0 (Mapping 3.0)
@@ -476,9 +497,12 @@ class PProductList {
 
 			//$item->fetch_meta_attributes(); //Old
 
+			/*
+			CustomFields and max_custom_field are ignored anyway, so removing
 			foreach($this->custom_fields as $custom_field)
 				if ($custom_field->post_id == $item->id)
 					$item->attributes[$custom_field->meta_key] = $custom_field->meta_value;
+			*/
 
 			//If woocommerce-google-merchant-center, we have to do extra work to extract data
 			if ( ($this->gmc_active) && (strlen($prod->gmc_value) > 0) ) 
@@ -528,6 +552,7 @@ class PProductList {
 			else {
 				$item->parent_manage_stock = 'no';
 				$this->applyWCAttributes($item);
+				$this->hideStockValid($item);
 				$parent->handleProduct($item);
 				foreach($item->attributes as &$x)
 					unset($x);
@@ -540,7 +565,20 @@ class PProductList {
 
 	}
 
-	function expandProduct($listitem, $parent) {
+	
+	function hideStockValid($item) {
+		global $pfcore;
+		//Hide out of stock
+		//if ( ($pfcore->manage_stock) )
+		if ( ($pfcore->hide_outofstock) && ($item->attributes['stock_status'] == 0) )		
+			$item->attributes['valid'] = false;
+
+		//Reformat "valid" if necessary
+		if (isset($item->attributes['valid']) && (strcmp($item->attributes['valid'], 'false') == 0) )
+			$item->attributes['valid'] = false;
+	}
+
+	function expandProduct($listitem, $parent) { //if variable product
 
 		global $wpdb;
 		global $pfcore;
@@ -579,13 +617,14 @@ class PProductList {
 				unset($item->attributes['product_is_in_stock']); //This was causing confusion among users
 			}
 
+			$this->hideStockValid($item);
 			//Hide out of stock
-			if (($pfcore->manage_stock) && ($pfcore->hide_outofstock) && ($item->attributes['stock_status'] == 0))
-				$item->attributes['valid'] = false;
+			// if (($pfcore->manage_stock) && ($pfcore->hide_outofstock) && ($item->attributes['stock_status'] == 0))
+			// 	$item->attributes['valid'] = false;
 
-			//Reformat "valid" if necessary
-			if (isset($item->attributes['valid']) && (strcmp($item->attributes['valid'], 'false') == 0) )
-				$item->attributes['valid'] = false;
+			// Reformat "valid" if necessary
+			// if (isset($item->attributes['valid']) && (strcmp($item->attributes['valid'], 'false') == 0) )
+			// 	$item->attributes['valid'] = false;
 
 			//Fetch any default attributes (Mapping 3.0)
 			foreach ($parent->attributeDefaults as $thisDefault)
@@ -650,35 +689,51 @@ class PProductList {
 
 		$this->postmetaLookup($item, $parent); //variations
 
-		//Go find the Variation's Attributes
-		/*$sql = "SELECT meta_key, meta_value FROM $wpdb->postmeta
-			WHERE post_id = " . $id . " AND 
-			meta_key LIKE 'attribute\_pa\_%'";
-		$attributes = $wpdb->get_results($sql);*/
+		$this->applyWCAttributesPost($item); //variations
 
-		//Add the variation attributes
-		//meta_value takes the slug from wp_terms instead of the name
-		$permutations = array();
-		/*foreach($attributes as $this_attribute) {
-			$key = $this_attribute->meta_key;
-			if (strpos($key, 'attribute_pa') == 0) {
-				$key = substr($key, 13);
-				//Convert from Slug to Term
-				$term = $this->masterAttributeList->findBySlug($this_attribute->meta_value);
-				if ($term != null)
-					$this_attribute->meta_value = $term->name;
-				//If no meta_value provided it means ANY of this attribute. Mark it for future permutation
-				if (strlen($this_attribute->meta_value) == 0) {
-					$termcat = $this->masterAttributeList->findByName($key);
-					if ($termcat != null)
-						$permutations[] = $termcat;
+		//If no permutations allowed, we're done
+		if (!$parent->allow_variation_permutations)
+			return;
+
+		//Add to permutations any piped attributes that are marked "used for variations"
+		foreach($item->wc_attributes as $thisAttribute)
+			if ($thisAttribute['is_variation'])
+				if (isset($item->attributes[$thisAttribute['name']]) && strlen($item->attributes[$thisAttribute['name']]) > 0) {
+					$name = $thisAttribute['name'];
+					$data = $item->attributes[$name];
+					if (strpos($data, '|') === false) continue;
+					$terms = explode('|', $data);
+					//Look for this term among the permutations
+					$exists = false;
+					foreach($this->permutations as $permutation)
+						if ($permutation->name == $name) {
+							$exists = true;
+							//The global piped attribute overrides the local.
+							//It may be desirable to one day clone the global attribute and put the local values into the clone
+							break;
+						}
+					if (!$exists) {
+						//Establish a new temporary MasterAttribute
+						$thisAttribute = new stdClass();
+						$thisAttribute->name = $name;
+						//$thisAttribute->type = ???;
+						$thisAttribute->children = array();
+						$this->permutations[] = $thisAttribute;
+						//Shove local values into the temporary MasterAttribute
+						foreach($terms as $datum) {
+							$datum = trim($datum);
+							$term = new stdClass();
+							$term->taxonomy = $name;
+							$term->name = $datum;
+							$term->slug = $datum;
+							$thisAttribute->children[] = $term;
+						}
+					}
+					
 				}
-			}
-			$item->attributes[$key] = $this_attribute->meta_value;
-		}*/
 
-		//If no permutations, we're done
-		if (count($permutations) == 0 || $parent->allow_variationPermutations)
+		//If no permutations exist, we're done
+		if (count($this->permutations) == 0)
 			return;
 
 		//The presence of permutations forcefully invalidate existing items
@@ -686,10 +741,13 @@ class PProductList {
 		 	if ($thisItem->id == $id)
 		 		$thisItem->attributes['valid'] = false;
 
+		$permutationTrackerObject = new stdClass();
+		$permutationTrackerObject->id = $id;
+		$permutationTrackerObject->parent_feed = $parent;
+		$permutationTrackerObject->countOfPermutations = 0;
+
 		//Now, add the permutations
-		//for ($i = 0; $i < count($permutations); $i++) //Only need this loop if counting null values into permutations
-		$i = 0;
-		$this->permute($id, $i, $permutations, $resultlist, $parent);
+		$this->permute($permutationTrackerObject, 0, $resultlist);
 
   }
 
@@ -702,7 +760,7 @@ class PProductList {
 		$item->attributes['weight'] = $product->get_weight();				
 		//$this->scpf_get_tax_rates($item,$product);
 		if ($parent->get_wc_shipping_attributes) 
-			$this->scpf_get_dimension_values($item,$product);					
+			$this->scpf_get_dimension_values($item,$product);
 		if ($parent->get_wc_shipping_class) 
 			$this->scpf_get_shipping_classes($item,$product);
 		if ($parent->variation_images) 
@@ -743,29 +801,32 @@ class PProductList {
 	}
 
 	//currently it triggers on piped values in the MasterAttributeTable (which comes from the central table). Soon it will come from the product's attribute value
-	function permute($id, $index, $permutations, &$resultlist, $parent, $stack = array() ) {
-		foreach ($permutations[$index]->children as $thisChild) 
-			if ($index == count($permutations) - 1) {
+	function permute($tracker, $index, &$resultlist, $stack = array() ) {
+		foreach ($this->permutations[$index]->children as $thisChild) 
+			if ($index == count($this->permutations) - 1) {
 				//At the end of the permutation chain, insert
 				foreach($resultlist as $listitem)
-					if ($listitem->id == $id && !$listitem->attributes['valid']) {
+					if ($listitem->id == $tracker->id && !$listitem->attributes['valid']) {
 						$item = clone $listitem;
+						$item->attributes['id'] = $tracker->parent_feed->permutation_base_id + $item->attributes['id'] * $tracker->parent_feed->permutation_variant_multiplier + $tracker->countOfPermutations;
 						$item->attributes['valid'] = true;
+						$item->attributes['sku'] .= '-' . sprintf("%'03d", $tracker->countOfPermutations);
 						$resultlist[] = $item;
 						$newStack = $stack;
 						$newStack[] = $thisChild;
 						//Debug
 						//$a = '';
 						//foreach($newStack as $term) $a .= $term->taxonomy . '=' . $term->name . ' ';
-						//error_log($id . ' end of stack ' . $a);
+						//error_log($tracker->id . ' end of stack ' . $a);
 						foreach($newStack as $term)
 							$item->attributes[$term->taxonomy] = $term->name;
+						$tracker->countOfPermutations++;
 					}
 			} else {
 				//Not the end of permutation chain means keep looking
 				$newStack = $stack;
 				$newStack[] = $thisChild;
-				$this->permute($id, $index + 1, $permutations, $resultlist, $parent, $newStack);
+				$this->permute($tracker, $index + 1, $resultlist, $newStack);
 			}
 	}
 
@@ -783,14 +844,18 @@ class PProductList {
 		//********************************************************************
 		//Parse
 		//********************************************************************
-		$permutations = array();
+		$this->permutations = array();
 		foreach($attributes as $this_attribute) {
 	
 			$key = $this_attribute->meta_key;
 			$value = $this_attribute->meta_value;
 
-			if (strlen($value) == 0)
+			if (strlen($value) == 0) {
+				$termcat = $this->masterAttributeList->findByName(substr($key, 13));
+				if ($termcat != null)
+					$this->permutations[] = $termcat;
 				continue;
+			}
 
 			//Special Case: Variation Attributes
 			if (strpos($key, 'attribute_pa') !== false) {
@@ -806,9 +871,10 @@ class PProductList {
 				}
 				//If no value provided it means ANY of this attribute. Mark it for future permutation
 				if (strlen($value) == 0) {
+					//It is dubious the computer will reach this case of len($value) == 0
 					$termcat = $this->masterAttributeList->findByName($key);
 					if ($termcat != null)
-						$permutations[] = $termcat;
+						$this->permutations[] = $termcat;
 				} else
 					$item->attributes[$key] = $value;
 				continue;
@@ -880,6 +946,31 @@ class PProductList {
 						break;
 					case '_bto_data':
 						$item->bto_data = $value;
+						break;
+					case '_cpf_brand':
+						if ( !empty($value) )
+							$item->attributes['brand'] = $value;
+						break;
+					case '_cpf_mpn':
+						if ( !empty($value) )
+							$item->attributes['mpn'] = $value;
+						break;
+					case '_cpf_description':
+						if ( !empty($value) )
+							$item->attributes['description'] = $value;
+						break;
+					case '_cpf_ean':
+						if ( !empty($value) )
+							$item->attributes['ean'] = $value;
+						break;
+					case '_cpf_upc':
+						if ( !empty($value) )
+							$item->attributes['upc'] = $value;
+						break;
+					case '_cpf_valid':
+						if ( !empty($value) )
+							$item->attributes['valid'] = $value;
+						break;	
 					default:
 						if (strlen($key) > 0 && $key[0] != '_')
 							$item->attributes[$key] = $value;
@@ -900,6 +991,30 @@ class PProductList {
 					case '_stock':
 						$item->attributes['stock_quantity'] = $value;
 						break;
+					case '_cpf_brand':
+						if ( !empty($value) )
+							$item->attributes['brand'] = $value;
+						break;
+					case '_cpf_mpn':
+						if ( !empty($value) )
+							$item->attributes['mpn'] = $value;
+						break;
+					case '_cpf_description':
+						if ( !empty($value) )
+							$item->attributes['description'] = $value;
+						break;
+					case '_cpf_ean':
+						if ( !empty($value) )
+							$item->attributes['ean'] = $value;
+						break;
+					case '_cpf_upc':
+						if ( !empty($value) )
+							$item->attributes['upc'] = $value;
+						break;
+					case '_cpf_valid':
+						if ( !empty($value) )
+							$item->attributes['valid'] = $value;
+						break;					
 					default:
 						if (strlen($key) > 0) {
 							if ($key[0] == '_')
@@ -920,8 +1035,6 @@ class PProductList {
 		else
 			$managing_stock = true;
 		$backorders_allowed = ($item->attributes['backorders'] === 'yes' || $item->attributes['backorders'] === 'notify' ? true : false);
-		//$item->attributes['mgs'] = (string) $managing_stock; //Debug
-		//$item->attributes['bks'] = (string) $backorders_allowed; //Debug
 		if ($managing_stock && $backorders_allowed)
 			$item->attributes['stock_status'] = 1;
 		elseif ($managing_stock && $item->attributes['stock_quantity'] <= $this->woocommerce_notify_no_stock_amount)
@@ -959,9 +1072,15 @@ class PProductList {
 			if ($image_id) {
 				$var_image = wp_get_attachment_image_src( $image_id, 'full' );
 				if ( $var_image[0] )
-					$item->attributes['feature_imgurl'] = $var_image[0]; //use wc variation image
+					$item->attributes['variation_imgurl'] = $var_image[0]; //use wc variation image
 			}
 		}
+
+		//by default: if the variant image is present, the plugin will use it
+		//set force_featured_image to true: this will force all variations to use the featured image (rather than the variation image)
+		if (!$parent->force_featured_image)
+			if ( isset( $item->attributes['variation_imgurl']) )
+				$item->attributes['feature_imgurl'] = $item->attributes['variation_imgurl'];
 
 		//Basic Tax Rates: Does not handle multiple rates per class
 		if ($parent->get_tax_rates) {

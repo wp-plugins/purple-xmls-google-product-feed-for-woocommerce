@@ -25,7 +25,7 @@ class PRakutenNewSkuFeed extends PCSVFeedEx {
 
 		$this->addAttributeMapping('seller_id', 'seller-id',true,true); //assigned by Rakuten.com Shopping
 		$this->addAttributeMapping('', 'gtin',true,true); //upc or ean
-		$this->addAttributeMapping('', 'isbn');
+		$this->addAttributeMapping('', 'isbn',true);
 		$this->addAttributeMapping('brand', 'mfg-name',true,true);
 		$this->addAttributeMapping('', 'mfg-part-number',true,true); //may selet id or sku
 		$this->addAttributeMapping('', 'asin');
@@ -47,8 +47,9 @@ class PRakutenNewSkuFeed extends PCSVFeedEx {
 		$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree
 		$this->addRule('price_rounding','pricerounding'); //2 decimals
 		$this->addRule( 'description', 'description',array('max_length=8000','strict') ); 
-		$this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 
-		$this->addRule( 'csv_standard', 'CSVStandard',array('title','100') ); //title char limit
+		// $this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 
+		// $this->addRule( 'csv_standard', 'CSVStandard',array('title','100') ); //title char limit
+		$this->addRule( 'substr','substr', array('title','0','100',true) ); //100 length
 
 	}
 	
@@ -82,12 +83,12 @@ class PRakutenNewSkuFeed extends PCSVFeedEx {
 //category-id
 	 	$product->attributes['current_category'] = explode("\t", $product->attributes['current_category'])[0];
 //seller id	
-		$product->attributes['seller_id'] = $this->seller_id;			
+		if ( isset($this->seller_id) )
+			$product->attributes['seller_id'] = $this->seller_id;			
 //result code notificaitons		
-		if ( !isset($this->seller_id) || strlen($product->attributes['seller_id']) == 0 ) {
+		if ( strlen($product->attributes['seller_id']) == 0 ) {
 			$this->addErrorMessage(1000, 'seller-id not configured. Add advanced command: $seller-id = ....', true);
 			$this->productCount--; //Make sure the parent class knows we failed to make a product
-			$this->merchant_id = '';
 			return '';
 		}
 

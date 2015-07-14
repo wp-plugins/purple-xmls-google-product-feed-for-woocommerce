@@ -56,11 +56,22 @@ class PBaseFeedDialog {
 			$output .= '<option value="' . $attr->attribute_name . '"' . $selected . '>' . $attr->attribute_name . '</option>';
 		}
 		$output .= '
+		<option value="">--Common attributes--</option>
 		<option value="brand">brand</option>
-		<option value="id">id</option>	
-		<option value="sku">sku</option>
-		<option value="title">title</option>
+		<option value="description_short">description_short</option>
+		<option value="id">id</option>
+		<option value="regular_price">regular_price</option>
 		<option value="sale_price">sale_price</option>
+		<option value="sku">sku</option>
+		<option value="tag">tag</option>
+		<option value="title">title</option>		
+		<option value="">--CPF Additional Fields--</option>
+		<option value="brand">brand</option>
+		<option value="ean">ean</option>
+		<option value="mpn">mpn</option>
+		<option value="upc">upc</option>
+		<option value="description">description</option>
+		<option value="">--Dummy attributes--</option>
 		<option value="default1">default1</option>
 		<option value="default2">default2</option>
 		<option value="default3">default3</option>	

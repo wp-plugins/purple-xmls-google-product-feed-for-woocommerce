@@ -97,7 +97,8 @@ class PAmazonFeed extends PCSVFeedEx
 		$this->addAttributeMapping('parent_sku', 'parent-sku');
 		$this->addAttributeMapping('relationship_type', 'relationship-type');
 		$this->addAttributeMapping('variation_theme', 'variation-theme');	
-		*/			
+		*/		
+		$this->addRule('price_rounding','pricerounding'); //2 decimals		
 	}
 
 	function formatProduct($product) {

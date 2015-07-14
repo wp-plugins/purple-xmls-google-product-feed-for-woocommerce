@@ -16,7 +16,7 @@ Listing Loader is for uploading listings of products that already exist on Amazo
 	$this->addAttributeMapping('condition_note', 'condition-note', false, true)->localized_name = 'condition-note';
 
 	$this->addAttributeMapping('', 'ASIN-hint', false, false)->localized_name = 'ASIN-hint';
-	$this->addAttributeMapping('title', 'title', false, false)->localized_name = 'title'; //Product title that is automatically populated when you use product lookup.
+	$this->addAttributeMapping('', 'title', false, false)->localized_name = 'title'; //Product title that is automatically populated when you use product lookup.
 	$this->addAttributeMapping('', 'product-tax-code', false, false)->localized_name = 'product-tax-code';
 	$this->addAttributeMapping('', 'operation-type', false, false)->localized_name = 'operation-type';
 	$this->addAttributeMapping('sale_price', 'sale-price', false, false)->localized_name = 'sale-price';

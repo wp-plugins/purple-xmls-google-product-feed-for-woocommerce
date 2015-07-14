@@ -2,7 +2,7 @@
 
 	/********************************************************************
 	Version 3.0
-		An eBay Feed
+		An eBay Commerce Network (shopping.com) Feed
 		Copyright 2014 Purple Turtle Productions. All rights reserved.
 		license	GNU General Public License version 3 or later; see GPLv3.txt
 	By: Keneto 2014-05-08
@@ -61,9 +61,10 @@ class PeBayFeed extends PBasicFeed {
 		// $this->addAttributeMapping('product_weight', 'Product_Weight', true);
 		// $this->addAttributeMapping('shipping_weight', 'Shipping_Weight', true);
 		// $this->addAttributeMapping('weight_unit_of_measure', 'Weight_Unit_of_Measure', true);
-	$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
-	$this->addRule('csv_standard', 'CSVStandard',array('title')); 
-	$this->addRule('csv_standard', 'CSVStandard',array('description')); 
+		$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
+		$this->addRule('status_standard', 'statusstandard'); //'in stock' or 'out of stock'
+		//$this->addRule('csv_standard', 'CSVStandard',array('title')); 
+		//$this->addRule('csv_standard', 'CSVStandard',array('description')); 
 
 	}
 
@@ -79,17 +80,6 @@ class PeBayFeed extends PBasicFeed {
 
 	foreach($product->imgurls as $index => $imgurl)
 		$product->attributes["alt_image_$index"] =  $imgurl;
-
-	if ($product->attributes['stock_status'] == 1)
-		$product->attributes['stock_status'] = 'in stock';
-	else
-		$product->attributes['stock_status'] = 'out of stock';
-
-	$product->attributes['regular_price'] = $product->attributes['regular_price'] . ' ' . $this->currency;
-	if ($product->attributes['has_sale_price'])
-		$product->attributes['current_price'] = $product->attributes['sale_price'] . ' ' . $this->currency;
-	else
-		$product->attributes['current_price'] = $product->attributes['regular_price'];
 
 	$product->attributes['weight_unit'] = $this->weight_unit;
 	//if (!isset($product->attributes['shipping_rate']))

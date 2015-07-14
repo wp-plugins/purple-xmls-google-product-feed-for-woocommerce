@@ -14,7 +14,7 @@
 	$this->addAttributeMapping('regular_price', 'standard_price',true,false)->localized_name = 'Standard Price';
 	$this->addAttributeMapping('currency', 'currency',true,true)->localized_name = 'Currency';  //GBP
 	$this->addAttributeMapping('quantity', 'quantity',true,false)->localized_name = 'Quantity';
-	$this->addAttributeMapping('condition', 'condition_type',true,false)->localized_name = 'Condition Type'; 
+	//$this->addAttributeMapping('condition', 'condition_type',true,false)->localized_name = 'Condition Type'; 
 
 /*** Some more preferred/optional attributes ***/
 	$this->addAttributeMapping('', 'included_components1',true,false)->localized_name = 'Active Ingredient1';  

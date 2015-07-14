@@ -14,7 +14,7 @@
 	$this->addAttributeMapping('quantity', 'quantity', false, false);
 	$this->addAttributeMapping('add_delete', 'add-delete', false, false);
 	$this->addAttributeMapping('', 'will-ship-internationally', false, false);
-	$this->addAttributeMapping('expedited-shipping', 'expedited-shipping', false, false);
+	$this->addAttributeMapping('expedited_shipping', 'expedited-shipping', false, false);
 	//$this->addAttributeMapping('standard-plus', 'standard-plus', false, false);
 	$this->addAttributeMapping('', 'item-note', false, false);
 	$this->addAttributeMapping('', 'fulfillment-center-id', false, false);

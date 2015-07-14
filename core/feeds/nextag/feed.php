@@ -24,14 +24,14 @@ class PNextagFeed extends PCSVFeedEx{
 		$this->fields = array();
 		//$this->fields = array("UPC", "Product Name", "Description", "Price", "Click-out URL", "Category", "Image URL", "Stock Status", "List Price");
 
-		//identifiers: must provide one of:
-		$this->addAttributeMapping('brand', 'Manufacturer',true,true);		
-		$this->addAttributeMapping('', 'Manufacturer Part Number',true,true);
-		//one of the below unique product identifiers
-		$this->addAttributeMapping('', 'UPC',true,true);
-		$this->addAttributeMapping('', 'ISBN',true,true);		
-		$this->addAttributeMapping('', 'MUZE ID',true,true);
-		$this->addAttributeMapping('', 'Distributor ID',true,true);
+		//identifiers: 
+		//must provide one of:
+		$this->addAttributeMapping('brand', 'Manufacturer',true,true); //manufacturer and mpn must be used together
+		$this->addAttributeMapping('sku', 'Manufacturer Part Number',true,true); //you can use your internal MPN (your internal product reference number; not preferred) 
+		$this->addAttributeMapping('', 'UPC',true,false);
+		$this->addAttributeMapping('', 'ISBN',true,false);		
+		$this->addAttributeMapping('', 'MUZE ID',true,false);
+		$this->addAttributeMapping('', 'Distributor ID',true,false);
 		//required
 		$this->addAttributeMapping('title', 'Product Name',true,true); //manufacturer added automatically (on nextag's side)
 		$this->addAttributeMapping('description', 'Description', true,true);
@@ -52,8 +52,6 @@ class PNextagFeed extends PCSVFeedEx{
 		$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
 		$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree
 		$this->addRule( 'description', 'description',array('max_length=500','strict') );
-		$this->addRule('csv_standard', 'CSVStandard',array('title')); 
-		$this->addRule('csv_standard', 'CSVStandard',array('description')); 
 
 	}
 

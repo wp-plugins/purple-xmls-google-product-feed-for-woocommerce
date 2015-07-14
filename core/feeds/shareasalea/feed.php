@@ -57,11 +57,13 @@ class PShareASaleAFeed extends PCSVFeed {
 		//********************************************************************
 		if (!isset($this->merchant_id)) {
 			$this->addErrorMessage(9000, 'MerchantID not configured. Need advanced command: $merchant-id = ....');
-			$this->merchant_id = '';
+			$this->productCount--;
+			//$this->merchant_id = '';
 		}
 		if (!isset($this->merchant)) {
 			$this->addErrorMessage(9001, 'Merchant not configured. Need advanced command: $merchant = ....');
-			$this->merchant = '';
+			$this->productCount--;
+			//$this->merchant = '';
 		}
 
 		$product->attributes['current_category'] = $this->current_category;

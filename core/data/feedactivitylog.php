@@ -76,8 +76,14 @@ class PFeedActivityLog {
 		$db->query();
 		$ordering = $db->loadResult() + 1;
 
+		$indexOfHyphen = strpos($file_name, '-');
+		if ($indexOfHyphen !== false)
+			$title = substr($file_name, $indexOfHyphen + 1);
+		else
+			$title = $file_name;
+
 		$newData = new stdClass();
-		$newData->title = substr($file_name, 3);
+		$newData->title = $title;
 		$newData->category = $category;
 		$newData->remote_category = $remote_category;
 		$newData->filename = $file_name;
@@ -91,6 +97,7 @@ class PFeedActivityLog {
 		$newData->modified = $date->toSql();
 		$newData->modified_by = $user->get('id');
 		$newData->shop_id = $shopID;
+		$newData->state = 1;
 		//$productCount
 		$db->insertObject('#__cartproductfeed_feeds', $newData, 'id');
 	}
@@ -228,6 +235,7 @@ class PFeedActivityLog {
 		$newData->modified = $date->toSql();
 		$newData->modified_by = $user->get('id');
 		$newData->shop_id = $shopID;
+		$newData->state = 1;
 		//$productCount
 
 		$db->updateObject('#__cartproductfeed_feeds', $newData, 'id');

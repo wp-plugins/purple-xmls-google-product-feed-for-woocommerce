@@ -46,10 +46,7 @@ class PGoDataFeedCSVFeed extends PCSVFeedEx {
 
 		$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
 		$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree
-		$this->addRule('price_rounding','pricerounding'); //2 decimals
-//Description and title: escape any quotes
-		$this->addRule( 'csv_standard', 'CSVStandard',array('title') ); 
-		$this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 	
+			$this->addRule('price_rounding','pricerounding'); //2 decimals
 		
 	}
   

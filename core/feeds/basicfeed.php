@@ -18,7 +18,7 @@ class PBasicFeed {
 	public $allow_additional_images = true;
 	public $allow_attributes = true;
 	public $allow_attribute_details = false; //old style attribute detection = source of minor hitches
-	public $allow_variationPermutations = false;
+	public $allow_variation_permutations = false;
 	public $allowRelatedData = true;
 	public $attributeAssignments = array();
 	public $attributeDefaults = array();
@@ -43,6 +43,8 @@ class PBasicFeed {
 	public $forceCData = false; //Applies to ProductListXML only
 	public $force_all_categories = false;
 	public $force_currency = false;
+	//public $force_featured_imgurl = false; //forces feature_imgurl even for variations
+	public $force_featured_image = false; //forces feature_imgurl even for variations
 	public $force_wc_api = false;
 	public $get_wc_shipping_attributes = false;
 	public $get_wc_shipping_class = false;
@@ -53,9 +55,12 @@ class PBasicFeed {
 	public $has_footer = true;
 	public $has_product_range = false;
 	public $ignoreDuplicates = true; //useful when products are assigned multiple categories and insufficient identifiers to distinguish them
+	public $lang = '';
 	public $max_description_length = 10000;
-	public $max_custom_field = 50000;
+	//public $max_custom_field = 50000;
 	public $message = ''; //For Error detection
+	public $permutation_base_id = 1000000; //Fix to more than the max # of products and posts
+	public $permutation_variant_multiplier = 1000; //Max # of "any" variants per product. Note: High values will cause IDs to spiral into the billions
 	public $providerName = '';
 	public $providerNameL = '';
 	public $productCount = 0; //Number of products successfully exported
@@ -63,6 +68,7 @@ class PBasicFeed {
 	public $productTypeFromLocalCategory = false;
 	public $providerType = 0;
 	public $relatedData = array();
+	public $reversible = false; //Feed accepts input data
 	public $rules = array();
 	//public $sellerName = ''; //Required Bing attribute - Merchant/Store that provides this product
 	public $success = false;
@@ -223,6 +229,9 @@ class PBasicFeed {
 			return '';
 	}
 
+	function finalizeRead() {
+	}
+
 	function formatLine($attribute, $value, $cdata = false, $leader_space = '') {
 		//Prep a single line for XML
 		//Allow the $attribute to be overridden
@@ -364,7 +373,7 @@ class PBasicFeed {
 			unset($this->feedOverrides);
 		}
 
-		if ($this->productCount == 0) {
+		if ($this->productCount <= 0) {
 			$this->message .= '<br>No products returned';
 			return;
 		}
@@ -455,6 +464,9 @@ class PBasicFeed {
 		//Load Attribute mappings
 		$this->feedOverrides = new PFeedOverride($this->providerName, $this, $saved_feed);
 
+	}
+
+	function initalizeRead() {
 	}
   
 	function insertField($new_field, $index_field) {
@@ -596,6 +608,18 @@ class PXMLFeed extends PBasicFeed {
 
 class PCSVFeed extends PBasicFeed {
 
+	function __construct () {
+		
+		parent::__construct();
+		//apply strictAttribute rule to removes html, special chars
+		$this->addRule( 'description', 'description', array('strict') );		
+		$this->addRule( 'strict_attribute','strictAttribute', array('description_short') );
+		//Descriptions and title: escape any quotes
+		$this->addRule( 'csv_standard', 'CSVStandard',array('title') ); 
+		$this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 
+		$this->addRule( 'csv_standard', 'CSVStandard',array('description_short') ); 
+	}
+
 	protected function asCSVString($current_feed) {
 
 		//Build output in order of fields
@@ -683,7 +707,15 @@ class PCSVFeedEx extends PBasicFeed {
 
 	function __construct () {
 		parent::__construct();
-		$this->addRule('description', 'description', array('strict'));
+		//apply strictAttribute rule to removes html, special chars
+		$this->addRule( 'description', 'description', array('strict') );		
+		$this->addRule( 'strict_attribute','strictAttribute', array('description_short') );
+		//Descriptions and title: escape any quotes
+		$this->addRule( 'csv_standard', 'CSVStandard',array('title') ); 
+		$this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 
+		$this->addRule( 'csv_standard', 'CSVStandard',array('description_short') ); 
+		
+		$this->reversible = true;
 	}
 
 	function formatProduct($product) {
@@ -776,6 +808,9 @@ class PCSVFeedEx extends PBasicFeed {
 				$n->attributeName = $key;
 		}*/
 
+	}
+
+	function read($data) {
 	}
 
 }

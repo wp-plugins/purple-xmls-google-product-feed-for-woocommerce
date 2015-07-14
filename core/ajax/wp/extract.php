@@ -22,6 +22,7 @@
 	$specified = safeGetPostData('specified');
 
 	$error = 0;
+	$errorMessage = '';
 	if (strlen($token) == 0)
 		$error = 1;
 	if (strlen($request) == 0)
@@ -109,11 +110,15 @@
 	$result = new stdClass();
 	$result->version = 2;
 	$result->error = $error;
+	$result->errorMessage = $errorMessage;
 	$result->endOfResults = false;
 	if ($error == 0)
 		$result->results = $wpdb->get_results($query);
-	else
+	else {
 		$result->results = array();
+		if ($result->error == 3)
+			$result->errorMessage = 'PostVar: ' . json_encode($_POST);
+	}
 	$result->resultCount = count($result->results); //Never count variations into this value or CloudService will error
 
 	//For Products, add the WooCommerce Product. Note: This won't work for WP-ECommerce

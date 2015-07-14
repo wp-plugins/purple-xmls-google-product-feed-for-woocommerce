@@ -163,13 +163,16 @@ class PProductCategories {
 		$db->setQuery('
 			SELECT id, title, tally
 			FROM #__rapidcart_categories
-			WHERE shop_id = ' . (int) $pfcore->shopID);
+			WHERE (shop_id = ' . (int) $pfcore->shopID . ') AND (state = 1)
+		');
 		$this->categories = $db->loadObjectList();
 
 		//Load the category-category-child links: parent_category, child_category
 		$db->setQuery('
 			SELECT parent_category as parent_category, id as child_category
-			FROM #__rapidcart_categories');
+			FROM #__rapidcart_categories
+			WHERE (shop_id = ' . (int) $pfcore->shopID . ') AND (state = 1)
+		');
 		$links = $db->loadObjectList();
 
 		if (count($this->categories) == 0) {

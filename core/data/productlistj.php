@@ -20,6 +20,8 @@ class PProductList {
 
 		$db = JFactory::getDBO();
 		$lang = JComponentHelper::getParams('com_languages')->get('site');
+		if (strlen($parent->lang) > 0)
+			$lang = $parent->lang;
 		$lang = strtolower(str_replace('-', '_', $lang));
     $sql = '
 			SELECT a.virtuemart_product_id as product_id, a.product_parent_id as parent_id, details.product_name, 
@@ -118,7 +120,8 @@ class PProductList {
 			$item->description_short = substr(strip_tags($prod->excerpt), 0, 1000); //!Need strip_shortcodes
 			$item->description_long = substr(strip_tags($prod->description), 0, 1000); //!Need strip_shortcodes
 			$item->attributes['valid'] = true;
-
+			if ( isset($item->description_short) )
+				$item->attributes['description_short'] = $item->description_short;
 			$item->attributes['id'] = $prod->product_id;
 
 			//Fetch any default attributes Stage 0 (Mapping 3.0)
@@ -203,14 +206,15 @@ class PProductList {
 				$item->attributes['feature_imgurl'] =  $pfcore->siteHost . $media[0]->file_url;
 				foreach ($media as $fileIndex => $file)
 					if ($fileIndex > 0)
-						$item->imgurls[] = $file->file_url;
+						$item->imgurls[] = $pfcore->siteHost . $file->file_url;
 			}
 
 			//Attributes
 			$attribute_names = explode(',', $prod->attribute_names);
 			$attribute_values = explode(',', $prod->attribute_values);
 			foreach($attribute_names as $key => $value)
-				$item->attributes[$value] = $attribute_values[$key];
+				if (strlen($value) > 0)
+					$item->attributes[$value] = $attribute_values[$key];
 
 			//Variations
 			if ($prod->parent_id > 0) {

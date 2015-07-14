@@ -179,7 +179,7 @@ class PFeedRuleDescription extends PFeedRule {
 			}
 			$product->attributes['description'] = $description;
 			$product->attributes['description_long'] = $description;
-			//$product->attributes['description_short'] = $description_short;
+			
 		}
 
 		if (strlen($product->attributes['description']) > $this->max_description_length) {		
@@ -278,8 +278,14 @@ class PFeedRuleFindAndSet extends PFeedRule {
 	public function process($product) {
 		
 		$this->resolveVirtualParameters();
-		if ( !isset($product->attributes[$this->parametersV[0]]) )
-			return;
+		//assumes $this->parametersV[1] is blank. IE, if attribute[param[0]] is blank, set..
+		//example: rule findAndSet(brand,"",stock_status,"out of stock")
+		if ( count($this->parametersV) == 3 )
+			if ( !isset($product->attributes[$this->parametersV[0]]) ){
+				$product->attributes[$this->parametersV[1]] = $this->parametersV[2];
+				return;
+			}
+
 		if ( count($this->parametersV) == 4 ) {
 			$findSet_haystack = $product->attributes[$this->parametersV[0]];
 			$findSet_needle = $this->parametersV[1];			
@@ -381,8 +387,14 @@ class PFeedRulePricestandard extends PFeedRule {
 				$this->unit = $this->parent_feed->currency;
 		}
 
-		if (strlen($product->attributes['regular_price']) == 0)
-			$product->attributes['regular_price'] = '0.00';			
+		if (strlen($product->attributes['regular_price']) == 0) {
+			//if regular doesn't exist, but sales price does
+			if ( $product->attributes['sale_price'] > 0 )
+				$product->attributes['regular_price'] = $product->attributes['sale_price'];
+			else
+				$product->attributes['regular_price'] = '0.00';	
+		}
+
 		$product->attributes['regular_price'] = sprintf( $this->parent_feed->currency_format, $product->attributes['regular_price'] ) . ' ' . $this->unit;
 		//$this->parent_feed->getMapping('sale_price')->enabled = $product->attributes['has_sale_price'];
 		if ($product->attributes['has_sale_price'])
@@ -661,7 +673,8 @@ class PFeedRuleStrReplace extends PFeedRule {
 }
 
 //***********************************************************
-//SubString: rule substr(source, start, length) as name
+//SubString: rule substr(source, start, length, true/false) as name
+//The 4th parameter if true, assigns the source to the portion of string
 //***********************************************************
 
 class PFeedRuleSubstr extends PFeedRule {
@@ -681,7 +694,11 @@ class PFeedRuleSubstr extends PFeedRule {
 			$this->value = substr($product->attributes[$this->parametersV[0]], (int)$this->parametersV[1]);
 		if (count($this->parametersV) == 3)
 			$this->value = substr($product->attributes[$this->parametersV[0]], (int)$this->parametersV[1], (int)$this->parametersV[2]);
-
+		if (count($this->parametersV) == 4) {
+			if ($this->parametersV[3]) 
+				$product->attributes[$this->parametersV[0]] = substr($product->attributes[$this->parametersV[0]], (int)$this->parametersV[1], (int)$this->parametersV[2]);
+		}
+		
 	}
 
 }
@@ -745,8 +762,8 @@ class PFeedRuleWeightunit extends PFeedRule {
 
 		parent::initialize();
 
-		if (count($this->parameters) > 2)
-			$this->unit = $this->parameters[1];
+		if (count($this->parameters) > 0)
+			$this->unit = $this->parameters[0];
 
 	}
 
@@ -765,9 +782,65 @@ class PFeedRuleWeightunit extends PFeedRule {
 			$product->attributes['weight'] = $product->attributes['weight'] . ' ' . $this->parent_feed->weight_unit;
 
 	}
+}
+//***********************************************************
+//Dimension Unit
+//rule dimensionunit(width, "cm")
+//***********************************************************
 
+class PFeedRuleDimensionunit extends PFeedRule {
+
+	public $dimension = '';
+	public $unit = '';
+
+	public function initialize() {
+
+		parent::initialize();
+
+		if (count($this->parameters) == 1) {
+			$this->dimension = $this->parameters[0];			
+		}
+		if (count($this->parameters) == 2) {
+			$this->dimension = $this->parameters[0];
+			$this->unit = $this->parameters[1];
+		}
+
+	}
+
+	public function process($product) {
+
+		if (!isset($product->attributes[$this->dimension]) || strlen( trim($product->attributes[$this->dimension]) ) == 0 ) {
+			return;
+		}
+
+		//$this->parent_feed->getMapping('weight')->enabled = true;
+		if (strlen($this->unit) > 0)
+			$product->attributes[$this->dimension] = $product->attributes[$this->dimension] . ' ' . $this->unit;
+		else
+			$product->attributes[$this->dimension] = $product->attributes[$this->dimension] . ' ' . $this->parent_feed->dimension_unit;
+
+	}
 //rule word(n, b)
 //returns nth word in string b.
+
+}
+
+//***********************************************************
+//strip_tags: Strip HTML and PHP tags from a string
+//***********************************************************
+
+class PFeedRuleStrip_tags extends PFeedRule {
+
+	public function process($product) {
+		$this->resolveVirtualParameters();
+
+		if ( !isset($product->attributes[$this->parametersV[0]]) )
+			return;
+		if (isset($this->parametersV[1]))
+			$allowable_tags  = $this->parametersV[1];
+		
+		$product->attributes[$this->parametersV[0]] = strip_tags($product->attributes[$this->parametersV[0]], $allowable_tags);
+	}
 
 }
 
@@ -849,6 +922,8 @@ class PFeedRuleRemoveAttributeCondition extends PFeedRule {
 }
 
 //Escape quotes in csv/txt files
+//rule csvStandard(title, 80)
+//warning: should only be applied once
 class PFeedRuleCSVStandard extends PFeedRule {
 	//csvstandard should also elminiate characters outside \x20-\x7E ...what about other language chars? -cg
 	public function initialize() {
@@ -872,6 +947,32 @@ class PFeedRuleCSVStandard extends PFeedRule {
 		$attrValue = trim($attrValue);	
 		$product->attributes[$this->parameters[0]] = $attrValue;			
 
+	}
+}
+
+/********
+* Similar to strict description, but for a specified attribute
+* Example: rule strictAttribute(description_short)
+***********/
+class PFeedRuleStrictAttribute extends PFeedRule {
+
+public $descriptionStrictReplacementChar = ' ';
+
+	public function process($product) {
+	
+		if ( isset($product->attributes[$this->parameters[0]]) ) {
+			
+				$strict_attribute = $product->attributes[$this->parameters[0]];
+				if (is_array($strict_attribute)) return; //fix warning: strlen() expects parameter 1 to be string, array given 		
+				//replace non-printable characters
+				for($i=0;$i<strlen($strict_attribute);$i++) {
+					if (($strict_attribute[$i] < "\x20") || ($strict_attribute[$i] > "\x7E")) {
+						$strict_attribute[$i] = $this->descriptionStrictReplacementChar;
+					}
+				}
+			$product->attributes[$this->parameters[0]] = $strict_attribute;
+		}
+			
 	}
 }
 

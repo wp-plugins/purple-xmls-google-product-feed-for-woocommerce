@@ -29,15 +29,17 @@ class PAmazonSCFeed extends PCSVFeed
 		$this->fields = array();
 		$this->fieldDelimiter = "\t";
 
-		$this->external_product_id_type = '';
-		$this->addRule('description', 'description', array('strict'));
+		$this->external_product_id_type = '';		
 		$this->stripHTML = true;	
 
 		$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
 		$this->addAttributeDefault('local_category', 'none','PCategoryTree'); //store's local category tree
 		$this->addRule('price_rounding','pricerounding');	
-		$this->addRule( 'csv_standard', 'CSVStandard',array('title') ); 
-		$this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 
+		
+		// below is applied in basicfeed.php
+		// $this->addRule('description', 'description', array('strict'));
+		// $this->addRule( 'csv_standard', 'CSVStandard',array('title') ); 
+		// $this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 
 	}
 
 	function loadTemplate($template) {
@@ -73,8 +75,16 @@ class PAmazonSCFeed extends PCSVFeed
 	}
 
 	//load Amazon ES templates
-	elseif ( strpos(strtolower($template), 'es/') !== false ) {}
-
+	elseif ( strpos(strtolower($template), 'es/') !== false ) {
+		include dirname(__FILE__) . '/templates/es-ES/all.templates.es.php';
+		
+		$files = scandir(dirname(__FILE__) . '/templates/es-ES');
+		foreach($files as $file)
+			if (strtolower($file) == $thisHeaderTemplateType.'.php')
+			//if (strpos($file, $this->headerTemplateType) !== false)
+					include_once dirname(__FILE__) . '/templates/es-ES/' . $file;
+	}
+	
 	//load Amazon FR templates
 	elseif ( strpos(strtolower($template), 'fr/') !== false ) {}
 
@@ -150,8 +160,8 @@ class PAmazonSCFeed extends PCSVFeed
 			{
 				if ( isset( $product->attributes['sale_price_dates_from'] ) && isset( $product->attributes['sale_price_dates_to'] ) ) 
 				{	
-					$product->attributes['sale_from_date'] = $pfcore->localizedDate( 'Y-m-d', $product->attributes['sale_price_dates_from'] );
-					$product->attributes['sale_end_date'] = $pfcore->localizedDate( 'Y-m-d', $product->attributes['sale_price_dates_to'] );
+					$product->attributes['sale_price_dates_from'] = $pfcore->localizedDate( 'Y-m-d', $product->attributes['sale_price_dates_from'] );
+					$product->attributes['sale_price_dates_to'] = $pfcore->localizedDate( 'Y-m-d', $product->attributes['sale_price_dates_to'] );
 				}
 				else //sale price is set, but no schedule. Amazon requires schedule.
 				{
@@ -171,7 +181,7 @@ class PAmazonSCFeed extends PCSVFeed
 
 			//sometimes templates only have one feed_product_type.
 			if (isset($this->feed_product_type) && strlen($this->feed_product_type) > 0)
-				if (isset($product->attributes['feed_product_type']) && (strlen($product->attributes['feed_product_type']) == 0) )
+				//if (isset($product->attributes['feed_product_type']) && (strlen($product->attributes['feed_product_type']) == 0) )
 					$product->attributes['feed_product_type'] = $this->feed_product_type;
 
 			if (!isset($product->attributes['currency']) || (strlen($product->attributes['currency']) == 0))
@@ -236,11 +246,11 @@ class PAmazonSCFeed extends PCSVFeed
 			if ( !isset($product->attributes['handling_time']) )
 					$product->attributes['handling_time'] = 2; //Indicates the time, in days, between when you receive an order for an item and when you can ship the item.
 			if ( !isset($product->attributes['feed_product_type']) )
-			 	$product->attributes['feed_product_type'] = '- refer to Inventory Template -';
+			 	$product->attributes['feed_product_type'] = 'Feed Product Type value required. Refer to Inventory Template.';
 			if ( !isset($product->attributes['item_type']) )
-				$product->attributes['item_type'] = '- refer to Template\'s BTG -';
+				$product->attributes['item_type'] = 'Item Type Keyword required. Please refer to Template\'s BTG.';
 			//if ( !isset($product->attributes['item-type-keyword']) )
-			//	$product->attributes['item-type-keyword'] = '- refer to Template\'s BTG -';
+			//	$product->attributes['item-type-keyword'] = 'Item Type Keyword required. Please refer to Template\'s BTG.';
 			
 			//remove s from https
 			if (strpos($product->attributes['feature_imgurl'], 'https') !== false) {
@@ -309,6 +319,8 @@ class PAmazonSCFeed extends PCSVFeed
 		foreach ($this->attributeDefaults as $thisDefault)
 			if ($thisDefault->stage == 2)
 				$product->attributes[$thisDefault->attributeName] = $thisDefault->getValue($product);
+
+		//$parent_sku = $product->attributes['parent_sku']; 
 
 		//********************************************************************
 		//Build output in order of fields
@@ -592,6 +604,17 @@ class PAmazonSCFeed extends PCSVFeed
 				$this->headerTemplateType = 'Watches';
 				$this->headerTemplateVersion = '2014.0909';
 				break;	
+//Spanish template versions updated June 26, 2015
+			case 'es/ sports and outdoors':
+			    $this->feed_product_type = 'SportingGoods'; //1 product type
+				$this->headerTemplateType = 'Sports';
+				$this->headerTemplateVersion = '2014.1013';
+				break;
+			case 'es/ clothing and accessories':
+				$this->headerTemplateType = 'Clothing';
+				$this->headerTemplateVersion = '2015.0227';
+				break;
+				
 //Italian template versions updated Mar 1, 2015
 			case 'it/ luggage':
 				$this->feed_product_type = 'luggage'; //1 product type

@@ -45,9 +45,6 @@ class PWebgainsFeed extends PCSVFeedEx {
 
 		$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
 		$this->addRule('price_rounding','pricerounding'); //2 decimals
-		//Description and title: escape any quotes
-		$this->addRule( 'csv_standard', 'CSVStandard',array('title') ); 
-		$this->addRule( 'csv_standard', 'CSVStandard',array('description') ); 
 	
 	}
 
@@ -69,12 +66,12 @@ class PWebgainsFeed extends PCSVFeedEx {
 				if ( !isset($product->attributes[$thisAttributeMapping->attributeName]) || strlen($product->attributes[$thisAttributeMapping->attributeName]) == 0 )
 				{
 					$this->addErrorMessage(12000, 'Missing required: ' . $thisAttributeMapping->mapTo);			
-					$this->productCount--; //break;
+					$this->productCount--;
+					//return;
 				}
 				//$error_count++;
 			}
 		}
-		
 		return parent::formatProduct($product);
 	
   }

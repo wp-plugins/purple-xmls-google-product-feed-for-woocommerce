@@ -19,20 +19,28 @@ class PAmmoSeekFeed extends PBasicFeed{
 		$this->providerNameL = 'ammoseek';
 		//Create some attributes (Mapping 3.0)
 		//required
-		$this->addAttributeMapping('description', 'description', true,true);
+		$this->addAttributeMapping('title', 'description', true,true);
 		$this->addAttributeMapping('link', 'url', true,true);
-		$this->addAttributeMapping('regular_price', 'price', true,true);
+		$this->addAttributeMapping('price', 'price', true,true); //sale price if defined
 		$this->addAttributeMapping('', 'caliber', true,true);
-		$this->addAttributeMapping('stock_quantity', 'numrounds', true,true);
-		$this->addAttributeMapping('', 'count', true,true);	//number of rounds for a given price
+		//one of the below are required
+		$this->addAttributeMapping('stock_quantity', 'numrounds', true,true); //number of rounds for a given price
+		$this->addAttributeMapping('', 'count', true,true);	//number of bullets for given price
 		//optional
-		$this->addAttributeMapping('brand', 'manufacturer', true);		
+		$this->addAttributeMapping('brand', 'manufacturer', true);
+		$this->addAttributeMapping('stock_status', 'availability', true);
 		$this->addAttributeMapping('', 'grains', true);
 		$this->addAttributeMapping('', 'type', true);
-		$this->addAttributeMapping('', 'gun', true);
+		$this->addAttributeMapping('', 'gun', true);		
+		$this->addAttributeMapping('', 'ammo_type', true);
 		$this->addAttributeMapping('', 'shot_size', true);
 		$this->addAttributeMapping('', 'shell_length', true);
-		$this->addAttributeMapping('stock_status', 'availability', true);
+		$this->addAttributeMapping('', 'casing', true);
+		$this->addAttributeMapping('', 'boxlimit', true);	
+
+		$this->ammoseek_combo_title = false;
+		$this->ammoseek_combo_idvar = false;
+		$this->addAttributeDefault('price', 'none', 'PSalePriceIfDefined');
 
 	}
   
@@ -65,6 +73,52 @@ class PAmmoSeekFeed extends PBasicFeed{
 		if ($product->attributes['has_sale_price'])
 			$product->attributes['sale_price'] = sprintf($this->currency_format, $product->attributes['sale_price']) . $this->currency;
 
+		//get the mapped-to attribute value
+		foreach( $this->attributeMappings as $thisAttributeMapping ) 
+			if ( $thisAttributeMapping->enabled && !$thisAttributeMapping->deleted && !empty($product->attributes[$thisAttributeMapping->attributeName]) ) {
+				if ( $thisAttributeMapping->mapTo == 'caliber' )
+					$cpf_attribute_caliber = $product->attributes[$thisAttributeMapping->attributeName];
+				if ( $thisAttributeMapping->mapTo == 'numrounds' )
+					$cpf_attribute_numrounds = $product->attributes[$thisAttributeMapping->attributeName];
+				if ( $thisAttributeMapping->mapTo == 'count' )
+					$cpf_attribute_count = $product->attributes[$thisAttributeMapping->attributeName];
+				if ( $thisAttributeMapping->mapTo == 'grains' )
+					$cpf_attribute_grains = $product->attributes[$thisAttributeMapping->attributeName];
+				if ( $thisAttributeMapping->mapTo == 'ammo_type' )
+					$cpf_attribute_ammotype = $product->attributes[$thisAttributeMapping->attributeName];
+				if ( $thisAttributeMapping->mapTo == 'shot_size' )
+					$cpf_attribute_shotsize = $product->attributes[$thisAttributeMapping->attributeName];
+				if ( $thisAttributeMapping->mapTo == 'shell_length' )
+					$cpf_attribute_shell_length = $product->attributes[$thisAttributeMapping->attributeName];
+
+			}
+		$ammoSeekTitle = $product->attributes['title'];
+		if ( $this->ammoseek_combo_title ) {
+
+			if ( !empty($cpf_attribute_caliber) ) 
+				$ammoSeekTitle .= ' | ' . $cpf_attribute_caliber;
+			if ( !empty($cpf_attribute_numrounds) ) 
+				$ammoSeekTitle .= ' | ' . $cpf_attribute_numrounds . ' rounds';
+			if ( !empty($cpf_attribute_count) ) 
+				$ammoSeekTitle .= ' | count: ' . $cpf_attribute_count;
+			if ( !empty($cpf_attribute_grains) ) 
+				$ammoSeekTitle .= ' | grains: '  . $cpf_attribute_grains;
+			if ( !empty($cpf_attribute_ammotype) ) 
+				$ammoSeekTitle .= ' | ammo type: ' . $cpf_attribute_ammotype;
+			if ( !empty($cpf_attribute_shotsize) ) 
+				$ammoSeekTitle .= ' | shot size: ' . $cpf_attribute_shotsize;
+			if ( !empty($cpf_attribute_shell_length) ) 
+				$ammoSeekTitle .= ' | shell length: ' . $cpf_attribute_shell_length;
+
+		}
+		else if ( $this->ammoseek_combo_idvar ) {
+			$ammoSeekTitle = $product->attributes['id'] . ' - ' . $product->attributes['title'] . ' - ' . $product->attributes['item_group_id']; 
+		}
+		else 
+			$ammoSeekTitle = $product->attributes['title'];
+		
+		$product->attributes['title'] = $ammoSeekTitle;
+
 		//********************************************************************
 		//Mapping 3.0 pre processing
 		//********************************************************************
@@ -96,10 +150,10 @@ class PAmmoSeekFeed extends PBasicFeed{
 		$countable = true;
 		if ($this->current_category == 'guns')
 			$countable = false;
-		if (!isset($product->attributes['numrounds']) || (strlen($product->attributes['numrounds']) == 0))
-			if (!isset($product->attributes['count']) || (strlen($product->attributes['count']) == 0))
-				if ($countable)
-					$this->addErrorMessage(10002, 'Missing numrounds for ' . $product->attributes['title']);
+		// if (!isset($product->attributes['numrounds']) || (strlen($product->attributes['numrounds']) == 0))
+		// 	if (!isset($product->attributes['count']) || (strlen($product->attributes['count']) == 0))
+		// 		if ($countable)
+		// 			$this->addErrorMessage(10002, 'Missing numrounds for ' . $product->attributes['title']);
 		if (!isset($product->attributes['caliber']) || (strlen($product->attributes['caliber']) == 0))
 			if (strpos(strtolower($product->attributes['title']), 'caliber') === false)
 				$this->addErrorMessage(10003, 'Missing caliber for ' . $product->attributes['title']);
