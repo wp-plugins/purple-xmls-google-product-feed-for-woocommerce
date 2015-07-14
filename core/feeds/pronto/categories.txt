@@ -1,0 +1,310 @@
+#Pronto Categories      
+Baby > Strollers & Accessories ; 373  
+Baby > Car Seats ; 375  
+Baby > Carriers ; 376  
+Baby > Cribs ; 374  
+Baby > All Other Baby Items ; 378  
+Books, Movies & Music > Books > Arts & Phtography ; 20
+Books, Movies & Music > Books > Audiobooks ; 23
+Books, Movies & Music > Books > Business and Money ; 52
+Books, Movies & Music > Books > Calendars ; 55
+Books, Movies & Music > Books > Children ; 62
+Books, Movies & Music > Books > Comics, Graphic Novels and Anime ; 80
+Books, Movies & Music > Books > Computer and Technology ; 82
+Books, Movies & Music > Books > Cooking and Wine ; 85
+Books, Movies & Music > Books > Diet and Health ; 97
+Books, Movies & Music > Books > Education & Textbooks ; 106
+Books, Movies & Music > Books > Fiction and Literature ; 117
+Books, Movies & Music > Books > History ; 153
+Books, Movies & Music > Books > Home and Garden ; 157
+Books, Movies & Music > Books > Memoirs and Biographies ; 189
+Books, Movies & Music > Books > Music ; 206
+Books, Movies & Music > Books > Mysteries ; 207
+Books, Movies & Music > Books > Nonfiction ; 212
+Books, Movies & Music > Books > Outdoors and Nature ; 240
+Books, Movies & Music > Books > Parenting and Families ; 248
+Books, Movies & Music > Books > Philosophy ; 255
+Books, Movies & Music > Books > Puzzles ; 266
+Books, Movies & Music > Books > Reference ; 269
+Books, Movies & Music > Books > Religion and Spirituality ; 271
+Books, Movies & Music > Books > Romance ; 277
+Books, Movies & Music > Books > Science and Nature ; 284
+Books, Movies & Music > Books > Science Fiction ; 285
+Books, Movies & Music > Books > Self Improvement ; 290
+Books, Movies & Music > Books > Sports ; 310
+Books, Movies & Music > Books > Travel ; 338
+Books, Movies & Music > Books > All Other Books ; 44
+Books, Movies & Music > Movies > Action and Adventure ; 2
+Books, Movies & Music > Movies > Animation ; 11
+Books, Movies & Music > Movies > Comedy ; 78
+Books, Movies & Music > Movies > Documentary ; 98
+Books, Movies & Music > Movies > Drama ; 102
+Books, Movies & Music > Movies > Educational and Instructional ; 107
+Books, Movies & Music > Movies > Family ; 115
+Books, Movies & Music > Movies > Fitness and Health ; 126
+Books, Movies & Music > Movies > Horror ; 158
+Books, Movies & Music > Movies > Independent ; 163
+Books, Movies & Music > Movies > International ; 166
+Books, Movies & Music > Movies > Military and War ; 197
+Books, Movies & Music > Movies > Musicals ; 204
+Books, Movies & Music > Movies > Mystery and Suspense ; 208
+Books, Movies & Music > Movies > Sports ; 311
+Books, Movies & Music > Movies > Westerns ; 351
+Books, Movies & Music > Movies > All Other Movies ; 202
+Books, Movies & Music > Music > Alternative ; 9
+Books, Movies & Music > Music > Blues ; 39
+Books, Movies & Music > Music > Broadway and Vocal ; 48
+Books, Movies & Music > Music > Children ; 65
+Books, Movies & Music > Music > Classical ; 71
+Books, Movies & Music > Music > Comedy ; 79
+Books, Movies & Music > Music > Country and Western ; 88
+Books, Movies & Music > Music > Dance and DJ ; 91
+Books, Movies & Music > Music > Folk ; 131
+Books, Movies & Music > Music > Hip Hop ; 152
+Books, Movies & Music > Music > International ; 1167
+Books, Movies & Music > Music > Jazz ; 168
+Books, Movies & Music > Music > Latin ; 178
+Books, Movies & Music > Music > Miscellaneous ; 200
+Books, Movies & Music > Music > New Age ; 211
+Books, Movies & Music > Music > Opera ; 215
+Books, Movies & Music > Music > Pop ; 260
+Books, Movies & Music > Music > Religious ; 272
+Books, Movies & Music > Music > Rhythm and Blues ; 274
+Books, Movies & Music > Music > Rock ; 276
+Books, Movies & Music > Music > Soundtracks ; 306
+Books, Movies & Music > Music > All Other Music ; 205
+Clothing & Accessories > Women’s Clothing > Women’s Denim, Pants & Shorts ; 357
+Clothing & Accessories > Women’s Clothing > Women’s Dresses & Skirts ; 298
+Clothing & Accessories > Women’s Clothing > Women’s Intimates & Hosiery ; 360
+Clothing & Accessories > Women’s Clothing > Women’s Outerwear ; 355
+Clothing & Accessories > Women’s Clothing > Women’s Robes, Sleepwear & Slippers ; 359
+Clothing & Accessories > Women’s Clothing > Women’s Shirts & Tops ; 358
+Clothing & Accessories > Women’s Clothing > Women’s Shoes ; 356
+Clothing & Accessories > Women’s Clothing > Women’s Swimwear ; 371
+Clothing & Accessories > Women’s Clothing > Maternity ; 188
+Clothing & Accessories > Men’s Clothing > Men’s Denim, Pants & Shorts ; 193
+Clothing & Accessories > Men’s Clothing > Men’s Outerwear ; 191
+Clothing & Accessories > Men’s Clothing > Men’s Shirts & Tops ; 194
+Clothing & Accessories > Men’s Clothing > Men’s Sleepwear, Robes & Slippers ; 195
+Clothing & Accessories > Men’s Clothing > Men’s Shoes ; 192
+Clothing & Accessories > Men’s Clothing > Men’s Swimwear ; 371
+Clothing & Accessories > Men’s Clothing > Men’s Underwear, Undershirts & Socks ; 196
+Clothing & Accessories > Children’s Clothing > Children’s Denim, Pants & Shorts ; 66
+Clothing & Accessories > Children’s Clothing > Children’s Outerwear ; 63
+Clothing & Accessories > Children’s Clothing > Children’s Shirts & Tops ; 67
+Clothing & Accessories > Children’s Clothing > Children’s Skirts & Dresses ; 298
+Clothing & Accessories > Children’s Clothing > Children’s Sleepwear, Robes & Slippers ; 68
+Clothing & Accessories > Children’s Clothing > Children’s Shoes ; 64
+Clothing & Accessories > Children’s Clothing > Children’s Swimwear ; 371
+Clothing & Accessories > Children’s Clothing > Children’s Underwear, Socks & Hosiery ; 69
+Clothing & Accessories > Accessories > Jewelry ; 122
+Clothing & Accessories > Accessories > Jewelry Organizers ; 171
+Clothing & Accessories > Accessories > Loose Gems and Beads ; 182
+Clothing & Accessories > Accessories > Body Jewelry ; 231
+Clothing & Accessories > Accessories > Watches ; 348
+Clothing & Accessories > Other Clothing > Costumes ; 371
+Clothing & Accessories > Other Clothing > Other Clothing ; 371
+Clothing & Accessories > Other Clothing > Other Outerwear ; 3
+Clothing & Accessories > Other Clothing > Other Shirts & Tops ; 6
+Clothing & Accessories > Other Clothing > Other Shorts, Pants & Jeans ; 5
+Clothing & Accessories > Other Clothing > Other Sleepwear, Robes & Slippers ; 7
+Clothing & Accessories > Other Clothing > Other Shoes ; 4
+Clothing & Accessories > Other Clothing > Other Underwear, Socks & Hosiery ; 8
+Computers > Laptops, Netbooks and Tablets ; 177  
+Computers > Desktops ; 96  
+Computers > E-Book Readers ; 138  
+Computers > Monitors & Projectors ; 201  
+Computers > Drives & Storage ; 92  
+Computers > Networking ; 210  
+Computers > Printers, Scanners, Copiers and Fax ; 264  
+Computers > Ink, Toner and Ribbons ; 383  
+Computers > Software ; 305  
+Computers > Keyboards, Mice and Input Devices ; 174  
+Computers > Memory ; 190  
+Computers > Cables and Accessories ; 54  
+Computers > Laptop Accessories ; 382  
+Computers > Desktop Accessories ; 381  
+Electronics > Cameras ; 56  
+Electronics > Optics ; 138  
+Electronics > Video and Security Cameras ; 343  
+Electronics > Camera Accessories ; 1  
+Electronics > Televisions ; 328  
+Electronics > DVD, VCR and Blu-ray Players & Recorders ; 105  
+Electronics > Portable Media ; 379  
+Electronics > Stereos, Receivers and Speakers ; 313  
+Electronics > Headphones and Audio Accessories ; 149  
+Electronics > Car Audio ; 261  
+Electronics > GPS ; 138  
+Electronics > Cell Phones ; 60  
+Electronics > Telephones ; 327  
+Electronics > Radio Communications & Scanners ; 267  
+Electronics > Communications Accessories ; 380  
+Electronics > Batteries and Chargers ; 32  
+Electronics > Other Electronic Accessories ; 222  
+Electronics > Other Electronics ; 223  
+Flowers, Food & Gifts > Flowers & Plants ; 129  
+Flowers, Food & Gifts > Food and Drink ; 307  
+Flowers, Food & Gifts > Other Gifts, Tobacco, and Party Supplies ; 225  
+Health & Beauty > Makeup and Accessories ; 186  
+Health & Beauty > Hair and Nail Care ; 144  
+Health & Beauty > Fragrance ; 134  
+Health & Beauty > Skin Care and Bath & Body ; 297  
+Health & Beauty > Dental & Oral Care ; 93  
+Health & Beauty > Ear Care ; 151  
+Health & Beauty > Vision Products ; 344  
+Health & Beauty > Eyeglasses ; 114  
+Health & Beauty > Contact Lenses ; 84  
+Health & Beauty > Massage and Relaxation ; 187  
+Health & Beauty > First Aid Kits and Supplies ; 123  
+Health & Beauty > Nutritional Supplements & Wellness Products ; 213  
+Health & Beauty > Pharmacy ; 254  
+Health & Beauty > Support and Mobility Aids ; 319  
+Health & Beauty > Other Health & Beauty Accessories ; 226  
+Health & Beauty > Other Health & Beauty ; 227  
+Home & Garden > Appliances > Refrigerators and Freezers ; 270
+Home & Garden > Appliances > Washers and Dryers ; 347
+Home & Garden > Appliances > Ranges, Ovens and Microwaves ; 241
+Home & Garden > Appliances > Grills ; 238
+Home & Garden > Appliances > Dishwashers ; 198
+Home & Garden > Appliances > Vacuums and Floor Cleaners ; 342
+Home & Garden > Appliances > Blenders, Food Processors and Mixers ; 38
+Home & Garden > Appliances > Coffee and Tea Makers ; 75
+Home & Garden > Appliances > Toasters ; 331
+Home & Garden > Appliances > Waffle Makers ; 346
+Home & Garden > Appliances > Breadmakers ; 47
+Home & Garden > Appliances > All Other Appliances ; 198
+Home & Garden > Arts & Crafts > Art Supplies ; 18
+Home & Garden > Arts & Crafts > Astronomy and Science ; 22
+Home & Garden > Arts & Crafts > Beer and Wine Making ; 35
+Home & Garden > Arts & Crafts > Candle and Soap Making ; 58
+Home & Garden > Arts & Crafts > Jewelry and Beadwork ; 170
+Home & Garden > Arts & Crafts > Ribbon ; 154
+Home & Garden > Arts & Crafts > Sewing and Needlework ; 291
+Home & Garden > Arts & Crafts > Scrapbooking and Paper Crafts ; 286
+Home & Garden > Arts & Crafts > Trains and Models ; 337
+Home & Garden > Kitchen & Dining > Barware and Stemware ; 28
+Home & Garden > Kitchen & Dining > Cookware ; 86
+Home & Garden > Kitchen & Dining > Tablecloths and Napkins ; 322
+Home & Garden > Kitchen & Dining > Tableware ; 70
+Home & Garden > Kitchen & Dining > Cleaning Supplies ; 72
+Home & Garden > Kitchen & Dining > All Other Kitchen and Dining ; 175
+Home & Garden > Furniture > Armoires and Entertainment Systems ; 17
+Home & Garden > Furniture > Beds and Mattresses ; 34
+Home & Garden > Furniture > Bookcases and Shelving ; 43
+Home & Garden > Furniture > Desks and Workstations ; 94
+Home & Garden > Furniture > Dressers ; 103
+Home & Garden > Furniture > Patio and Outdoor Furniture ; 249
+Home & Garden > Furniture > Sofas and Chairs ; 304
+Home & Garden > Furniture > Tables ; 323
+Home & Garden > Furniture > Sets ; 135
+Home & Garden > Furniture > All Other Furniture ; 199
+Home & Garden > Lawn & Garden > Lawn and Garden Care ; 139
+Home & Garden > Lawn & Garden > Greenhouses ; 143
+Home & Garden > Lawn & Garden > Bird Baths, Feeders, and Houses ; 37
+Home & Garden > Lawn & Garden > Outdoor Décor ; 218
+Home & Garden > Lawn & Garden > Pool and Spa Supplies ; 229
+Home & Garden > Decor > Linens and Bedding ; 181
+Home & Garden > Decor > Towels and Bath Accessories ; 333
+Home & Garden > Decor > Flooring ; 127
+Home & Garden > Decor > Lighting ; 180
+Home & Garden > Decor > Paint and Wallpaper ; 243
+Home & Garden > Decor > Paintings and Prints ; 245
+Home & Garden > Decor > Rugs and Carpet ; 279
+Home & Garden > Decor > Sculptures ; 288
+Home & Garden > Decor > Window Treatments ; 353
+Home & Garden > Decor > Cushions, Throws and Home Accents ; 89
+Home & Garden > Pets > Pet Supplies ; 253
+Home & Garden > Other > All Other Home and Garden ; 229
+Musical Instruments & Performance > Amplifiers ; 10  
+Musical Instruments & Performance > Keyboard Instruments ; 173  
+Musical Instruments & Performance > Percussion Instruments ; 252  
+Musical Instruments & Performance > Recording Equipment ; 268  
+Musical Instruments & Performance > Sheet Music ; 292  
+Musical Instruments & Performance > Stringed Instruments ; 316  
+Musical Instruments & Performance > Wind Instruments ; 352  
+Musical Instruments & Performance > Other Musical Instruments and Performance ; 203  
+Office & School Supplies > Folders and Binders ; 130  
+Office & School Supplies > Mailroom and Shipping Supplies ; 185  
+Office & School Supplies > Organizers and Planners ; 216  
+Office & School Supplies > Pads and Notebooks ; 242  
+Office & School Supplies > Paper, Copier and Fax Supplies ; 247  
+Office & School Supplies > Presentation Materials ; 263  
+Office & School Supplies > Writing Utensils ; 364  
+Office & School Supplies > Other Office and School Supplies ; 233  
+Sporting Goods > Team Sports > Baseball and Softball ; 29
+Sporting Goods > Team Sports > Basketball ; 30
+Sporting Goods > Team Sports > Field Hockey ; 118
+Sporting Goods > Team Sports > Football and Rugby ; 132
+Sporting Goods > Team Sports > Ice Hockey and Ice Skating ; 161
+Sporting Goods > Team Sports > Paintball and Airsoft ; 244
+Sporting Goods > Team Sports > Racquet Sports ; 329
+Sporting Goods > Team Sports > Soccer ; 302
+Sporting Goods > Team Sports > Volleyball ; 345
+Sporting Goods > Team Sports > Trading Cards ; 336
+Sporting Goods > Team Sports > Sports Memorabilia ; 77
+Sporting Goods > Team Sports > Other Team Sports ; 325
+Sporting Goods > Individual Sports > Bowling ; 45
+Sporting Goods > Individual Sports > Boating and Waterskiing ; 41
+Sporting Goods > Individual Sports > Boxing and Martial Arts ; 46
+Sporting Goods > Individual Sports > Camping ; 57
+Sporting Goods > Individual Sports > Climbing and Hiking ; 73
+Sporting Goods > Individual Sports > Cycling ; 90
+Sporting Goods > Individual Sports > Equestrian ; 113
+Sporting Goods > Individual Sports > Golf ; 142
+Sporting Goods > Individual Sports > Hunting and Fishing ; 159
+Sporting Goods > Individual Sports > Running and Jogging ; 280
+Sporting Goods > Individual Sports > Skateboarding ; 295
+Sporting Goods > Individual Sports > Skiing ; 296
+Sporting Goods > Individual Sports > Snowboarding ; 300
+Sporting Goods > Individual Sports > Other Winter Recreation ; 354
+Sporting Goods > Individual Sports > Surfing ; 320
+Sporting Goods > Individual Sports > Swimming, Scuba and Snorkeling ; 321
+Sporting Goods > Individual Sports > Weight Lifting and Cardio ; 349
+Sporting Goods > Individual Sports > Wrestling ; 362
+Sporting Goods > Individual Sports > Yoga and Pilates ; 365
+Sporting Goods > Individual Sports > Other Outdoor Recreation ; 239
+Sporting Goods > Accessories > Hydration ; 160
+Sporting Goods > Accessories > Protective Gear ; 265
+Sporting Goods > Accessories > Pedometers and Heart Rate Monitors ; 251
+Sporting Goods > Accessories > Other Fitness Accessories ; 125
+Tools & Hardware > Automotive > Auto Parts ; 25
+Tools & Hardware > Automotive > Body Repair and Customization ; 42
+Tools & Hardware > Automotive > Car and Truck Accessories ; 59
+Tools & Hardware > Automotive > Engine and Tire Repair ; 112
+Tools & Hardware > Automotive > Other Auto Parts ; 26
+Tools & Hardware > Building Materials > Cabinets and Trim ; 53
+Tools & Hardware > Building Materials > Doors and Windows ; 101
+Tools & Hardware > Building Materials > Electrical ; 109
+Tools & Hardware > Building Materials > Lumber and Wood ; 184
+Tools & Hardware > Building Materials > Nails, Screws and Fasteners ; 209
+Tools & Hardware > Building Materials > Plumbing and Heating ; 257
+Tools & Hardware > Building Materials > Sealers and Adhesives ; 289
+Tools & Hardware > Building Materials > Siding ; 294
+Tools & Hardware > Building Materials > Stone and Masonry ; 314
+Tools & Hardware > Building Materials > Other Building Materials ; 49
+Tools & Hardware > Tools > Drills ; 104
+Tools & Hardware > Tools > Electrical Tools ; 108
+Tools & Hardware > Tools > Generators and Air Tools ; 140
+Tools & Hardware > Tools > Job Site Safety and Ergonomics ; 72
+Tools & Hardware > Tools > Landscape and Snow Removal ; 176
+Tools & Hardware > Tools > Plumbing Tools ; 259
+Tools & Hardware > Tools > Saws and Accessories ; 283
+Tools & Hardware > Tools > Screwdrivers and Nail Guns ; 287
+Tools & Hardware > Tools > Specialty Hand Tools ; 308
+Tools & Hardware > Tools > Tool Storage and Organizers ; 315
+Tools & Hardware > Tools > Welding ; 350
+Tools & Hardware > Tools > Woodworking and Carpentry Tools ; 361
+Tools & Hardware > Tools > Other Hand Tools ; 145
+Tools & Hardware > Tools > Other Power Tools ; 262
+Tools & Hardware > Other > All Other Tools and Hardware ; 237
+Toys & Games > Action Figures and Figurines ; 120  
+Toys & Games > Board Games ; 40  
+Toys & Games > Building Sets, Blocks and Models ; 50  
+Toys & Games > Dolls and Plush ; 100  
+Toys & Games > Other Toys and Games ; 334  
+Video Games > Consoles and Accessories ; 110  
+Video Games > Video Games ; 372  
+Collectibles > Antiques ; 12  
+Collectibles > Coins ; 76  
+Collectibles > Stamps ; 312  
+Collectibles > Other Collectibles ; 77  

@@ -1,0 +1,470 @@
+#Affiliate Window category tree
+Clothing & Accessories > Children's Clothing  
+Clothing & Accessories > Children's Clothing > Baby Clothes
+Clothing & Accessories > Children's Clothing > Boys' Clothes
+Clothing & Accessories > Children's Clothing > Girls' Clothes
+Clothing & Accessories > Clothing Accessories  
+Clothing & Accessories > Clothing Accessories > Bags
+Clothing & Accessories > Clothing Accessories > Children's Accessories
+Clothing & Accessories > Clothing Accessories > Men's Accessories
+Clothing & Accessories > Clothing Accessories > Women's Accessories
+Clothing & Accessories > Fancy Dress  
+Clothing & Accessories > General Clothing  
+Clothing & Accessories > Lingerie  
+Clothing & Accessories > Lingerie > Bodies
+Clothing & Accessories > Lingerie > Bras
+Clothing & Accessories > Lingerie > Combination Sets
+Clothing & Accessories > Lingerie > Nightwear
+Clothing & Accessories > Lingerie > Socks & Hosiery
+Clothing & Accessories > Lingerie > Suspenders & Garters
+Clothing & Accessories > Lingerie > Women's Underwear
+Clothing & Accessories > Men's Clothing  
+Clothing & Accessories > Men's Clothing > Men's Outerwear
+Clothing & Accessories > Men's Clothing > Men's Socks
+Clothing & Accessories > Men's Clothing > Men's Sportswear
+Clothing & Accessories > Men's Clothing > Men's Suits
+Clothing & Accessories > Men's Clothing > Men's Swimwear
+Clothing & Accessories > Men's Clothing > Men's Tops
+Clothing & Accessories > Men's Clothing > Men's Trousers
+Clothing & Accessories > Men's Clothing > Men's Underwear
+Clothing & Accessories > Novelty T-Shirts  
+Clothing & Accessories > Shoes  
+Clothing & Accessories > Shoes > Children's Footwear
+Clothing & Accessories > Shoes > Men's Footwear
+Clothing & Accessories > Shoes > Women's Footwear
+Clothing & Accessories > Women's Clothing  
+Clothing & Accessories > Women's Clothing > Maternity
+Clothing & Accessories > Women's Clothing > Women's Dresses & Skirts
+Clothing & Accessories > Women's Clothing > Women's Outerwear
+Clothing & Accessories > Women's Clothing > Women's Sportswear
+Clothing & Accessories > Women's Clothing > Women's Suits
+Clothing & Accessories > Women's Clothing > Women's Swimwear
+Clothing & Accessories > Women's Clothing > Women's Tops
+Clothing & Accessories > Women's Clothing > Women's Trousers
+Computers & Software > Computer Components  
+Computers & Software > Computer Components > Computer Cases
+Computers & Software > Computer Components > Controller Cards
+Computers & Software > Computer Components > CPUs
+Computers & Software > Computer Components > Fans
+Computers & Software > Computer Components > Graphics Cards
+Computers & Software > Computer Components > Motherboards
+Computers & Software > Computer Components > Power Supplies
+Computers & Software > Computer Components > Sound Cards
+Computers & Software > Computer Components > TV Cards
+Computers & Software > Handhelds  
+Computers & Software > Handhelds > GPS & Sat Nav
+Computers & Software > Handhelds > PDAs & Accessories
+Computers & Software > Hardware  
+Computers & Software > Hardware > Computers
+Computers & Software > Hardware > Laptops
+Computers & Software > Hardware > Monitors
+Computers & Software > Input Devices  
+Computers & Software > Input Devices > Headsets
+Computers & Software > Input Devices > Joysticks and Gaming
+Computers & Software > Input Devices > Keyboards
+Computers & Software > Input Devices > Mice
+Computers & Software > Input Devices > Microphones
+Computers & Software > Input Devices > WebCams
+Computers & Software > ISP & Hosting  
+Computers & Software > ISP & Hosting > Broadband
+Computers & Software > ISP & Hosting > Web Hosting
+Computers & Software > Memory  
+Computers & Software > Memory > Compact Flash
+Computers & Software > Memory > Memory Card Reader
+Computers & Software > Memory > Memory Stick
+Computers & Software > Memory > Microdrive
+Computers & Software > Memory > Multimedia Card
+Computers & Software > Memory > Other Memory
+Computers & Software > Memory > RAM
+Computers & Software > Memory > SD Card
+Computers & Software > Memory > SmartMedia
+Computers & Software > Memory > XD Cards
+Computers & Software > Peripherals  
+Computers & Software > Peripherals > All-In-One Printers
+Computers & Software > Peripherals > Cables
+Computers & Software > Peripherals > Computer Speakers
+Computers & Software > Peripherals > Laptop Bags
+Computers & Software > Peripherals > Modems
+Computers & Software > Peripherals > Printer Consumables
+Computers & Software > Peripherals > Printers
+Computers & Software > Peripherals > Scanners
+Computers & Software > Software  
+Computers & Software > Storage Media  
+Computers & Software > Storage Media > Blank Media
+Computers & Software > Storage Media > CD Writers
+Computers & Software > Storage Media > CD-ROM Drives
+Computers & Software > Storage Media > DAT Drives
+Computers & Software > Storage Media > DVD Drives
+Computers & Software > Storage Media > DVD Writers
+Computers & Software > Storage Media > Floppy Disk Drives
+Computers & Software > Storage Media > Hard Drives
+Computers & Software > Storage Media > Pen Drives
+Computers & Software > Storage Media > Tape Drives
+Computers & Software > Storage Media > Zip Drives
+Computers & Software > Wireless & Networking  
+Computers & Software > Wireless & Networking > Bluetooth Adapters
+Computers & Software > Wireless & Networking > Hubs & Switches
+Computers & Software > Wireless & Networking > Networking
+Computers & Software > Wireless & Networking > Streaming Media Devices
+Computers & Software > Wireless & Networking > Wireless Adapters
+Computers & Software > Wireless & Networking > Wireless Routers
+Dating >   
+Electronics > Audio Equipment  
+Electronics > Audio Equipment > Amplifiers & Receivers
+Electronics > Audio Equipment > Audio Systems
+Electronics > Audio Equipment > Cables, Parts & Power Supplies
+Electronics > Audio Equipment > Cassette Decks
+Electronics > Audio Equipment > CD Players
+Electronics > Audio Equipment > DJ Equipment
+Electronics > Audio Equipment > HiFi Speakers
+Electronics > Audio Equipment > In-Car Entertainment
+Electronics > Audio Equipment > MiniDisc Separates
+Electronics > Audio Equipment > Radios
+Electronics > Audio Equipment > Tuners
+Electronics > Home Entertainment  
+Electronics > Home Entertainment > Blu-Ray Players
+Electronics > Home Entertainment > DVD Players
+Electronics > Home Entertainment > DVD Recorders
+Electronics > Home Entertainment > HD DVD Players
+Electronics > Home Entertainment > Headphones
+Electronics > Home Entertainment > Home Cinema
+Electronics > Home Entertainment > Projectors
+Electronics > Home Entertainment > Remote Controls
+Electronics > Home Entertainment > Set Top Boxes & Receivers
+Electronics > Home Entertainment > VCR Players
+Electronics > Photography  
+Electronics > Photography > Accessories
+Electronics > Photography > Camcorders
+Electronics > Photography > Cameras
+Electronics > Photography > Optical Devices
+Electronics > Photography > Photo Development
+Electronics > Portable Audio  
+Electronics > Portable Audio > Accessories
+Electronics > Portable Audio > Batteries
+Electronics > Portable Audio > MP3 Players
+Electronics > Portable Audio > Portable Cassette Players
+Electronics > Portable Audio > Portable CD Players
+Electronics > Portable Audio > Portable MiniDisc
+Electronics > Portable Audio > Portable Radios
+Electronics > Portable Audio > Stereos
+Electronics > Televisions  
+Electronics > Televisions > Combi TVs
+Electronics > Televisions > LCD TV
+Electronics > Televisions > Plasma TV
+Electronics > Televisions > Projection TV
+Electronics > Televisions > Projector Accessories
+Electronics > Televisions > Standard (4:3) TV
+Electronics > Televisions > Television Accessories
+Electronics > Televisions > Widescreen TV
+Entertainment > Books  
+Entertainment > Books > Adult Books
+Entertainment > Books > Audio Books
+Entertainment > Books > Books
+Entertainment > Books > Magazine Subscriptions
+Entertainment > DVDs  
+Entertainment > DVDs > Adult Movies
+Entertainment > DVDs > Blu-Ray
+Entertainment > DVDs > DVD Rentals
+Entertainment > DVDs > DVDs
+Entertainment > DVDs > Film Downloads
+Entertainment > DVDs > HD DVD
+Entertainment > DVDs > UMDs
+Entertainment > DVDs > VHS
+Entertainment > Music  
+Entertainment > Music > Cassettes & Vinyl
+Entertainment > Music > CDs
+Entertainment > Music > Music Downloads
+Entertainment > Music > Musical Instruments
+Entertainment > Video Gaming  
+Entertainment > Video Gaming > Console
+Entertainment > Video Gaming > Console Accessories
+Entertainment > Video Gaming > Retro Games
+Entertainment > Video Gaming > Video Games
+Finance > Credit Cards  
+Finance > Credit Cards > Cashback & Reward Credit Cards
+Finance > Credit Cards > Credit Cards
+Finance > Credit Cards > Pre-pay Credit Cards
+Finance > Insurance  
+Finance > Insurance > Contents Insurance
+Finance > Insurance > Health Insurance
+Finance > Insurance > Home Insurance
+Finance > Insurance > Life Insurance
+Finance > Insurance > Mortgage Insurance
+Finance > Insurance > Specialist Insurance
+Finance > Insurance > Travel Insurance
+Finance > Insurance > Vehicle Insurance
+Finance > Investments  
+Finance > Investments > Bonds
+Finance > Investments > Cash ISAs
+Finance > Investments > Pensions
+Finance > Investments > Quotes
+Finance > Investments > Shares
+Finance > Investments > Stockbrokers
+Finance > Investments > Stocks & Shares ISAs
+Finance > Loans  
+Finance > Loans > Bad Credit Loans
+Finance > Loans > Car Loans
+Finance > Loans > Finance
+Finance > Loans > Home Loans
+Finance > Loans > Personal Loans
+Finance > Loans > Secured Loans
+Finance > Loans > Unsecured Loans
+Finance > Mortgages  
+Finance > Mortgages > Bad Credit Mortgages
+Finance > Mortgages > Buy to Let Mortgages
+Finance > Mortgages > Capped Mortgages
+Finance > Mortgages > Discounted Mortgages
+Finance > Mortgages > Fixed Rate Mortgages
+Finance > Mortgages > Flexible Mortgages
+Finance > Mortgages > Mortgage Advice
+Finance > Mortgages > Mortgage Insurance
+Finance > Mortgages > Mortgage Protection
+Finance > Mortgages > Remortgages
+Finance > Mortgages > Self Certification Mortgages
+Finance > Mortgages > Standard Variable Mortgages
+Finance > Personal Banking  
+Finance > Personal Banking > Bank Accounts
+Finance > Personal Banking > Current Accounts
+Finance > Personal Banking > Online Banking
+Finance > Personal Banking > Savings Accounts
+General Clothing    
+Gifts, Gadgets & Toys > Experiences  
+Gifts, Gadgets & Toys > Experiences > Driving
+Gifts, Gadgets & Toys > Experiences > Extreme
+Gifts, Gadgets & Toys > Experiences > Flying
+Gifts, Gadgets & Toys > Experiences > Short Breaks
+Gifts, Gadgets & Toys > Experiences > Lifestyle
+Gifts, Gadgets & Toys > Experiences > Other Experiences
+Gifts, Gadgets & Toys > Experiences > Pampering
+Gifts, Gadgets & Toys > Experiences > Water Experiences
+Gifts, Gadgets & Toys > Gadgets  
+Gifts, Gadgets & Toys > Gadgets > Adult Toys
+Gifts, Gadgets & Toys > Gadgets > Auctions
+Gifts, Gadgets & Toys > Gadgets > Electronic Gadgets
+Gifts, Gadgets & Toys > Gadgets > Other Gadgets
+Gifts, Gadgets & Toys > Gadgets > Adult Toys
+Gifts, Gadgets & Toys > Gadgets > Auctions
+Gifts, Gadgets & Toys > Gadgets > Electronic Gadgets
+Gifts, Gadgets & Toys > Gadgets > Other Gadgets
+Gifts, Gadgets & Toys > Gadgets > Calendars
+Gifts, Gadgets & Toys > Gadgets > Christmas Gifts
+Gifts, Gadgets & Toys > Gadgets > Collectibles
+Gifts, Gadgets & Toys > Gadgets > Decorations
+Gifts, Gadgets & Toys > Gadgets > Flowers
+Gifts, Gadgets & Toys > Gadgets > Greeting Cards
+Gifts, Gadgets & Toys > Gadgets > Hampers
+Gifts, Gadgets & Toys > Gadgets > Novelty Gifts
+Gifts, Gadgets & Toys > Gadgets > Other Occasions
+Gifts, Gadgets & Toys > Gadgets > Personalised Gifts
+Gifts, Gadgets & Toys > Gadgets > Valentine's Day
+Gifts, Gadgets & Toys > Gadgets > Wedding Gifts
+Gifts, Gadgets & Toys > Toys  
+Gifts, Gadgets & Toys > Toys > Electronic & RC Toys
+Gifts, Gadgets & Toys > Toys > Action Figures
+Gifts, Gadgets & Toys > Toys > Baby Toys
+Gifts, Gadgets & Toys > Toys > Creative & Construction
+Gifts, Gadgets & Toys > Toys > Dolls
+Gifts, Gadgets & Toys > Toys > Games, Puzzles & Learning
+Gifts, Gadgets & Toys > Toys > Musical Toys
+Gifts, Gadgets & Toys > Toys > Other Toys
+Gifts, Gadgets & Toys > Toys > Outdoor Toys
+Gifts, Gadgets & Toys > Toys > Soft Toys
+Gifts, Gadgets & Toys > Toys > Toy Models
+Health & Beauty > Bodycare & Fitness  
+Health & Beauty > Bodycare & Fitness > Bodycare Appliances
+Health & Beauty > Bodycare & Fitness > Shaving
+Health & Beauty > Cosmetics & Skincare  
+Health & Beauty > Cosmetics & Skincare > Cosmetics
+Health & Beauty > Cosmetics & Skincare > Fragrance
+Health & Beauty > Cosmetics & Skincare > Skincare
+Health & Beauty > Haircare  
+Health & Beauty > Haircare > Haircare Appliances
+Health & Beauty > Haircare > Haircare Products
+Health & Beauty > Health  
+Health & Beauty > Health > Contact Lenses
+Health & Beauty > Health > Diet
+Health & Beauty > Health > Glasses
+Health & Beauty > Health > Medical
+Health & Beauty > Health > Nutrition
+Health & Beauty > Health > Oral Health
+Health & Beauty > Health > Vitamins & Supplements
+Home & Garden > Agricultural Products  
+Home & Garden > Arts & Crafts  
+Home & Garden > Baby Products  
+Home & Garden > Bathrooms & Accessories  
+Home & Garden > Bathrooms & Accessories > Bathroom Scales
+Home & Garden > Bathrooms & Accessories > Bathroom Sinks & Taps
+Home & Garden > Bathrooms & Accessories > Bathrooms
+Home & Garden > Bathrooms & Accessories > Bathtubs
+Home & Garden > Bathrooms & Accessories > Bespoke Bathrooms
+Home & Garden > Bathrooms & Accessories > Showers
+Home & Garden > Bathrooms & Accessories > Sinks
+Home & Garden > DIY  
+Home & Garden > DIY > Hand Tools
+Home & Garden > DIY > Home Security
+Home & Garden > DIY > Painting & Decorating
+Home & Garden > DIY > Power Tools
+Home & Garden > Food  
+Home & Garden > Food > Cakes, Snacks & Sweets
+Home & Garden > Food > Chocolate
+Home & Garden > Food > Condiments
+Home & Garden > Food > Dairy
+Home & Garden > Food > Drinks
+Home & Garden > Food > Fruit & Vegetables
+Home & Garden > Food > Hampers
+Home & Garden > Food > Meat, Poultry & Fish
+Home & Garden > Food > Organic Food
+Home & Garden > Food > Party Food
+Home & Garden > Food > Ready Meals
+Home & Garden > Food > Tinned Food
+Home & Garden > Furniture  
+Home & Garden > Furniture > Beds
+Home & Garden > Furniture > Chairs
+Home & Garden > Furniture > Mattresses
+Home & Garden > Furniture > Sofas
+Home & Garden > Furniture > Storage
+Home & Garden > Furniture > Tables
+Home & Garden > Garden  
+Home & Garden > Garden > Barbecues & Accessories
+Home & Garden > Garden > Garden & Leisure
+Home & Garden > Garden > Garden Tools
+Home & Garden > Garden > Lawn Mowers
+Home & Garden > Garden > Plants & Seeds
+Home & Garden > Garden > Sheds & Garden Furniture
+Home & Garden > General Household  
+Home & Garden > General Household > Cleaning
+Home & Garden > General Household > Flooring & Carpeting
+Home & Garden > General Household > Heating & Cooling
+Home & Garden > General Household > Lighting
+Home & Garden > General Household > Pets
+Home & Garden > General Household > Radiators
+Home & Garden > Home Accessories  
+Home & Garden > Home Accessories > Art
+Home & Garden > Home Accessories > Curtains & Blinds
+Home & Garden > Home Accessories > Decorations
+Home & Garden > Home Accessories > Furniture Accessories
+Home & Garden > Home Accessories > Home Textiles
+Home & Garden > Home Accessories > House Accessories
+Home & Garden > Household Bills  
+Home & Garden > Household Bills > Gas & Electric Bills
+Home & Garden > Household Bills > Telephone Bills
+Home & Garden > Kitchen  
+Home & Garden > Kitchen > Bespoke Kitchens
+Home & Garden > Kitchen > Cookware & Utensils
+Home & Garden > Kitchen > Crockery
+Home & Garden > Kitchen > Cutlery
+Home & Garden > Kitchen > Glassware
+Home & Garden > Kitchen > Kitchen Sinks and Taps
+Home & Garden > Kitchen > Kitchen Units
+Home & Garden > Living Room  
+Home & Garden > Office Supplies  
+Home & Garden > Property  
+Home & Garden > Property > Buy Property
+Home & Garden > Property > Rent Property
+Home & Garden > Wine, Spirits & Tobacco  
+Home & Garden > Wine, Spirits & Tobacco > Alcoholic Drinks
+Home & Garden > Wine, Spirits & Tobacco > Tobacco
+Home & Garden > Wine, Spirits & Tobacco > Wine
+Home Appliances > Appliance Spares  
+Home Appliances > Cooking  
+Home Appliances > Cooking > Cooker Hoods
+Home Appliances > Cooking > Cookers & Ovens
+Home Appliances > Cooking > Grills
+Home Appliances > Cooking > Hobs
+Home Appliances > Cooking > Microwaves
+Home Appliances > Laundry & Cleaning  
+Home Appliances > Laundry & Cleaning > Dishwashers
+Home Appliances > Laundry & Cleaning > Irons
+Home Appliances > Laundry & Cleaning > Tumble Dryers
+Home Appliances > Laundry & Cleaning > Vacuum Cleaner Accessories
+Home Appliances > Laundry & Cleaning > Vacuum Cleaners
+Home Appliances > Laundry & Cleaning > Washer Dryers
+Home Appliances > Laundry & Cleaning > Washing Machines
+Home Appliances > Refrigeration > 
+Home Appliances > Refrigeration > Freezers
+Home Appliances > Refrigeration > Fridge Freezers
+Home Appliances > Refrigeration > Fridges
+Home Appliances > Small Appliances  
+Home Appliances > Small Appliances > Blenders
+Home Appliances > Small Appliances > Breadmakers
+Home Appliances > Small Appliances > Can Openers
+Home Appliances > Small Appliances > Coffee Makers
+Home Appliances > Small Appliances > Deep Fryers
+Home Appliances > Small Appliances > Electric Kettles
+Home Appliances > Small Appliances > Electric Shavers
+Home Appliances > Small Appliances > Food Processors
+Home Appliances > Small Appliances > Ice Cream Makers
+Home Appliances > Small Appliances > Irons
+Home Appliances > Small Appliances > Juicers
+Home Appliances > Small Appliances > Other Appliances
+Home Appliances > Small Appliances > Sandwich / Waffle Makers
+Home Appliances > Small Appliances > Toasters
+Jewellery > Men's Jewellery  
+Jewellery > Men's Watches  
+Jewellery > Women's Jewellery  
+Jewellery > Women's Watches  
+Sports > Extreme Sports  
+Sports > Fitness  
+Sports > Fitness > Cycling
+Sports > Fitness > Fitness Equipment
+Sports > Fitness > Support Aids
+Sports > Other Sports  
+Sports > Other Sports > Boxing
+Sports > Other Sports > Darts
+Sports > Other Sports > Equestrian
+Sports > Other Sports > Fishing
+Sports > Other Sports > Golf
+Sports > Other Sports > Motorsport
+Sports > Other Sports > Outdoor Adventure
+Sports > Other Sports > Snooker, Pool & Billiards
+Sports > Other Sports > Trampolines
+Sports > Other Sports > Water Sports
+Sports > Racket Sports  
+Sports > Racket Sports > Badminton
+Sports > Racket Sports > Squash
+Sports > Racket Sports > Table Tennis
+Sports > Racket Sports > Tennis
+Sports > Sports Memorabilia  
+Sports > Sportswear & Swimwear  
+Sports > Sportswear & Swimwear > Swimming Accessories
+Sports > Team Sports  
+Sports > Team Sports > Basketball
+Sports > Team Sports > Cricket
+Sports > Team Sports > Football
+Sports > Team Sports > Hockey
+Sports > Team Sports > Other Team Sports
+Sports > Winter Sports  
+Telephones & Faxes > Mobile Phones > Handsets
+Telephones & Faxes > Mobile Phones > Mobile Downloads
+Telephones & Faxes > Mobile Phones > Mobile Phone Accessories
+Telephones & Faxes > Mobile Phones > Pay Monthly
+Telephones & Faxes > Mobile Phones > Prepay Mobile Phones
+Telephones & Faxes > Other Telephones  
+Telephones & Faxes > Other Telephones > All-In-Ones
+Telephones & Faxes > Other Telephones > Fax Machines
+Telephones & Faxes > Other Telephones > Home Telephone Accessories
+Telephones & Faxes > Other Telephones > House Telephones
+Telephones & Faxes > Other Telephones > IP Phones
+Telephones & Faxes > Other Telephones > Video Conferencing
+Tickets > Concerts  
+Tickets > Sporting Events  
+Tickets > Theatre  
+Tickets > Theme Parks  
+Tickets > Tourist Attractions  
+Travel > Accommodation  
+Travel > Airport Parking  
+Travel > Car Hire  
+Travel > Cruises  
+Travel > Ferries & Eurotunnel  
+Travel > Flights  
+Travel > Holidays  
+Vehicles, Parts and Accessories > Auto Care  
+Vehicles, Parts and Accessories > Car Accessories  
+Vehicles, Parts and Accessories > Motorcycles  
+Vehicles, Parts and Accessories > New & Used Cars  
+Vehicles, Parts and Accessories > Tyres  
+Vehicles, Parts and Accessories > Vehicle Finance  
+Vehicles, Parts and Accessories > Vehicle Leasing  
+Vehicles, Parts and Accessories > Vehicle Security  
+Vehicles, Parts and Accessories > Vehicle Servicing  
+Vehicles, Parts and Accessories > Wheels  
