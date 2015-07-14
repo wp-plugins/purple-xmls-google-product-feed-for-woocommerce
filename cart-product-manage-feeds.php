@@ -240,9 +240,9 @@ function feeds_main_table() {
                     </th>
                     <th scope="col" style="width: 80px;"><?php _e( 'Last Updated', 'cart-product-strings' ); ?></th>
                     <th scope="col" width="50px"><?php //_e( 'View', 'cart-product-strings' ); ?></th>
-										<th scope="col" width="50px"><?php _e( 'Options', 'cart-product-strings' ); ?></th>
+					<th scope="col" width="50px"><?php _e( 'Options', 'cart-product-strings' ); ?></th>
                     <th scope="col" width="50px"><?php //_e( 'Delete', 'cart-product-strings' ); ?></th>
-										<th scope="col"><?php _e( 'Products', 'cart-product-strings' ); ?></th>
+					<th scope="col"><?php _e( 'Products', 'cart-product-strings' ); ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -380,9 +380,9 @@ function feeds_main_table() {
                     </th>
                     <th scope="col" style="width: 80px;"><?php _e( 'Last Updated', 'cart-product-strings' ); ?></th>
                     <th scope="col"><?php //_e( 'View', 'cart-product-strings' ); ?></th>
-										<th scope="col"><?php _e( 'Options', 'cart-product-strings' ); ?></th>
+					<th scope="col"><?php _e( 'Options', 'cart-product-strings' ); ?></th>
                     <th scope="col"><?php //_e( 'Delete', 'cart-product-strings' ); ?></th>
-										<th scope="col"><?php _e( 'Products', 'cart-product-strings' ); ?></th>
+					<th scope="col"><?php _e( 'Products', 'cart-product-strings' ); ?></th>
                 </tr>
             </tfoot>
 

@@ -5,7 +5,7 @@
   Plugin URI: www.shoppingcartproductfeed.com
   Description: WooCommerce Shopping Cart Export :: <a target="_blank" href="http://shoppingcartproductfeed.com/tos/">How-To Click Here</a>
   Author: ShoppingCartProductFeed.com
-  Version: 3.1.2.12
+  Version: 3.1.2.37
   Author URI: www.shoppingcartproductfeed.com
   Authors: Haris, Keneto (May2014)
   Note: The "core" folder is shared to the Joomla component.
@@ -18,7 +18,7 @@
 require_once dirname(__FILE__) . '/../../../wp-admin/includes/plugin.php';
 $plugin_version_data = get_plugin_data( __FILE__ );
 //current version: used to show version throughout plugin pages
-define('FEED_PLUGIN_VERSION', $plugin_version_data[ 'Version' ] ); 
+define('FEED_PLUGIN_VERSION', $plugin_version_data[ 'Version' ] );
 define('CPF_PLUGIN_BASENAME', plugin_basename( __FILE__ ) ); //cart-product-feed/cart-product-feed.php
 
 //functions to display cart-product-feed version and checks for updates
@@ -150,7 +150,7 @@ function update_all_cart_feeds_step_2() {
 	$aggregateProviders = array();
 	foreach ($feed_ids as $this_feed_id) {
 
-		if ($this_feed_id->type == 'AggXml' || $this_feed_id->type == 'AggCsv' || $this_feed_id->type == 'AggTxt') {
+		if ($this_feed_id->type == 'AggXml' || $this_feed_id->type == 'AggXmlGoogle' || $this_feed_id->type == 'AggCsv' || $this_feed_id->type == 'AggTxt') {
 			$providerName = $this_feed_id->type;
 			$providerFile = 'core/feeds/' . strtolower($providerName) . '/feed.php';
 			if (!file_exists(dirname(__FILE__) . '/' . $providerFile))
@@ -175,7 +175,7 @@ function update_all_cart_feeds_step_2() {
 		$providerName = $saved_feed->provider;
 
 		//Skip any Aggregate Types
-		if ($providerName == 'AggXml' || $providerName == 'AggCsv' || $providerName == 'AggTxt')
+		if ($providerName == 'AggXml' || $providerName == 'AggXmlGoogle' || $providerName == 'AggCsv' || $providerName == 'AggTxt')
 			continue;
 
 		//Make sure someone exists in the core who can provide the feed
@@ -192,7 +192,7 @@ function update_all_cart_feeds_step_2() {
 
 		$x->productList = $savedProductList;
 		$x->getFeedData($saved_feed->category_id, $saved_feed->remote_category, $saved_feed->filename, $saved_feed);
-		
+
 		$savedProductList = $x->productList;
 		$x->products = null;
 
